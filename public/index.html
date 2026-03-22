@@ -666,6 +666,32 @@ footer {
   border-top: 1px solid #2d2d2d;
   background: #212121;
 }
+
+/* ── Annotation toggle ── */
+.anno-toggle { display: flex; justify-content: flex-end; grid-column: 1/-1; margin-bottom: 6px; }
+.anno-toggle-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 11px; font-family: var(--sans);
+  font-weight: 600; padding: 5px 14px; border-radius: 100px;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
+}
+.anno-toggle-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* ── Hide-commentary mode ── */
+.compare-panels.hide-anno .anno { display: none !important; }
+.compare-panels.hide-anno .anno-wrap { margin-bottom: 10px; }
+.compare-panels.hide-anno .anno-bad,
+.compare-panels.hide-anno .anno-good {
+  background: none; color: inherit; padding: 0; font-weight: inherit; border-radius: 0;
+}
+
+/* ── Byline col scrollable ── */
+.byline-col .compare-article {
+  max-height: 540px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(212,133,74,0.3) transparent;
+}
+.byline-col .compare-article::-webkit-scrollbar { width: 4px; }
+.byline-col .compare-article::-webkit-scrollbar-thumb { background: rgba(212,133,74,0.3); border-radius: 2px; }
 .compare-col {
   border-radius: 12px; padding: 28px; border: 1px solid var(--border);
   background: #131210;
@@ -938,6 +964,9 @@ footer {
       <div class="prompt-banner" style="grid-column:1/-1;">
         <span class="prompt-pill">Prompt: "Write an article on why most B2B email campaigns get low reply rates"</span>
       </div>
+      <div class="anno-toggle">
+        <button class="anno-toggle-btn" id="annoToggle" onclick="toggleAnnotations()">Hide commentary</button>
+      </div>
 
       <!-- ── Left: ChatGPT interface ── -->
       <div class="compare-col chatgpt-col">
@@ -1034,30 +1063,81 @@ footer {
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
+
           <div class="anno-wrap">
             <h1><span class="anno-good">How to Increase B2B Email Campaign Reply Rates from 1.4% to 8.7%</span></h1>
-            <div class="anno good">✓ The specific numbers are in the title. Readers immediately know this is about a concrete, measurable gap — not a generic "improve your email" article.</div>
+            <div class="anno good">✓ Specific numbers in the title. Readers immediately know this is about a concrete, measurable gap — not a generic "improve your email" article.</div>
           </div>
+
           <div class="anno-wrap">
             <p>Your B2B email campaigns reply rates tell a different story than your open rates suggest. <span class="anno-good">While 73% of B2B marketers celebrate 20% open rates as success, the average reply rate sits at 1.4%.</span> This is backwards thinking, and it's costing companies millions.</p>
-            <div class="anno good">✓ Opinion stated in the third sentence with no hedging — "backwards thinking." ChatGPT's opener was a disclaimer. This is a position.</div>
+            <div class="anno good">✓ Opinion in sentence three, no hedging — "backwards thinking." ChatGPT's opener was a disclaimer. This is a position.</div>
           </div>
+
+          <h2>Reply Rates Predict Revenue 300% Better Than Opens</h2>
+          <p>Salesforce's 2023 State of Marketing report reveals that companies focusing on B2B email campaigns reply rates generate 4.2x more qualified leads than those chasing opens and clicks. Yet most B2B marketers still track open rates as their primary success metric.</p>
+          <p>Aaron Ross, author of "Predictable Revenue," puts it bluntly: "The moment you optimize for opens instead of replies, you've chosen marketing metrics over revenue metrics."</p>
+          <p>He's right. The math backs this up. Outreach.io's 2023 benchmark study found that emails optimized for replies achieve 8.7% reply rates — more than six times the industry average.</p>
+
           <h2>Most "Best Practices" Kill B2B Email Campaign Conversations</h2>
+          <p>Traditional email wisdom actively works against reply generation. Gartner's 2022 B2B Buyer Journey Study found that 67% of decision makers prefer emails with 150+ words that ask business questions, directly contradicting the "keep it short" rule that dominates email marketing advice.</p>
           <div class="anno-wrap">
             <p><span class="anno-good">Drift's CEO David Cancel proved this in 2022 when he replaced company newsletters with personal emails from executives asking customers about their challenges. The result: 34% reply rates and $2.3M in pipeline generated.</span></p>
-            <div class="anno good">✓ Named person, named company, year, specific outcome, dollar figure. ChatGPT gave 10 sections of unnamed "best practices." This is one paragraph that makes the point concrete.</div>
+            <div class="anno good">✓ Named person, company, year, outcome, dollar figure. ChatGPT gave 10 sections of unnamed "best practices." This is one paragraph that makes the point concrete.</div>
           </div>
+          <p>Sure, the emails took longer to write. But they generated actual conversations instead of quick deletes.</p>
+          <p>The difference isn't length — it's depth. Shallow emails optimized for quick consumption get consumed and forgotten. Emails that demonstrate genuine business understanding demand responses.</p>
+
+          <h2>Questions Drive 5x Higher B2B Email Reply Rates</h2>
+          <p>ConvertKit's 2023 Email Performance Study reveals a stark truth: only 18% of B2B emails include clear questions requiring responses. Yet question-based emails generate 5x more replies than statement-based emails.</p>
+          <p>Atlassian tested this directly. Their customer expansion emails asking "What's your team's biggest workflow bottleneck right now?" achieved 9.2% reply rates versus 1.7% for feature-focused versions.</p>
+          <p>Question quality matters more than the ask itself. Jill Konrath's 2023 LinkedIn research showed executives respond 5x more frequently to emails referencing industry challenges they've publicly discussed rather than generic pain points.</p>
+          <p>This requires homework. Real homework. Not just plugging company names into templates.</p>
+
+          <h2>The Campaign Mindset Prevents Conversations</h2>
+          <p>Thinking in "campaigns" rather than conversations limits B2B email campaigns reply rates. Marketing campaigns broadcast to audiences. Conversations happen between individuals.</p>
+          <p>Shopify Plus discovered this when they redesigned partner outreach emails in 2023. Instead of generic case studies, they included revenue projections for each recipient's business model. Reply rates jumped from 2.1% to 12.8%.</p>
+          <p>The shift required abandoning broadcast efficiency for conversation intimacy. Each email became a custom business analysis rather than a templated pitch. Yes, it took 10x longer per email. But each email generated 6x more replies.</p>
+
+          <h2>Segment by Authority to Boost Email Reply Performance</h2>
+          <p>Campaign Monitor's 2023 B2B Email Benchmarks expose another error: 84% of B2B email campaigns use broad segments of 1,000+ recipients, but campaigns with segments under 100 people achieve 640% higher reply rates.</p>
+          <p>HubSpot's 2023 Email Marketing Report goes deeper. Companies segmenting lists by budget authority rather than company size see 312% higher reply rates.</p>
+          <p>The reason is simple. Decision makers reply to emails about decisions they can actually make. Individual contributors, regardless of company size, rarely reply to emails about strategic initiatives beyond their control.</p>
+          <p>Zoom's enterprise team proved this by replacing monthly product updates with quarterly "strategy sync" emails asking customers about remote work challenges. The targeted approach generated 847 executive-level conversations in Q3 2023 alone.</p>
+
+          <h2>Perfect Grammar Kills Authenticity in B2B Communications</h2>
+          <p>Here's something that surprised us: emails with minor grammatical imperfections and conversational language receive 67% more replies than perfectly polished corporate communications. They feel human rather than automated.</p>
+          <p>This doesn't mean sloppy writing. It means choosing "you're facing a tough quarter" over "your organization is experiencing challenging market conditions."</p>
+          <p>The difference in tone creates different response expectations. Corporate speak signals one-way communication. Conversational language invites dialogue.</p>
+
+          <h2>Why Targeting Beats Timing for B2B Email Success</h2>
+          <p>Boomerang's 2023 Email Timing Analysis found B2B emails sent Tuesday–Thursday between 10am–11am get 23% higher reply rates than other slots. Yet 89% of marketers still batch-send on Mondays.</p>
+          <p>But timing optimization pales compared to targeting optimization. A perfectly timed email to the wrong person generates zero replies. A well-targeted email to the right decision maker gets responses regardless of send time.</p>
+          <p>We've seen emails sent at 11 PM on a Friday generate same-day responses because they addressed urgent business problems the recipient was actively wrestling with.</p>
+
           <h2>The Real Metric That Matters</h2>
+          <p>The companies seeing exceptional B2B email campaigns reply rates have stopped optimizing delivery schedules and started optimizing recipient relevance. They send fewer emails to more carefully selected audiences with more questions about actual business challenges.</p>
           <div class="anno-wrap">
             <p>Your reply rate isn't a secondary metric to track after open rates improve. It's the only metric that actually connects to revenue. <span class="anno-good">Everything else is just digital theater.</span></p>
-            <div class="anno good">✓ "Digital theater" is the kind of phrase someone with an opinion writes. ChatGPT's ending was "reply rates don't just improve—they become predictable" — a reframe that sounds meaningful and says nothing.</div>
+            <div class="anno good">✓ "Digital theater" is the kind of phrase someone with an opinion writes. ChatGPT's ending was "they become predictable" — a reframe that sounds meaningful and says nothing.</div>
           </div>
+
         </div>
       </div>
 
     </div>
   </div><!-- /compare-panels -->
 </div>
+
+<script>
+function toggleAnnotations() {
+  const panels = document.querySelector('.compare-panels');
+  const btn = document.getElementById('annoToggle');
+  const hiding = !panels.classList.contains('hide-anno');
+  panels.classList.toggle('hide-anno', hiding);
+  btn.textContent = hiding ? 'Show commentary' : 'Hide commentary';
+}
+</script>
 
 <!-- ── Pipeline steps ── -->
 <div class="pipeline-section" id="how-it-works">
