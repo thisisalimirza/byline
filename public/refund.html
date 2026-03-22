@@ -103,8 +103,8 @@
     <label for="tokenInput">Your credit token</label>
     <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
     <p class="hint">
-      Find this in your browser's localStorage under the key <code>byline_credit_token</code>.
-      You must be on the same device and browser where you purchased.
+      This is filled in automatically when you click "Request a refund" from the app.
+      If it's blank, open the app on the device where you purchased and click the refund link there.
     </p>
     <button type="submit" id="submitBtn">Process refund →</button>
   </form>
@@ -122,9 +122,11 @@
 </div>
 
 <script>
-  // Auto-populate token from localStorage if on the same device
+  // Auto-populate token — prefer URL param (linked from app), fall back to localStorage
   window.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('byline_credit_token');
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+    const lsToken  = localStorage.getItem('byline_credit_token');
+    const token    = urlToken || lsToken;
     if (token) document.getElementById('tokenInput').value = token;
   });
 

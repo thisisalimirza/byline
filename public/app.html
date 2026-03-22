@@ -858,7 +858,7 @@
         Running low — top up to keep generating.
       </div>
       <div class="field-hint" style="margin-top:10px;">
-        Credits are tied to this device &amp; browser. <a href="/refund" target="_blank" style="color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;">Request a refund</a>
+        Credits are tied to this device &amp; browser. <a id="refundLink" href="/refund" target="_blank" style="color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;">Request a refund</a>
       </div>
       <!-- Own API key — power user escape hatch -->
       <div class="own-key-toggle" id="ownKeyToggle" onclick="toggleOwnKey()">
@@ -1607,6 +1607,9 @@ function updateCreditDisplay(n) {
   if (numEl) numEl.textContent = n;
   if (hcpEl) hcpEl.textContent = n;
   if (warnEl) warnEl.classList.toggle('visible', _creditToken && n > 0 && n <= 3);
+  // Keep refund link pre-loaded with token so user never has to find it manually
+  const refundLink = document.getElementById('refundLink');
+  if (refundLink && _creditToken) refundLink.href = `/refund?token=${encodeURIComponent(_creditToken)}`;
 }
 
 async function refreshCredits() {
