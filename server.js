@@ -167,6 +167,29 @@ app.get('/refund', (req, res) =>
   res.sendFile(path.join(__dirname, 'public', 'refund.html'))
 );
 
+// ── GET /api/refund-eligible ──────────────────────────────────────────────────
+// Check whether a credit token is eligible for a refund (read-only).
+app.get('/api/refund-eligible', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.json({ eligible: false, reason: 'Missing token' });
+  const entry = await storageGet(`credit:${token}`);
+  if (!entry) return res.json({ eligible: false, reason: 'Purchase not found on this device/browser' });
+  if (!entry.stripeSessionId) return res.json({ eligible: false, reason: 'Older purchase — email us for a manual refund' });
+  if ((entry.used || 0) > 0) {
+    const total = entry.remaining + entry.used;
+    return res.json({ eligible: false, reason: `${entry.used} of ${total} credits already used` });
+  }
+  // Look up amount from Stripe session for display
+  let amount = null;
+  if (stripe) {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(entry.stripeSessionId);
+      amount = session.amount_total / 100;
+    } catch (_) {}
+  }
+  res.json({ eligible: true, remaining: entry.remaining, amount });
+});
+
 // ── POST /api/refund ──────────────────────────────────────────────────────────
 // Self-serve refund: user provides their credit token → we find the Stripe
 // payment intent and issue a full refund automatically. Idempotent.

@@ -11,6 +11,8 @@
     --bg: #0d0c0a; --surface: #191714; --border: rgba(255,255,255,0.07);
     --text: #f0ece4; --text-muted: #8c887f; --text-dim: #504d47;
     --accent: #d4854a; --accent-soft: rgba(212,133,74,0.1);
+    --green: #4ec99a; --green-soft: rgba(78,201,154,0.1);
+    --red: #e87a6a; --red-soft: rgba(232,122,106,0.08);
     --sans: 'Plus Jakarta Sans', sans-serif; --display: 'Fraunces', Georgia, serif;
     --r: 10px;
   }
@@ -23,13 +25,13 @@
   a.back {
     display: flex; align-items: center; gap: 6px;
     font-size: 13px; color: var(--text-muted); text-decoration: none;
-    margin-bottom: 48px; align-self: flex-start; max-width: 480px; width: 100%;
+    margin-bottom: 48px; align-self: flex-start; max-width: 520px; width: 100%;
     transition: color 0.15s;
   }
   a.back:hover { color: var(--text); }
   .card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; padding: 36px; width: 100%; max-width: 480px;
+    border-radius: 16px; padding: 36px; width: 100%; max-width: 520px;
   }
   .eyebrow {
     font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
@@ -41,47 +43,86 @@
   }
   .policy-box {
     background: var(--accent-soft); border: 1px solid rgba(212,133,74,0.18);
-    border-radius: var(--r); padding: 14px 16px; margin-bottom: 24px;
+    border-radius: var(--r); padding: 14px 16px; margin-bottom: 28px;
     font-size: 12px; color: var(--text-muted); line-height: 1.65;
   }
   .policy-box strong { color: var(--text); font-weight: 600; }
+
+  /* ── Purchase list ── */
+  .purchase-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .purchase-row {
+    border: 1px solid var(--border); border-radius: var(--r);
+    padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .purchase-row.eligible { border-color: rgba(78,201,154,0.25); background: var(--green-soft); }
+  .purchase-row.ineligible { opacity: 0.6; }
+  .purchase-meta { flex: 1; min-width: 0; }
+  .purchase-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .purchase-date { font-size: 11px; color: var(--text-dim); }
+  .purchase-status { font-size: 11px; margin-top: 4px; }
+  .purchase-status.ok { color: var(--green); }
+  .purchase-status.no { color: var(--text-dim); }
+  .refund-btn {
+    flex-shrink: 0; background: var(--green); color: #0d0c0a; border: none;
+    border-radius: 7px; padding: 8px 14px; font-family: var(--sans);
+    font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+  .refund-btn:hover { opacity: 0.85; }
+  .refund-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Loading skeleton */
+  .purchase-loading { font-size: 12px; color: var(--text-dim); padding: 8px 0; }
+
+  /* ── Manual fallback ── */
+  .manual-toggle {
+    font-size: 11px; color: var(--text-dim); cursor: pointer; text-align: center;
+    margin-bottom: 0; user-select: none; transition: color 0.15s;
+  }
+  .manual-toggle:hover { color: var(--text-muted); }
+  .manual-toggle .arrow { display: inline-block; transition: transform 0.2s; margin-right: 3px; }
+  .manual-toggle.open .arrow { transform: rotate(90deg); }
+  .manual-section { display: none; margin-top: 20px; }
+  .manual-section.visible { display: block; }
   label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
   input[type="text"] {
     width: 100%; padding: 10px 14px; font-family: var(--sans); font-size: 13px;
     background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-    border-radius: var(--r); color: var(--text); margin-bottom: 20px;
+    border-radius: var(--r); color: var(--text); margin-bottom: 12px;
     outline: none; transition: border-color 0.15s;
   }
   input[type="text"]:focus { border-color: rgba(255,255,255,0.18); }
   input[type="text"]::placeholder { color: var(--text-dim); }
-  .hint { font-size: 11px; color: var(--text-dim); margin-top: -14px; margin-bottom: 20px; line-height: 1.5; }
-  .hint code {
-    font-family: monospace; font-size: 10px;
-    background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;
-  }
-  button[type="submit"] {
+  .hint { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.5; }
+  button.manual-btn {
     width: 100%; background: var(--accent); color: #fff; border: none;
     border-radius: var(--r); padding: 13px; font-family: var(--sans);
     font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
   }
-  button[type="submit"]:hover { opacity: 0.88; }
-  button[type="submit"]:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.manual-btn:hover { opacity: 0.88; }
+  button.manual-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── Result banner ── */
   .result {
     margin-top: 20px; padding: 14px 16px; border-radius: var(--r);
     font-size: 13px; line-height: 1.55; display: none;
   }
-  .result.success {
-    background: rgba(78,201,154,0.1); border: 1px solid rgba(78,201,154,0.25); color: #4ec99a;
-  }
-  .result.error {
-    background: rgba(232,122,106,0.08); border: 1px solid rgba(232,122,106,0.22); color: #e87a6a;
-  }
+  .result.success { background: var(--green-soft); border: 1px solid rgba(78,201,154,0.25); color: var(--green); }
+  .result.error { background: var(--red-soft); border: 1px solid rgba(232,122,106,0.22); color: var(--red); }
   .result-title { font-weight: 600; margin-bottom: 4px; }
+
   .footer-note {
     margin-top: 24px; font-size: 11px; color: var(--text-dim);
     text-align: center; line-height: 1.6;
   }
   .footer-note a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  .no-purchases {
+    font-size: 13px; color: var(--text-dim); text-align: center;
+    padding: 20px 0 4px;
+  }
 </style>
 </head>
 <body>
@@ -91,7 +132,7 @@
 <div class="card">
   <div class="eyebrow">Byline</div>
   <h1>Request a refund</h1>
-  <p class="sub">No questions asked. Paste your credit token below and we'll process your refund instantly and automatically.</p>
+  <p class="sub">No questions asked. We'll process eligible refunds instantly and automatically.</p>
 
   <div class="policy-box">
     <strong>Refund policy:</strong> Full refund if you haven't used any credits yet.
@@ -99,15 +140,28 @@
     the API costs have already been incurred.
   </div>
 
-  <form id="refundForm" onsubmit="submitRefund(event)">
-    <label for="tokenInput">Your credit token</label>
+  <!-- Purchase history from this device -->
+  <div id="purchaseSection">
+    <div class="purchase-loading" id="purchaseLoading">Checking your purchases on this device…</div>
+    <div class="purchase-list" id="purchaseList" style="display:none;"></div>
+    <div class="no-purchases" id="noPurchases" style="display:none;">
+      No purchases found on this device or browser.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Manual fallback -->
+  <div class="manual-toggle" id="manualToggle" onclick="toggleManual()">
+    <span class="arrow">›</span> Purchased on a different device? Enter token manually
+  </div>
+  <div class="manual-section" id="manualSection">
+    <div style="height:16px;"></div>
+    <label for="tokenInput">Credit token</label>
     <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
-    <p class="hint">
-      This is filled in automatically when you click "Request a refund" from the app.
-      If it's blank, open the app on the device where you purchased and click the refund link there.
-    </p>
-    <button type="submit" id="submitBtn">Process refund →</button>
-  </form>
+    <p class="hint">Open the app on the device where you purchased, click "Request a refund" in the Credits sidebar — it will pass the token automatically.</p>
+    <button class="manual-btn" id="manualBtn" onclick="submitManual()">Process refund →</button>
+  </div>
 
   <div class="result" id="result">
     <div class="result-title" id="resultTitle"></div>
@@ -115,70 +169,160 @@
   </div>
 
   <p class="footer-note">
-    Having trouble finding your token? Email
+    Need help?
     <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>
-    with your purchase receipt.
   </p>
 </div>
 
 <script>
-  // Auto-populate token — prefer URL param (linked from app), fall back to localStorage
-  window.addEventListener('DOMContentLoaded', () => {
-    const urlToken = new URLSearchParams(window.location.search).get('token');
-    const lsToken  = localStorage.getItem('byline_credit_token');
-    const token    = urlToken || lsToken;
-    if (token) document.getElementById('tokenInput').value = token;
-  });
-
-  async function submitRefund(e) {
-    e.preventDefault();
-    const token  = document.getElementById('tokenInput').value.trim();
-    const btn    = document.getElementById('submitBtn');
-
-    if (!token) { showResult('error', 'Missing token', 'Please paste your credit token.'); return; }
-
-    btn.disabled = true;
-    btn.textContent = 'Processing…';
-    document.getElementById('result').style.display = 'none';
-
-    try {
-      const r = await fetch('/api/refund', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ creditToken: token }),
-      });
-      const d = await r.json();
-
-      if (d.success) {
-        localStorage.removeItem('byline_credit_token');
-        localStorage.removeItem('byline_credit_bal');
-        document.getElementById('refundForm').style.display = 'none';
-        showResult(
-          'success',
-          '✓ Refund processed',
-          'Your $' + d.amount.toFixed(2) + ' ' + d.currency + ' refund is on its way. It\'ll appear on your statement within 5–10 business days. Your credits have been cancelled.'
-        );
-      } else {
-        showResult('error', '✗ Could not process refund', d.error || 'Something went wrong.');
-        btn.disabled = false;
-        btn.textContent = 'Process refund →';
-      }
-    } catch(err) {
-      showResult('error', '✗ Network error', 'Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Process refund →';
-    }
+  function toggleManual() {
+    const toggle = document.getElementById('manualToggle');
+    const section = document.getElementById('manualSection');
+    const open = toggle.classList.toggle('open');
+    section.classList.toggle('visible', open);
   }
 
   function showResult(type, title, msg) {
-    const el    = document.getElementById('result');
-    const titleEl = document.getElementById('resultTitle');
-    const msgEl   = document.getElementById('resultMsg');
+    const el = document.getElementById('result');
     el.className = 'result ' + type;
-    titleEl.textContent = title;
-    msgEl.textContent   = msg;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultMsg').textContent = msg;
     el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+
+  async function doRefund(token, btnEl, onSuccess) {
+    btnEl.disabled = true;
+    btnEl.textContent = 'Processing…';
+    try {
+      const r = await fetch('/api/refund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creditToken: token }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        // Remove this token from localStorage history
+        const history = JSON.parse(localStorage.getItem('byline_purchases') || '[]');
+        localStorage.setItem('byline_purchases', JSON.stringify(history.filter(p => p.token !== token)));
+        if (localStorage.getItem('byline_credit_token') === token) {
+          localStorage.removeItem('byline_credit_token');
+          localStorage.removeItem('byline_credit_bal');
+        }
+        onSuccess(d);
+      } else {
+        showResult('error', '✗ Could not process refund', d.error || 'Something went wrong.');
+        btnEl.disabled = false;
+        btnEl.textContent = 'Refund →';
+      }
+    } catch (err) {
+      showResult('error', '✗ Network error', 'Please try again.');
+      btnEl.disabled = false;
+      btnEl.textContent = 'Refund →';
+    }
+  }
+
+  function buildPurchaseRow(purchase, eligibility) {
+    const row = document.createElement('div');
+    row.className = 'purchase-row ' + (eligibility.eligible ? 'eligible' : 'ineligible');
+
+    const meta = document.createElement('div');
+    meta.className = 'purchase-meta';
+
+    const title = document.createElement('div');
+    title.className = 'purchase-title';
+    title.textContent = purchase.credits + ' articles';
+    meta.appendChild(title);
+
+    const dateEl = document.createElement('div');
+    dateEl.className = 'purchase-date';
+    dateEl.textContent = new Date(purchase.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    meta.appendChild(dateEl);
+
+    const status = document.createElement('div');
+    status.className = 'purchase-status ' + (eligibility.eligible ? 'ok' : 'no');
+    if (eligibility.eligible) {
+      const amt = eligibility.amount != null ? ' ($' + eligibility.amount.toFixed(2) + ')' : '';
+      status.textContent = '✓ Eligible for full refund' + amt;
+    } else {
+      status.textContent = '✗ ' + (eligibility.reason || 'Not eligible');
+    }
+    meta.appendChild(status);
+    row.appendChild(meta);
+
+    if (eligibility.eligible) {
+      const btn = document.createElement('button');
+      btn.className = 'refund-btn';
+      btn.textContent = 'Refund →';
+      btn.onclick = () => {
+        doRefund(purchase.token, btn, (d) => {
+          row.className = 'purchase-row ineligible';
+          btn.remove();
+          status.className = 'purchase-status ok';
+          status.textContent = '✓ Refunded — $' + d.amount.toFixed(2) + ' ' + d.currency + ' on its way (5–10 business days)';
+          showResult('success', '✓ Refund processed', 'Your $' + d.amount.toFixed(2) + ' refund is on its way. It\'ll appear on your statement within 5–10 business days.');
+        });
+      };
+      row.appendChild(btn);
+    }
+
+    return row;
+  }
+
+  async function loadPurchases() {
+    const loadingEl = document.getElementById('purchaseLoading');
+    const listEl    = document.getElementById('purchaseList');
+    const noneEl    = document.getElementById('noPurchases');
+
+    // Collect all tokens: purchase history array + current active token
+    const history    = JSON.parse(localStorage.getItem('byline_purchases') || '[]');
+    const activeToken = localStorage.getItem('byline_credit_token');
+
+    // Merge — ensure active token appears if not in history (older sessions)
+    const seen = new Set(history.map(p => p.token));
+    if (activeToken && !seen.has(activeToken)) {
+      history.unshift({ token: activeToken, credits: '?', date: new Date().toISOString() });
+    }
+
+    // Also check URL param (linked from app)
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+    if (urlToken && !seen.has(urlToken)) {
+      history.unshift({ token: urlToken, credits: '?', date: new Date().toISOString() });
+    }
+
+    loadingEl.style.display = 'none';
+
+    if (history.length === 0) {
+      noneEl.style.display = 'block';
+      return;
+    }
+
+    listEl.style.display = 'flex';
+
+    // Check eligibility for each in parallel
+    const checks = history.map(p =>
+      fetch('/api/refund-eligible?token=' + encodeURIComponent(p.token))
+        .then(r => r.json())
+        .catch(() => ({ eligible: false, reason: 'Could not check status' }))
+    );
+    const results = await Promise.all(checks);
+
+    history.forEach((p, i) => {
+      listEl.appendChild(buildPurchaseRow(p, results[i]));
+    });
+  }
+
+  async function submitManual() {
+    const token = document.getElementById('tokenInput').value.trim();
+    const btn   = document.getElementById('manualBtn');
+    if (!token) { showResult('error', 'Missing token', 'Please paste your credit token.'); return; }
+    doRefund(token, btn, (d) => {
+      document.getElementById('manualSection').style.display = 'none';
+      showResult('success', '✓ Refund processed', 'Your $' + d.amount.toFixed(2) + ' ' + d.currency + ' refund is on its way within 5–10 business days.');
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', loadPurchases);
 </script>
 </body>
 </html>

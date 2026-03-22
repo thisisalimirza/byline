@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Byline — AI Article Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1718,8 +1719,21 @@ function handleUrlParams() {
     localStorage.setItem('byline_credit_token', token);
     updateCreditDisplay(credits);
     if (isNew) {
+      // Save to purchase history so refund page can list all purchases
+      const history = JSON.parse(localStorage.getItem('byline_purchases') || '[]');
+      history.unshift({ token, credits, date: new Date().toISOString() });
+      localStorage.setItem('byline_purchases', JSON.stringify(history.slice(0, 20)));
+
       openCreditsModal();
       document.getElementById('newCreditsBanner').classList.add('visible');
+
+      // Celebrate!
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 },
+          colors: ['#d4854a', '#f0ece4', '#4ec99a', '#f5c87a'] });
+        setTimeout(() => confetti({ particleCount: 60, spread: 120, origin: { y: 0.4 },
+          colors: ['#d4854a', '#f0ece4', '#4ec99a'] }), 350);
+      }
     }
   }
   if (error) {
