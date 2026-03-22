@@ -161,6 +161,55 @@ app.get('/success', async (req, res) => {
   }
 });
 
+// ── GET /refund ───────────────────────────────────────────────────────────────
+app.get('/refund', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public', 'refund.html'))
+);
+
+// ── POST /api/refund ──────────────────────────────────────────────────────────
+// Self-serve refund: user provides their credit token → we find the Stripe
+// payment intent and issue a full refund automatically. Idempotent.
+app.post('/api/refund', async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Payments not configured' });
+
+  const { creditToken } = req.body;
+  if (!creditToken) return res.status(400).json({ error: 'Missing credit token' });
+
+  const entry = await storageGet(`credit:${creditToken}`);
+  if (!entry) return res.status(404).json({ error: 'Credit token not found. Make sure you\'re on the same device and browser where you purchased.' });
+  if (!entry.stripeSessionId) return res.status(400).json({ error: 'No purchase found for this token.' });
+
+  // Don't refund if credits have been substantially used
+  const originalCredits = entry.remaining + (entry.used || 0);
+  if ((entry.used || 0) > 0) {
+    return res.status(400).json({
+      error: `You've already used ${entry.used} of your ${originalCredits} credits. Refunds are only available before any credits are consumed.`
+    });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(entry.stripeSessionId);
+    const paymentIntent = session.payment_intent;
+    if (!paymentIntent) return res.status(400).json({ error: 'No payment found for this session.' });
+
+    // Check if already refunded
+    const pi = await stripe.paymentIntents.retrieve(paymentIntent);
+    if (pi.status === 'canceled' || pi.amount_received === 0) {
+      return res.status(400).json({ error: 'This payment has already been refunded.' });
+    }
+
+    const refund = await stripe.refunds.create({ payment_intent: paymentIntent });
+
+    // Invalidate the credit token
+    await storageDel(`credit:${creditToken}`);
+
+    res.json({ success: true, amount: refund.amount / 100, currency: refund.currency.toUpperCase() });
+  } catch (err) {
+    console.error('Refund error:', err.message);
+    res.status(500).json({ error: 'Refund failed: ' + err.message });
+  }
+});
+
 // ── POST /api/chat ────────────────────────────────────────────────────────────
 // Accepts either:
 //   { apiKey, ...anthropicBody }      — user's own key, bypasses credits

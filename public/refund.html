@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refund — Byline</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0c0a; --surface: #191714; --border: rgba(255,255,255,0.07);
+    --text: #f0ece4; --text-muted: #8c887f; --text-dim: #504d47;
+    --accent: #d4854a; --accent-soft: rgba(212,133,74,0.1);
+    --sans: 'Plus Jakarta Sans', sans-serif; --display: 'Fraunces', Georgia, serif;
+    --r: 10px;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--sans); min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 20px;
+  }
+  a.back {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-muted); text-decoration: none;
+    margin-bottom: 48px; align-self: flex-start; max-width: 480px; width: 100%;
+    transition: color 0.15s;
+  }
+  a.back:hover { color: var(--text); }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 36px; width: 100%; max-width: 480px;
+  }
+  .eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  }
+  h1 { font-family: var(--display); font-size: 26px; font-weight: 500; margin-bottom: 10px; }
+  .sub {
+    font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 28px;
+  }
+  .policy-box {
+    background: var(--accent-soft); border: 1px solid rgba(212,133,74,0.18);
+    border-radius: var(--r); padding: 14px 16px; margin-bottom: 24px;
+    font-size: 12px; color: var(--text-muted); line-height: 1.65;
+  }
+  .policy-box strong { color: var(--text); font-weight: 600; }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%; padding: 10px 14px; font-family: var(--sans); font-size: 13px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: var(--r); color: var(--text); margin-bottom: 20px;
+    outline: none; transition: border-color 0.15s;
+  }
+  input[type="text"]:focus { border-color: rgba(255,255,255,0.18); }
+  input[type="text"]::placeholder { color: var(--text-dim); }
+  .hint { font-size: 11px; color: var(--text-dim); margin-top: -14px; margin-bottom: 20px; line-height: 1.5; }
+  .hint code {
+    font-family: monospace; font-size: 10px;
+    background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;
+  }
+  button[type="submit"] {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    border-radius: var(--r); padding: 13px; font-family: var(--sans);
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+  }
+  button[type="submit"]:hover { opacity: 0.88; }
+  button[type="submit"]:disabled { opacity: 0.4; cursor: not-allowed; }
+  .result {
+    margin-top: 20px; padding: 14px 16px; border-radius: var(--r);
+    font-size: 13px; line-height: 1.55; display: none;
+  }
+  .result.success {
+    background: rgba(78,201,154,0.1); border: 1px solid rgba(78,201,154,0.25); color: #4ec99a;
+  }
+  .result.error {
+    background: rgba(232,122,106,0.08); border: 1px solid rgba(232,122,106,0.22); color: #e87a6a;
+  }
+  .result-title { font-weight: 600; margin-bottom: 4px; }
+  .footer-note {
+    margin-top: 24px; font-size: 11px; color: var(--text-dim);
+    text-align: center; line-height: 1.6;
+  }
+  .footer-note a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<a class="back" href="/app">← Back to Byline</a>
+
+<div class="card">
+  <div class="eyebrow">Byline</div>
+  <h1>Request a refund</h1>
+  <p class="sub">No questions asked. Paste your credit token below and we'll process your refund instantly and automatically.</p>
+
+  <div class="policy-box">
+    <strong>Refund policy:</strong> Full refund if you haven't used any credits yet.
+    Once you've generated at least one article, the credit pack is non-refundable —
+    the API costs have already been incurred.
+  </div>
+
+  <form id="refundForm" onsubmit="submitRefund(event)">
+    <label for="tokenInput">Your credit token</label>
+    <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
+    <p class="hint">
+      Find this in your browser's localStorage under the key <code>byline_credit_token</code>.
+      You must be on the same device and browser where you purchased.
+    </p>
+    <button type="submit" id="submitBtn">Process refund →</button>
+  </form>
+
+  <div class="result" id="result">
+    <div class="result-title" id="resultTitle"></div>
+    <div id="resultMsg"></div>
+  </div>
+
+  <p class="footer-note">
+    Having trouble finding your token? Email
+    <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>
+    with your purchase receipt.
+  </p>
+</div>
+
+<script>
+  // Auto-populate token from localStorage if on the same device
+  window.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('byline_credit_token');
+    if (token) document.getElementById('tokenInput').value = token;
+  });
+
+  async function submitRefund(e) {
+    e.preventDefault();
+    const token  = document.getElementById('tokenInput').value.trim();
+    const btn    = document.getElementById('submitBtn');
+
+    if (!token) { showResult('error', 'Missing token', 'Please paste your credit token.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+    document.getElementById('result').style.display = 'none';
+
+    try {
+      const r = await fetch('/api/refund', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ creditToken: token }),
+      });
+      const d = await r.json();
+
+      if (d.success) {
+        localStorage.removeItem('byline_credit_token');
+        localStorage.removeItem('byline_credit_bal');
+        document.getElementById('refundForm').style.display = 'none';
+        showResult(
+          'success',
+          '✓ Refund processed',
+          'Your $' + d.amount.toFixed(2) + ' ' + d.currency + ' refund is on its way. It\'ll appear on your statement within 5–10 business days. Your credits have been cancelled.'
+        );
+      } else {
+        showResult('error', '✗ Could not process refund', d.error || 'Something went wrong.');
+        btn.disabled = false;
+        btn.textContent = 'Process refund →';
+      }
+    } catch(err) {
+      showResult('error', '✗ Network error', 'Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Process refund →';
+    }
+  }
+
+  function showResult(type, title, msg) {
+    const el    = document.getElementById('result');
+    const titleEl = document.getElementById('resultTitle');
+    const msgEl   = document.getElementById('resultMsg');
+    el.className = 'result ' + type;
+    titleEl.textContent = title;
+    msgEl.textContent   = msg;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>

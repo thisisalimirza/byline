@@ -179,6 +179,10 @@
     color: var(--text-muted);
     margin-bottom: 5px;
   }
+  .field-hint {
+    font-size: 11px; color: var(--text-dim);
+    margin-top: 5px; line-height: 1.5;
+  }
 
   input[type="text"], input[type="password"], textarea, select {
     width: 100%;
@@ -656,6 +660,24 @@
   .draft-toast-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
   .draft-toast-note { font-size: 11px; color: rgba(240,236,228,0.5); line-height: 1.5; }
 
+  /* Save reminder banner */
+  .save-reminder {
+    display: none; align-items: flex-start; gap: 10px;
+    margin: 0 1rem 1rem;
+    background: rgba(212,133,74,0.08); border: 1px solid rgba(212,133,74,0.22);
+    border-radius: var(--r-sm); padding: 12px 14px;
+    font-size: 12px; color: var(--text-muted); line-height: 1.55;
+  }
+  .save-reminder.visible { display: flex; }
+  .save-reminder strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; }
+  .save-reminder-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .save-reminder-dismiss {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 14px; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: auto;
+    align-self: flex-start;
+  }
+  .save-reminder-dismiss:hover { color: var(--text-muted); }
+
   /* Saved Drafts tab */
   .draft-item {
     padding: 0.9rem 0; border-bottom: 1px solid #f5f0e8;
@@ -834,6 +856,9 @@
       </div>
       <div class="credit-low-warn" id="creditLowWarn">
         Running low — top up to keep generating.
+      </div>
+      <div class="field-hint" style="margin-top:10px;">
+        Credits are tied to this device &amp; browser. <a href="/refund" target="_blank" style="color:var(--text-muted);text-decoration:underline;text-underline-offset:2px;">Request a refund</a>
       </div>
       <!-- Own API key — power user escape hatch -->
       <div class="own-key-toggle" id="ownKeyToggle" onclick="toggleOwnKey()">
@@ -1059,6 +1084,14 @@
       </div>
       <div class="agent-panel-body">
         <div class="agent-output-text" id="out5">Follows after refining.</div>
+      </div>
+      <div class="save-reminder" id="saveReminder">
+        <span class="save-reminder-icon">⚠</span>
+        <div>
+          <strong>Save your article before closing.</strong>
+          Articles aren't stored yet — copy or export it now. A dashboard to save &amp; access articles across devices is coming soon.
+        </div>
+        <button class="save-reminder-dismiss" onclick="this.closest('.save-reminder').classList.remove('visible')">✕</button>
       </div>
     </div>
 
@@ -1799,6 +1832,7 @@ async function runPipeline() {
   btn.textContent = '⟳ Generating…';
   document.getElementById('copyBtn').classList.remove('visible');
   document.getElementById('previewBtn').classList.remove('visible');
+  document.getElementById('saveReminder').classList.remove('visible');
 
   // Reset all panels
   for (let i = 1; i <= 5; i++) {
@@ -1872,6 +1906,7 @@ async function runPipeline() {
 
     document.getElementById('copyBtn').classList.add('visible');
     document.getElementById('previewBtn').classList.add('visible');
+    document.getElementById('saveReminder').classList.add('visible');
 
     // Scroll to final output
     document.getElementById('panel5').scrollIntoView({ behavior: 'smooth' });
