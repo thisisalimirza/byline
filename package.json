@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vercel/kv": "^3.0.0",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "stripe": "^20.4.1"
   }
 }

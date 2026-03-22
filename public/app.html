@@ -215,6 +215,135 @@
   }
   .toggle-key:hover { color: var(--text); }
 
+  /* ── Credits sidebar card ─────────────────────────────────────────────────── */
+  .credit-display { display: flex; align-items: center; justify-content: space-between; }
+  .credit-balance { display: flex; align-items: baseline; gap: 5px; }
+  .credit-num { font-family: var(--display); font-size: 30px; font-weight: 600; color: var(--accent); }
+  .credit-unit { font-size: 13px; color: var(--text-muted); }
+  .credit-topup {
+    background: var(--accent-soft); border: 1px solid rgba(212,133,74,0.3);
+    border-radius: 20px; padding: 5px 14px;
+    font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--accent);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .credit-topup:hover { background: var(--accent-glow); }
+  .credit-low-warn {
+    margin-top: 8px; padding: 8px 10px;
+    background: rgba(232,122,106,0.08); border: 1px solid rgba(232,122,106,0.22);
+    border-radius: var(--r-sm); font-size: 12px; color: #e87a6a; display: none;
+  }
+  .credit-low-warn.visible { display: block; }
+  .own-key-toggle {
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim); cursor: pointer;
+    display: flex; align-items: center; gap: 5px; user-select: none;
+  }
+  .own-key-toggle:hover { color: var(--text-muted); }
+  .own-key-toggle .okt-icon { transition: transform 0.2s; }
+  .own-key-toggle.open .okt-icon { transform: rotate(90deg); }
+  .own-key-inline { margin-top: 8px; display: none; }
+  .own-key-inline.visible { display: block; }
+  .own-key-inline .api-key-wrapper input { padding-right: 54px; }
+
+  /* ── Credit pill in header ────────────────────────────────────────────────── */
+  .header-credit-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 12px; cursor: pointer;
+    font-size: 12px; transition: border-color 0.15s;
+  }
+  .header-credit-pill:hover { border-color: var(--border-hover); }
+  .hcp-count { font-weight: 700; color: var(--accent); }
+  .hcp-label { color: var(--text-muted); }
+
+  /* ── Buy-credits modal ────────────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.72); z-index: 300;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; width: min(500px, 94vw); padding: 32px;
+    position: relative; box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text-muted); width: 28px; height: 28px;
+    border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 5px;
+  }
+  .modal-title {
+    font-family: var(--display); font-size: 22px; font-weight: 600;
+    color: var(--text); margin-bottom: 5px;
+  }
+  .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.55; }
+  .pack-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+  .pack-card {
+    border: 1.5px solid var(--border); border-radius: var(--r);
+    padding: 16px 12px 12px; cursor: pointer; text-align: center;
+    position: relative; transition: border-color 0.15s, background 0.15s;
+  }
+  .pack-card:hover, .pack-card.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .pack-badge {
+    position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 2px 9px; border-radius: 20px; white-space: nowrap;
+  }
+  .pack-credits { font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--text); }
+  .pack-label { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+  .pack-price { font-size: 16px; font-weight: 700; color: var(--accent); }
+  .pack-per { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+  .modal-cta {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    border-radius: var(--r-sm); padding: 14px;
+    font-family: var(--sans); font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-bottom: 18px; transition: opacity 0.15s;
+  }
+  .modal-cta:hover { opacity: 0.88; }
+  .modal-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+  .modal-divider {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--text-dim); font-size: 12px; margin-bottom: 16px;
+  }
+  .modal-divider::before, .modal-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .own-key-section label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+  .own-key-row { display: flex; gap: 8px; }
+  .own-key-row input {
+    flex: 1; padding: 9px 12px; font-family: var(--mono); font-size: 12px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r-sm); color: var(--text);
+  }
+  .own-key-row input::placeholder { color: var(--text-dim); }
+  .own-key-save {
+    padding: 9px 14px; background: var(--surface3); border: 1px solid var(--border);
+    border-radius: var(--r-sm); color: var(--text); font-family: var(--sans);
+    font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .own-key-save:hover { background: var(--border); }
+  .modal-storage-note {
+    font-size: 11px; color: var(--text-dim); text-align: center;
+    margin-top: 14px; line-height: 1.6;
+  }
+  .new-credits-banner {
+    background: rgba(78,201,154,0.1); border: 1px solid rgba(78,201,154,0.25);
+    border-radius: var(--r-sm); padding: 10px 14px;
+    font-size: 13px; color: #4ec99a; margin-bottom: 14px; display: none;
+  }
+  .new-credits-banner.visible { display: block; }
+
   /* Audience type toggle */
   .type-toggle { display: flex; gap: 5px; }
   .type-btn {
@@ -684,17 +813,38 @@
       <span class="pipe-node-label">Polish</span>
     </div>
   </div>
+  <button class="header-credit-pill" id="headerCreditPill" onclick="openCreditsModal()">
+    <span class="hcp-count" id="hcpCount">—</span>
+    <span class="hcp-label">credits</span>
+  </button>
 </header>
 
 <main>
   <aside class="sidebar">
 
-    <!-- API Key -->
+    <!-- Credits -->
     <div class="sidebar-card">
-      <div class="sidebar-card-title">API Key</div>
-      <div class="api-key-wrapper">
-        <input type="password" id="apiKey" placeholder="sk-ant-..." />
-        <button class="toggle-key" onclick="toggleKey()">show</button>
+      <div class="sidebar-card-title">Credits</div>
+      <div class="credit-display">
+        <div class="credit-balance">
+          <span class="credit-num" id="creditNum">—</span>
+          <span class="credit-unit">articles left</span>
+        </div>
+        <button class="credit-topup" onclick="openCreditsModal()">Top up →</button>
+      </div>
+      <div class="credit-low-warn" id="creditLowWarn">
+        Running low — top up to keep generating.
+      </div>
+      <!-- Own API key — power user escape hatch -->
+      <div class="own-key-toggle" id="ownKeyToggle" onclick="toggleOwnKey()">
+        <span class="okt-icon">›</span> Use my own API key instead
+      </div>
+      <div class="own-key-inline" id="ownKeyInline">
+        <div class="api-key-wrapper">
+          <input type="password" id="apiKey" placeholder="sk-ant-..." />
+          <button class="toggle-key" onclick="toggleKey()">show</button>
+        </div>
+        <div class="field-hint">Bypasses credits — billed to your Anthropic account directly.</div>
       </div>
     </div>
 
@@ -1410,13 +1560,148 @@ function buildHumanizerNote(name, style) {
   return `\n\n[EDITORIAL NOTE — NOT PART OF ARTICLE]: After your full edit pass, do one additional check: any mentions of "${name}" must read as a trusted colleague's natural recommendation — not ad copy. If you find any salesy, promotional, or advertorial language around those mentions, rewrite it to sound like organic prose. Output only the complete revised article.`;
 }
 
+// ── Credits state & functions ─────────────────────────────────────────────────
+let _creditToken  = localStorage.getItem('byline_credit_token') || null;
+let _creditBal    = 0;
+let _selectedPack = 'creator';
+
+function updateCreditDisplay(n) {
+  _creditBal = n;
+  localStorage.setItem('byline_credit_bal', String(n));
+  const numEl  = document.getElementById('creditNum');
+  const hcpEl  = document.getElementById('hcpCount');
+  const warnEl = document.getElementById('creditLowWarn');
+  if (numEl) numEl.textContent = n;
+  if (hcpEl) hcpEl.textContent = n;
+  if (warnEl) warnEl.classList.toggle('visible', _creditToken && n > 0 && n <= 3);
+}
+
+async function refreshCredits() {
+  if (!_creditToken) { updateCreditDisplay(0); return; }
+  try {
+    const r = await fetch(`/api/credits?token=${encodeURIComponent(_creditToken)}`);
+    const d = await r.json();
+    if (d.valid) {
+      updateCreditDisplay(d.remaining);
+    } else {
+      _creditToken = null;
+      localStorage.removeItem('byline_credit_token');
+      updateCreditDisplay(0);
+    }
+  } catch(e) {
+    // Network error — use cached value
+    updateCreditDisplay(parseInt(localStorage.getItem('byline_credit_bal') || '0', 10));
+  }
+}
+
+function openCreditsModal(outOfCredits = false) {
+  document.getElementById('creditsModal').classList.add('open');
+  document.getElementById('modalSub').textContent = outOfCredits
+    ? 'You\'re out of credits. Top up to keep generating.'
+    : 'One credit = one full 5-agent article. No API key required.';
+}
+
+function closeCreditsModal() {
+  document.getElementById('creditsModal').classList.remove('open');
+  document.getElementById('newCreditsBanner').classList.remove('visible');
+}
+
+function handleModalBackdrop(e) {
+  if (e.target === document.getElementById('creditsModal')) closeCreditsModal();
+}
+
+function selectPack(pack) {
+  _selectedPack = pack;
+  document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById(`pack-${pack}`);
+  if (el) el.classList.add('selected');
+}
+
+async function purchaseCredits() {
+  const btn = document.getElementById('modalCta');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting to Stripe…';
+  try {
+    const r = await fetch('/api/create-checkout', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ pack: _selectedPack }),
+    });
+    const d = await r.json();
+    if (d.url) {
+      window.location.href = d.url;
+    } else {
+      showError(d.error || 'Could not create checkout session.');
+      btn.disabled = false;
+      btn.textContent = 'Buy with Card →';
+    }
+  } catch(e) {
+    showError('Network error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Buy with Card →';
+  }
+}
+
+function saveOwnKey() {
+  const key = document.getElementById('modalApiKey').value.trim();
+  if (!key) return;
+  localStorage.setItem('byline_own_key', key);
+  document.getElementById('apiKey').value = key;
+  // Show own key section in sidebar
+  document.getElementById('ownKeyInline').classList.add('visible');
+  document.getElementById('ownKeyToggle').classList.add('open');
+  closeCreditsModal();
+}
+
+function toggleOwnKey() {
+  const inline = document.getElementById('ownKeyInline');
+  const toggle = document.getElementById('ownKeyToggle');
+  const open   = inline.classList.toggle('visible');
+  toggle.classList.toggle('open', open);
+}
+
+function handleUrlParams() {
+  const params  = new URLSearchParams(window.location.search);
+  const token   = params.get('token');
+  const credits = parseInt(params.get('credits') || '0', 10);
+  const isNew   = params.get('new') === '1';
+  const error   = params.get('error');
+
+  if (token && credits >= 0) {
+    _creditToken = token;
+    localStorage.setItem('byline_credit_token', token);
+    updateCreditDisplay(credits);
+    if (isNew) {
+      openCreditsModal();
+      document.getElementById('newCreditsBanner').classList.add('visible');
+    }
+  }
+  if (error) {
+    showError('Payment issue: ' + error.replace(/_/g, ' '));
+  }
+  // Clean URL so token isn't exposed on refresh/share
+  if (params.has('token') || params.has('error') || params.has('new')) {
+    window.history.replaceState({}, '', '/app');
+  }
+}
+
+function loadSavedOwnKey() {
+  const saved = localStorage.getItem('byline_own_key');
+  if (saved) document.getElementById('apiKey').value = saved;
+}
+
 // ── Core streaming call ──────────────────────────────────────────────────────
-async function streamAgent(apiKey, model, maxTokens, systemPrompt, userMessage, outEl, panelN) {
+// authMode: { type: 'key', apiKey } | { type: 'run', runToken }
+async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage, outEl, panelN) {
+  const authPayload = authMode.type === 'key'
+    ? { apiKey: authMode.apiKey }
+    : { runToken: authMode.runToken };
+
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      apiKey,
+      ...authPayload,
       model,
       max_tokens: maxTokens,
       system: systemPrompt,
@@ -1458,12 +1743,12 @@ async function streamAgent(apiKey, model, maxTokens, systemPrompt, userMessage, 
 
 // ── Pipeline orchestration ───────────────────────────────────────────────────
 async function runPipeline() {
-  const apiKey  = document.getElementById('apiKey').value.trim();
-  const topic   = document.getElementById('topic').value.trim();
-  const keyword = document.getElementById('keyword').value.trim();
-  const audience = document.getElementById('audience').value.trim();
-  const tone    = document.getElementById('tone').value;
-  const model   = document.getElementById('model').value;
+  const ownApiKey = document.getElementById('apiKey').value.trim();
+  const topic     = document.getElementById('topic').value.trim();
+  const keyword   = document.getElementById('keyword').value.trim();
+  const audience  = document.getElementById('audience').value.trim();
+  const tone      = document.getElementById('tone').value;
+  const model     = document.getElementById('model').value;
 
   const sys = [1,2,3,4,5].map(n => document.getElementById('sys' + n).value.trim());
 
@@ -1471,14 +1756,43 @@ async function runPipeline() {
   const productName = document.getElementById('productName').value.trim();
   const productDesc = document.getElementById('productDesc').value.trim();
   const productUrl  = document.getElementById('productUrl').value.trim();
-  const strategistNote  = buildStrategistNote(productName, productDesc, promoStyle);
+  const strategistNote   = buildStrategistNote(productName, productDesc, promoStyle);
   const writerProductCtx = buildWriterProductCtx(productName, productDesc, productUrl, promoStyle);
   const humanizerNote    = buildHumanizerNote(productName, promoStyle);
 
   hideError();
-  if (!apiKey)  { showError('Please enter your Anthropic API key.'); return; }
   if (!topic)   { showError('Please enter an article topic.'); return; }
   if (!keyword) { showError('Please enter a target keyword.'); return; }
+
+  // ── Resolve auth: own key → credits → prompt ──────────────────────────────
+  let authMode;
+  if (ownApiKey) {
+    authMode = { type: 'key', apiKey: ownApiKey };
+  } else if (_creditToken) {
+    const btn2 = document.getElementById('runBtn');
+    btn2.textContent = '⟳ Starting…';
+    try {
+      const r = await fetch('/api/start-run', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ creditToken: _creditToken }),
+      });
+      if (r.status === 402) { openCreditsModal(true); btn2.disabled = false; btn2.textContent = '✦ Generate Article'; return; }
+      if (!r.ok) throw new Error('Could not start run');
+      const d = await r.json();
+      authMode = { type: 'run', runToken: d.runToken };
+      updateCreditDisplay(d.remaining);
+    } catch (e) {
+      showError(e.message);
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('runBtn').textContent = '✦ Generate Article';
+      return;
+    }
+  } else {
+    openCreditsModal(false);
+    return;
+  }
+  // ──────────────────────────────────────────────────────────────────────────
 
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
@@ -1496,7 +1810,6 @@ async function runPipeline() {
   setOutput(4, 'Follows after writing.', false);
   setOutput(5, 'Follows after refining.', false);
 
-  // Scroll output area to top
   document.getElementById('outputArea').scrollTop = 0;
 
   try {
@@ -1507,7 +1820,7 @@ async function runPipeline() {
     setPipeNode(1, 'active'); setPanel(1, 'active'); setPill(1, 'working…', true);
     const out1El = document.getElementById('out1');
     const brief = await streamAgent(
-      apiKey, model, 1200, sys[0],
+      authMode, model, 1200, sys[0],
       `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\nTone preference: ${tone}${strategistNote}`,
       out1El, 1
     );
@@ -1518,7 +1831,7 @@ async function runPipeline() {
     setOutput(2, '', false);
     const out2El = document.getElementById('out2');
     const research = await streamAgent(
-      apiKey, model, 1500, sys[1],
+      authMode, model, 1500, sys[1],
       `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\n\nStrategic brief:\n${brief}`,
       out2El, 2
     );
@@ -1529,7 +1842,7 @@ async function runPipeline() {
     setOutput(3, '', false);
     const out3El = document.getElementById('out3');
     const draft = await streamAgent(
-      apiKey, model, 4096, sys[2],
+      authMode, model, 4096, sys[2],
       `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\nTone: ${tone}\n\nStrategic brief:\n${brief}\n\nResearch notes:\n${research}${writerProductCtx}`,
       out3El, 3
     );
@@ -1540,7 +1853,7 @@ async function runPipeline() {
     setOutput(4, '', false);
     const out4El = document.getElementById('out4');
     const humanized = await streamAgent(
-      apiKey, model, 4096, sys[3],
+      authMode, model, 4096, sys[3],
       draft + humanizerNote,
       out4El, 4
     );
@@ -1551,7 +1864,7 @@ async function runPipeline() {
     setOutput(5, '', false);
     const out5El = document.getElementById('out5');
     await streamAgent(
-      apiKey, model, 2048, sys[4],
+      authMode, model, 2048, sys[4],
       `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${humanized}`,
       out5El, 5
     );
@@ -1921,6 +2234,9 @@ document.addEventListener('DOMContentLoaded', () => {
   for (let n = 1; n <= 5; n++) {
     document.getElementById('sys' + n).value = PROMPTS[n];
   }
+  handleUrlParams();   // handle ?token= from Stripe redirect
+  loadSavedOwnKey();   // restore saved own API key if any
+  refreshCredits();    // verify credit token with server and update display
 });
 </script>
 
@@ -1928,6 +2244,60 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="draft-toast" id="draftToast">
   <div class="draft-toast-title">Draft saved ✓</div>
   <div class="draft-toast-note">Stored in your browser only — won't sync across devices or browsers.</div>
+</div>
+
+<!-- Buy Credits Modal -->
+<div class="modal-overlay" id="creditsModal" onclick="handleModalBackdrop(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCreditsModal()">✕</button>
+
+    <div class="new-credits-banner" id="newCreditsBanner">
+      ✓ Payment successful — credits added to your account.
+    </div>
+
+    <div class="modal-eyebrow">Byline Credits</div>
+    <div class="modal-title">Generate articles instantly</div>
+    <div class="modal-sub" id="modalSub">One credit = one full 5-agent article. No API key required.</div>
+
+    <div class="pack-grid">
+      <div class="pack-card" id="pack-starter" onclick="selectPack('starter')">
+        <div class="pack-credits">10</div>
+        <div class="pack-label">articles</div>
+        <div class="pack-price">$5</div>
+        <div class="pack-per">$0.50 each</div>
+      </div>
+      <div class="pack-card selected" id="pack-creator" onclick="selectPack('creator')">
+        <div class="pack-badge">Best value</div>
+        <div class="pack-credits">25</div>
+        <div class="pack-label">articles</div>
+        <div class="pack-price">$10</div>
+        <div class="pack-per">$0.40 each</div>
+      </div>
+      <div class="pack-card" id="pack-studio" onclick="selectPack('studio')">
+        <div class="pack-credits">75</div>
+        <div class="pack-label">articles</div>
+        <div class="pack-price">$25</div>
+        <div class="pack-per">$0.33 each</div>
+      </div>
+    </div>
+
+    <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy with Card →</button>
+
+    <div class="modal-divider">or use your own Anthropic key</div>
+
+    <div class="own-key-section">
+      <label>Paste your key — bypasses credits entirely, billed to your Anthropic account.</label>
+      <div class="own-key-row">
+        <input type="password" id="modalApiKey" placeholder="sk-ant-..." autocomplete="off" />
+        <button class="own-key-save" onclick="saveOwnKey()">Save key</button>
+      </div>
+    </div>
+
+    <p class="modal-storage-note">
+      Credits are stored locally in your browser (localStorage).<br>
+      They won't transfer across devices or browsers.
+    </p>
+  </div>
 </div>
 
 </body>
