@@ -315,13 +315,16 @@
   }
   .modal-cta:hover { opacity: 0.88; }
   .modal-cta:disabled { opacity: 0.4; cursor: not-allowed; }
-  .modal-divider {
-    display: flex; align-items: center; gap: 12px;
-    color: var(--text-dim); font-size: 12px; margin-bottom: 16px;
+  .modal-own-key-toggle {
+    text-align: center; margin-top: 14px;
+    font-size: 11px; color: var(--text-dim); cursor: pointer;
+    user-select: none; transition: color 0.15s;
   }
-  .modal-divider::before, .modal-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
+  .modal-own-key-toggle:hover { color: var(--text-muted); }
+  .modal-own-key-toggle .arrow { display: inline-block; transition: transform 0.2s; margin-right: 3px; }
+  .modal-own-key-toggle.open .arrow { transform: rotate(90deg); }
+  .modal-own-key-body { display: none; margin-top: 12px; }
+  .modal-own-key-body.visible { display: block; }
   .own-key-section label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
   .own-key-row { display: flex; gap: 8px; }
   .own-key-row input {
@@ -1678,6 +1681,13 @@ async function purchaseCredits() {
   }
 }
 
+function toggleModalOwnKey() {
+  const toggle = document.getElementById('modalOwnKeyToggle');
+  const body   = document.getElementById('modalOwnKeyBody');
+  const isOpen = toggle.classList.toggle('open');
+  body.classList.toggle('visible', isOpen);
+}
+
 function saveOwnKey() {
   const key = document.getElementById('modalApiKey').value.trim();
   if (!key) return;
@@ -2321,20 +2331,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy with Card →</button>
 
-    <div class="modal-divider">or use your own Anthropic key</div>
-
-    <div class="own-key-section">
-      <label>Paste your key — bypasses credits entirely, billed to your Anthropic account.</label>
-      <div class="own-key-row">
-        <input type="password" id="modalApiKey" placeholder="sk-ant-..." autocomplete="off" />
-        <button class="own-key-save" onclick="saveOwnKey()">Save key</button>
-      </div>
-    </div>
-
     <p class="modal-storage-note">
-      Credits are stored locally in your browser (localStorage).<br>
+      Credits are stored locally in your browser.<br>
       They won't transfer across devices or browsers.
     </p>
+
+    <div class="modal-own-key-toggle" id="modalOwnKeyToggle" onclick="toggleModalOwnKey()">
+      <span class="arrow">›</span> Have your own Anthropic API key?
+    </div>
+    <div class="modal-own-key-body" id="modalOwnKeyBody">
+      <div class="own-key-section">
+        <label>Paste your key — bypasses credits entirely, billed to your Anthropic account.</label>
+        <div class="own-key-row">
+          <input type="password" id="modalApiKey" placeholder="sk-ant-..." autocomplete="off" />
+          <button class="own-key-save" onclick="saveOwnKey()">Save key</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
