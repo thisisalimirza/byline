@@ -18,28 +18,33 @@ const CREDIT_PACKS = {
 };
 
 // ── Storage abstraction ───────────────────────────────────────────────────────
-// Uses Vercel KV (Redis) in production, in-memory Map for local dev.
-// Vercel KV env vars are auto-injected when you connect a KV store in the dashboard.
-let kv = null;
+// Uses Upstash Redis in production (env vars injected by Vercel marketplace).
+// Falls back to in-memory Map for local dev — credits reset on server restart,
+// which is fine for development.
+let redis = null;
 try {
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-    kv = require('@vercel/kv');
+    const { Redis } = require('@upstash/redis');
+    redis = new Redis({
+      url:   process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN,
+    });
   }
-} catch (e) { /* kv stays null — local dev mode */ }
+} catch (e) { /* redis stays null — local dev mode */ }
 
 const _mem = new Map(); // local dev fallback only
 
 async function storageGet(key) {
-  if (kv) return kv.get(key);
+  if (redis) return redis.get(key);
   return _mem.get(key) ?? null;
 }
 async function storageSet(key, val, ttlSec) {
-  if (kv) return ttlSec ? kv.set(key, val, { ex: ttlSec }) : kv.set(key, val);
+  if (redis) return ttlSec ? redis.set(key, val, { ex: ttlSec }) : redis.set(key, val);
   _mem.set(key, val);
   if (ttlSec) setTimeout(() => _mem.delete(key), ttlSec * 1000);
 }
 async function storageDel(key) {
-  if (kv) return kv.del(key);
+  if (redis) return redis.del(key);
   _mem.delete(key);
 }
 
@@ -229,7 +234,7 @@ if (require.main === module) {
     console.log(`\n  Byline → http://localhost:${PORT}`);
     if (!stripe)                        console.log('  ⚠  Stripe not configured');
     if (!process.env.ANTHROPIC_API_KEY) console.log('  ⚠  ANTHROPIC_API_KEY not set');
-    if (!kv)                            console.log('  ℹ  No KV store — using in-memory (local dev mode)');
+    if (!redis)                         console.log('  ℹ  No Redis store — using in-memory (local dev mode)');
     console.log();
   });
 }
