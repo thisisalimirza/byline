@@ -597,8 +597,59 @@ footer {
 .footer-logo { font-family: var(--display); font-size: 15px; font-weight: 600; color: var(--text-dim); letter-spacing: -0.02em; }
 .footer-note { font-size: 12px; color: var(--text-dim); margin-left: auto; }
 
+/* ── Before/After Comparison ── */
+.compare-section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+.compare-section .section-heading { text-align: center; }
+.compare-section .section-sub { text-align: center; margin: 0 auto 2.5rem; }
+.compare-tabs {
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 2rem;
+}
+.compare-tab {
+  padding: 7px 18px; border-radius: 100px; font-family: var(--sans); font-size: 12px;
+  font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted); transition: all 0.15s;
+}
+.compare-tab:hover { border-color: var(--border-hover); color: var(--text); }
+.compare-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.compare-panels { position: relative; }
+.compare-panel { display: none; }
+.compare-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.compare-col {
+  border-radius: 12px; padding: 28px; border: 1px solid var(--border);
+  background: #131210;
+}
+.compare-col.byline-col { background: #151310; border-color: rgba(212,133,74,0.2); }
+.col-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px; margin-bottom: 20px;
+}
+.col-badge.ai-badge { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border); }
+.col-badge.byline-badge { background: rgba(212,133,74,0.12); color: var(--accent); border: 1px solid rgba(212,133,74,0.25); }
+.compare-article { font-size: 13px; line-height: 1.65; color: var(--text-muted); }
+.compare-article h1 {
+  font-family: var(--display); font-size: 16px; font-weight: 500;
+  color: var(--text); line-height: 1.3; margin-bottom: 14px;
+}
+.compare-article h2 {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-dim); margin: 16px 0 8px; border: none;
+}
+.compare-article p { margin-bottom: 10px; font-size: 12.5px; }
+.anno-bad  { background: rgba(239,68,68,0.12); color: #f87171; border-radius: 3px; padding: 1px 4px; }
+.anno-good { background: rgba(34,197,94,0.1);  color: #4ade80; border-radius: 3px; padding: 1px 4px; }
+.anno {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 10.5px; border-radius: 5px; padding: 5px 8px; margin: -4px 0 10px;
+  line-height: 1.45;
+}
+.anno.bad  { background: rgba(239,68,68,0.06); color: #f87171; border-left: 2px solid rgba(239,68,68,0.35); }
+.anno.good { background: rgba(34,197,94,0.06); color: #4ade80; border-left: 2px solid rgba(34,197,94,0.35); }
+
 /* ── Responsive ── */
 @media (max-width: 860px) {
+  .compare-panel.active { grid-template-columns: 1fr; }
+  .compare-col.ai-col { display: none; } /* show only Byline on mobile */
   .nav-links { display: none; }
   .why-grid, .promo-feature, .seo-feature { grid-template-columns: 1fr; gap: 2.5rem; }
   .steps-grid { grid-template-columns: 1fr 1fr; }
@@ -794,6 +845,108 @@ footer {
     </div>
   </div>
 </section>
+
+<!-- ── Before/After Comparison ── -->
+<div class="compare-section">
+  <div class="eyebrow" style="text-align:center;margin-bottom:10px;">See the difference</div>
+  <h2 class="section-heading">Generic AI vs.<br><em>a pipeline built to rank.</em></h2>
+  <p class="section-sub" style="max-width:540px;">Same topic. Same prompt intent. One typed into ChatGPT, one through Byline's five-agent pipeline.</p>
+
+  <div class="compare-tabs">
+    <button class="compare-tab active" onclick="switchTopic(0)">Local SEO</button>
+    <button class="compare-tab" onclick="switchTopic(1)">SaaS Content</button>
+    <button class="compare-tab" onclick="switchTopic(2)">B2B Email</button>
+  </div>
+
+  <div class="compare-panels">
+
+    <!-- ── Topic 0: Local SEO ── -->
+    <div class="compare-panel active" id="topic-0">
+      <div class="compare-col ai-col">
+        <span class="col-badge ai-badge">Generic AI</span>
+        <div class="compare-article">
+          <h1>How to Improve Your Local SEO: A Complete Guide</h1>
+          <p><span class="anno-bad">In today's competitive digital landscape</span>, local SEO is <span class="anno-bad">crucial</span> for small businesses looking to attract more customers in their area. By implementing the right strategies, you can improve your visibility in local search results and drive more traffic to your business.</p>
+          <div class="anno bad">❌ Banned opener + vague claim — "crucial" for whom, how, and why?</div>
+          <h2>Why Local SEO Matters for Your Business</h2>
+          <p>Local SEO is <span class="anno-bad">more important than ever</span> because it helps potential customers find you when they're searching for products and services in your area. <span class="anno-bad">There are several effective strategies</span> you can implement to improve your local search rankings.</p>
+          <div class="anno bad">❌ "More important than ever" = filler. No strategy is named, let alone explained.</div>
+        </div>
+      </div>
+      <div class="compare-col byline-col">
+        <span class="col-badge byline-badge">✦ Byline</span>
+        <div class="compare-article">
+          <h1>The Local SEO Trick That Google Built for Small Businesses (Not Chains)</h1>
+          <p><span class="anno-good">Domino's has a 50-person SEO team.</span> You have thirty minutes on a Tuesday. Yet independent restaurants outrank them on Google Maps regularly — not because they found a loophole, but because Google's local algorithm rewards something chains structurally can't fake.</p>
+          <div class="anno good">✓ Named contrast creates instant tension. Reader immediately knows whose side we're on.</div>
+          <h2>The Metric 91% of Local Businesses Are Ignoring</h2>
+          <p>Review response time is now a confirmed ranking signal, according to a <span class="anno-good">2023 BrightLocal study of 34,000 business profiles</span>. Businesses responding within 24 hours ranked <span class="anno-good">1.3 positions higher</span> in Map Pack results on average.</p>
+          <div class="anno good">✓ Named source, sample size, year, and exact number — not "studies show it's significant."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Topic 1: SaaS Content ── -->
+    <div class="compare-panel" id="topic-1">
+      <div class="compare-col ai-col">
+        <span class="col-badge ai-badge">Generic AI</span>
+        <div class="compare-article">
+          <h1>The Ultimate Guide to SaaS Content Marketing in 2024</h1>
+          <p>Content marketing has become <span class="anno-bad">an essential strategy</span> for SaaS companies looking to grow their user base and reduce churn. By creating <span class="anno-bad">valuable, relevant content</span>, you can attract potential customers, build trust, and drive conversions.</p>
+          <div class="anno bad">❌ "Essential" + "valuable, relevant" are filler adjectives with zero information content.</div>
+          <h2>Why Content Marketing is Crucial for SaaS</h2>
+          <p>Content marketing is important for SaaS companies because <span class="anno-bad">buyers do extensive research before making purchasing decisions</span>. By being present at each stage of the buyer's journey, you can guide potential customers from awareness to consideration to purchase.</p>
+          <div class="anno bad">❌ States the obvious, adds nothing. This paragraph could be cut without losing a single insight.</div>
+        </div>
+      </div>
+      <div class="compare-col byline-col">
+        <span class="col-badge byline-badge">✦ Byline</span>
+        <div class="compare-article">
+          <h1>Why Intercom Grew to $50M ARR Publishing Less Than Their Competitors</h1>
+          <p><span class="anno-good">Intercom published fewer blog posts than almost every competitor in their category.</span> Their editorial team rejected more pitches than they accepted. In a market where content volume was the growth strategy, they bet that one genuinely useful piece would outperform ten mediocre ones.</p>
+          <div class="anno good">✓ Counterintuitive angle with a named company. Reader's assumption is challenged immediately.</div>
+          <h2>The Conversion Gap No One Talks About</h2>
+          <p>HubSpot's research tracked <span class="anno-good">8,000 businesses over 18 months</span>. Companies publishing 16+ posts monthly got 3.5x more traffic. What the headline buries: <span class="anno-good">the correlation between publishing frequency and trial signups was near zero.</span></p>
+          <div class="anno good">✓ Specific sample size and timeframe. Then a contrarian finding that reframes the entire statistic.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Topic 2: B2B Email ── -->
+    <div class="compare-panel" id="topic-2">
+      <div class="compare-col ai-col">
+        <span class="col-badge ai-badge">Generic AI</span>
+        <div class="compare-article">
+          <h1>How to Create an Effective B2B Email Marketing Strategy</h1>
+          <p>Email marketing remains <span class="anno-bad">one of the most powerful tools</span> in the B2B marketer's toolkit. With an average ROI of $42 for every $1 spent, it's a channel that delivers results when done correctly. However, many B2B companies struggle to see significant returns.</p>
+          <div class="anno bad">❌ The $42 ROI stat is widely misattributed and uncited here. "When done correctly" is circular — obviously.</div>
+          <h2>Best Practices for B2B Email Success</h2>
+          <p>To create effective B2B email campaigns, you need to focus on <span class="anno-bad">several key elements</span>. These include segmenting your audience, crafting compelling subject lines, personalizing your messages, and providing <span class="anno-bad">valuable content that resonates</span> with your readers.</p>
+          <div class="anno bad">❌ A list of vague recommendations with no specifics on how, when, or why any of them work.</div>
+        </div>
+      </div>
+      <div class="compare-col byline-col">
+        <span class="col-badge byline-badge">✦ Byline</span>
+        <div class="compare-article">
+          <h1>Drift Stopped Optimizing for Open Rates. Their Email Pipeline Grew 67%.</h1>
+          <p>In <span class="anno-good">Q3 2021</span>, Drift's demand generation team made a decision that looked like a mistake on paper: they stopped tracking open rates in weekly reviews. Open rates dropped 22% in the first month. Pipeline sourced from email grew <span class="anno-good">67% over the next two quarters.</span></p>
+          <div class="anno good">✓ Specific quarter, specific team, specific outcome — three numbers that make the reader stop scrolling.</div>
+          <h2>Why the Metric Everyone Tracks Is the Wrong One</h2>
+          <p>The average business professional receives <span class="anno-good">121 emails a day (Radicati Group, 2023)</span>. Open rate optimization is a fight over fractional attention in an exhausted inbox. The teams generating pipeline have shifted from "how do we get them to open?" to <span class="anno-good">"what would make someone stop at 2pm on a Wednesday?"</span></p>
+          <div class="anno good">✓ Cited stat reframes the competitive landscape. The question at the end is vivid and memorable — not generic advice.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /compare-panels -->
+</div>
+
+<script>
+function switchTopic(n) {
+  document.querySelectorAll('.compare-panel').forEach((p,i) => p.classList.toggle('active', i === n));
+  document.querySelectorAll('.compare-tab').forEach((t,i) => t.classList.toggle('active', i === n));
+}
+</script>
 
 <!-- ── Pipeline steps ── -->
 <div class="pipeline-section" id="how-it-works">
