@@ -686,6 +686,44 @@
   #saveBanner-dismiss:hover { color: var(--text-muted); }
   /* ── end TEMP ── */
 
+  /* ── Sticky completion bar ── */
+  #completionBar {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+    background: linear-gradient(135deg, #1a1714 0%, #22201c 100%);
+    border-top: 1px solid rgba(169,125,240,0.3);
+    padding: 14px 2rem;
+    align-items: center; gap: 1rem;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+    animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  #completionBar.visible { display: flex; }
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .completion-bar-icon {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(169,125,240,0.15); border: 1px solid rgba(169,125,240,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .completion-bar-text { flex: 1; min-width: 0; }
+  .completion-bar-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .completion-bar-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .completion-bar-btn {
+    background: var(--a5); border: none; border-radius: 100px;
+    padding: 9px 20px; font-family: var(--sans); font-size: 13px; font-weight: 700;
+    color: #0d0c0a; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .completion-bar-btn:hover { opacity: 0.85; transform: scale(1.02); }
+  .completion-bar-dismiss {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 16px; cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1;
+  }
+  .completion-bar-dismiss:hover { color: var(--text-muted); }
+
   /* Saved Drafts tab */
   .draft-item {
     padding: 0.9rem 0; border-bottom: 1px solid #f5f0e8;
@@ -853,6 +891,17 @@
     <span class="hcp-label">credits</span>
   </button>
 </header>
+
+<!-- Sticky completion bar — shown when pipeline finishes -->
+<div id="completionBar">
+  <div class="completion-bar-icon">✦</div>
+  <div class="completion-bar-text">
+    <div class="completion-bar-title">Your article is ready</div>
+    <div class="completion-bar-sub">Copy, export, or preview it before closing — articles aren't saved yet.</div>
+  </div>
+  <button class="completion-bar-btn" onclick="openPreview()">Preview Article →</button>
+  <button class="completion-bar-dismiss" onclick="document.getElementById('completionBar').classList.remove('visible');document.getElementById('completionBarSpacer').style.height='0'" title="Dismiss">✕</button>
+</div>
 
 <!-- TEMP: remove this banner once Supabase persistence is added -->
 <div id="saveBanner">
@@ -1129,6 +1178,9 @@
       </div>
     </div>
 
+    <!-- Spacer so completion bar doesn't cover final panel -->
+    <div id="completionBarSpacer" style="height:0;transition:height 0.35s;flex-shrink:0;"></div>
+
   </div>
 </main>
 
@@ -1260,9 +1312,9 @@
       <div class="impl-guide-card">
 
         <!-- TEMP: remove once Supabase persistence is added -->
-        <div style="display:flex;align-items:center;gap:8px;background:rgba(212,133,74,0.08);border:1px solid rgba(212,133,74,0.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8c887f;line-height:1.5;">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(212,133,74,0.1);border:1px solid rgba(212,133,74,0.28);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#6b5a3e;line-height:1.5;">
           <span style="font-size:13px;flex-shrink:0;">⚠</span>
-          <span><strong style="color:#f0ece4;font-weight:600;">Copy or save this article before you close.</strong> Articles aren't stored yet — they'll be gone when you close the tab.</span>
+          <span><strong style="color:#3d2b0f;font-weight:600;">Copy or save this article before you close.</strong> Articles aren't stored yet — they'll be gone when you close the tab.</span>
         </div>
         <!-- end TEMP -->
 
@@ -1933,6 +1985,8 @@ async function runPipeline() {
   document.getElementById('copyBtn').classList.remove('visible');
   document.getElementById('previewBtn').classList.remove('visible');
   document.getElementById('saveBanner').classList.remove('visible');
+  document.getElementById('completionBar').classList.remove('visible');
+  document.getElementById('completionBarSpacer').style.height = '0';
 
   // Reset all panels
   for (let i = 1; i <= 6; i++) {
@@ -2027,6 +2081,8 @@ async function runPipeline() {
     document.getElementById('copyBtn').classList.add('visible');
     document.getElementById('previewBtn').classList.add('visible');
     document.getElementById('saveBanner').classList.add('visible');
+    document.getElementById('completionBar').classList.add('visible');
+    document.getElementById('completionBarSpacer').style.height = '72px';
 
     // Scroll to final output
     document.getElementById('panel6').scrollIntoView({ behavior: 'smooth' });
@@ -2195,6 +2251,7 @@ function openPreview() {
 
   // Open overlay
   document.getElementById('previewOverlay').classList.add('open');
+  document.getElementById('completionBar').classList.remove('visible');
   document.querySelector('.preview-scroll').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 
