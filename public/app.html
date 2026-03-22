@@ -840,12 +840,12 @@
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-5">
       <span class="pipe-node-num">5</span>
-      <span class="pipe-node-label">Humanize</span>
+      <span class="pipe-node-label">SEO</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-6">
       <span class="pipe-node-num">6</span>
-      <span class="pipe-node-label">Polish</span>
+      <span class="pipe-node-label">Humanize</span>
     </div>
   </div>
   <button class="header-credit-pill" id="headerCreditPill" onclick="openCreditsModal()">
@@ -1036,7 +1036,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(5)">
           <div class="agent-dot" style="background:var(--a5)"></div>
-          <span class="agent-config-title">Humanizing</span>
+          <span class="agent-config-title">SEO Polish</span>
           <span class="agent-config-chevron" id="chev5">▼</span>
         </div>
         <div class="agent-config-body" id="cfg5">
@@ -1046,7 +1046,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(6)">
           <div class="agent-dot" style="background:#e8b84b"></div>
-          <span class="agent-config-title">SEO Polish</span>
+          <span class="agent-config-title">Humanizing</span>
           <span class="agent-config-chevron" id="chev6">▼</span>
         </div>
         <div class="agent-config-body" id="cfg6">
@@ -1108,7 +1108,7 @@
     <div class="agent-panel" id="panel5">
       <div class="agent-panel-header">
         <div class="agent-step-num">5</div>
-        <span class="agent-label label-5">Humanizing the Voice</span>
+        <span class="agent-label label-5">SEO &amp; Structure</span>
         <span class="agent-status-pill" id="pill5">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1119,13 +1119,13 @@
     <div class="agent-panel final-panel" id="panel6">
       <div class="agent-panel-header">
         <div class="agent-step-num">6</div>
-        <span class="agent-label label-6">Final Polish &amp; SEO</span>
+        <span class="agent-label label-6">Humanizing the Voice</span>
         <span class="agent-status-pill" id="pill6">—</span>
         <button class="copy-btn" id="copyBtn" onclick="copyArticle()">Copy</button>
         <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview Article →</button>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out6">Follows after humanizing.</div>
+        <div class="agent-output-text" id="out6">Follows after SEO editing.</div>
       </div>
     </div>
 
@@ -1471,33 +1471,7 @@ Closing paragraph: 1-3 sentences, ends on a specific thought — not a summary, 
 
 Output only the revised article. No preamble, no explanation.`,
 
-  5: `You are a voice editor. You will receive an article that has already been mechanically cleaned of AI writing patterns. Your job is not to remove patterns — that work is done. Your only job is to make this read like it was written by a person who has genuine opinions, not assembled by a language model.
-
-PASS 1 — INJECT SOUL:
-Read the article and ask honestly: does this sound like a person with a perspective, or like assembled text?
-
-Work through these fixes:
-— Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
-— Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
-— Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
-— Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
-— The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
-
-PASS 2 — SELF-AUDIT:
-After your edits, read the article from the top and ask: "What still makes this obviously AI-generated?"
-
-Look for:
-- Every paragraph at the same emotional temperature (no peaks, no texture)
-- Vivid details that feel made up or generic
-- Opinions that are hedged into meaninglessness
-- A rhythm that's still too clean, too even
-- An ending that summarizes rather than concludes
-
-Fix what you find. Then output the final article.
-
-Output only the final article. No preamble, no explanation, no commentary about your changes.`,
-
-  6: `You are a senior editor and SEO specialist doing a final pass. You will receive a polished article and the target keyword.
+  5: `You are a senior editor and SEO specialist. You will receive a polished article and the target keyword.
 
 EDITORIAL PASS:
 - Is every paragraph earning its place? Cut anything that doesn't add new information or forward momentum.
@@ -1525,7 +1499,36 @@ META: [A 150-160 character meta description with the keyword and a clear value p
 
 ---
 
-[The final, complete article with no preamble]`
+[The article body only — no preamble]`,
+
+  6: `You are a voice editor doing the final pass. You will receive an article that has been mechanically cleaned of AI patterns AND already had its SEO keywords carefully placed. Your job is not to remove patterns or adjust keywords — that work is done. Your only job is to make this read like it was written by a person who has genuine opinions, not assembled by a language model.
+
+KEYWORD GUARD RAIL — CRITICAL:
+The target keyword has already been woven into specific sentences. Do not remove, rephrase, or rewrite those sentences purely to change keyword placement. If a sentence contains the target keyword and you have a genuine voice reason to rephrase it, do so — but keep the keyword in the rewritten sentence.
+
+PASS 1 — INJECT SOUL:
+Read the article and ask honestly: does this sound like a person with a perspective, or like assembled text?
+
+Work through these fixes:
+— Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
+— Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
+— Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
+— Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
+— The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
+
+PASS 2 — SELF-AUDIT:
+After your edits, read the article from the top and ask: "What still makes this obviously AI-generated?"
+
+Look for:
+- Every paragraph at the same emotional temperature (no peaks, no texture)
+- Vivid details that feel made up or generic
+- Opinions that are hedged into meaninglessness
+- A rhythm that's still too clean, too even
+- An ending that summarizes rather than concludes
+
+Fix what you find. Then output the final article.
+
+Output only the final article body. No preamble, no explanation, no commentary about your changes.`
 };
 
 // ── State ───────────────────────────────────────────────────────────────────
@@ -1940,7 +1943,7 @@ async function runPipeline() {
   setOutput(3, 'Follows after research.', false);
   setOutput(4, 'Follows after writing.', false);
   setOutput(5, 'Follows after refining.', false);
-  setOutput(6, 'Follows after humanizing.', false);
+  setOutput(6, 'Follows after SEO editing.', false);
 
   document.getElementById('outputArea').scrollTop = 0;
 
@@ -1991,26 +1994,34 @@ async function runPipeline() {
     );
     setPipeNode(4, 'done'); setPanel(4, null); setPill(4, 'done ✓', false);
 
-    // ── Agent 5: Voice Humanizer ──
+    // ── Agent 5: SEO Editor ──
     setPipeNode(5, 'active'); setPanel(5, 'active'); setPill(5, 'working…', true);
     setOutput(5, '', false);
     const out5El = document.getElementById('out5');
-    const voiced = await streamAgent(
-      authMode, model, 4096, sys[4],
-      cleaned + humanizerNote,
+    const seoRaw = await streamAgent(
+      authMode, model, 2048, sys[4],
+      `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${cleaned}`,
       out5El, 5
     );
     setPipeNode(5, 'done'); setPanel(5, null); setPill(5, 'done ✓', false);
 
-    // ── Agent 6: SEO Editor ──
+    // Extract TITLE/META + body from SEO output so the humanizer only touches prose
+    const { title: seoTitle, meta: seoMeta, body: seoBody } = parseArticle(seoRaw);
+    const seoBodyOnly = seoBody || seoRaw;
+
+    // ── Agent 6: Voice Humanizer ──
     setPipeNode(6, 'active'); setPanel(6, 'active'); setPill(6, 'working…', true);
     setOutput(6, '', false);
     const out6El = document.getElementById('out6');
     await streamAgent(
-      authMode, model, 2048, sys[5],
-      `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${voiced}`,
+      authMode, model, 4096, sys[5],
+      seoBodyOnly + humanizerNote,
       out6El, 6
     );
+
+    // Reconstruct TITLE/META header from SEO agent + humanized body from Agent 6
+    const humanizedBody = out6El.textContent.trim();
+    out6El.textContent = `TITLE: ${seoTitle || topic}\nMETA: ${seoMeta || ''}\n\n---\n\n${humanizedBody}`;
     setPipeNode(6, 'done'); setPanel(6, null); setPill(6, 'done ✓', false);
 
     document.getElementById('copyBtn').classList.add('visible');
