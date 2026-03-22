@@ -51,7 +51,7 @@
     font-weight: 400;
     min-height: 100vh;
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr;
   }
 
   /* ── Header ── */
@@ -151,7 +151,7 @@
   .pipe-node.done-6 .pipe-node-num { border-color: rgba(232,184,75,0.35); background: rgba(232,184,75,0.05); color: rgba(232,184,75,0.55); }
   .pipe-node.done-6 .pipe-node-label { color: rgba(232,184,75,0.45); }
 
-  main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 58px); overflow: hidden; }
+  main { display: grid; grid-template-columns: 340px 1fr; height: 100%; overflow: hidden; }
 
   /* ── Sidebar ── */
   .sidebar {
@@ -668,23 +668,23 @@
   .draft-toast-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
   .draft-toast-note { font-size: 11px; color: rgba(240,236,228,0.5); line-height: 1.5; }
 
-  /* Save reminder banner */
-  .save-reminder {
-    display: none; align-items: flex-start; gap: 10px;
-    margin: 0 1rem 1rem;
-    background: rgba(212,133,74,0.08); border: 1px solid rgba(212,133,74,0.22);
-    border-radius: var(--r-sm); padding: 12px 14px;
-    font-size: 12px; color: var(--text-muted); line-height: 1.55;
+  /* ── TEMP: Save banner — remove once Supabase persistence is added ── */
+  #saveBanner {
+    display: none;
+    align-items: center; gap: 10px;
+    padding: 9px 1.75rem;
+    background: rgba(212,133,74,0.1); border-bottom: 1px solid rgba(212,133,74,0.25);
+    font-size: 12px; color: var(--text-muted); line-height: 1.4;
+    flex-shrink: 0;
   }
-  .save-reminder.visible { display: flex; }
-  .save-reminder strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; }
-  .save-reminder-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
-  .save-reminder-dismiss {
+  #saveBanner.visible { display: flex; }
+  #saveBanner strong { color: var(--text); font-weight: 600; }
+  #saveBanner-dismiss {
     background: none; border: none; color: var(--text-dim);
-    font-size: 14px; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: auto;
-    align-self: flex-start;
+    font-size: 14px; cursor: pointer; padding: 0; margin-left: auto; flex-shrink: 0;
   }
-  .save-reminder-dismiss:hover { color: var(--text-muted); }
+  #saveBanner-dismiss:hover { color: var(--text-muted); }
+  /* ── end TEMP ── */
 
   /* Saved Drafts tab */
   .draft-item {
@@ -853,6 +853,14 @@
     <span class="hcp-label">credits</span>
   </button>
 </header>
+
+<!-- TEMP: remove this banner once Supabase persistence is added -->
+<div id="saveBanner">
+  <span>⚠</span>
+  <span><strong>Your article isn't saved yet.</strong> Copy or export it before closing — a save-to-dashboard feature is coming soon.</span>
+  <button id="saveBanner-dismiss" onclick="document.getElementById('saveBanner').classList.remove('visible')">✕</button>
+</div>
+<!-- end TEMP -->
 
 <main>
   <aside class="sidebar">
@@ -1119,14 +1127,6 @@
       <div class="agent-panel-body">
         <div class="agent-output-text" id="out6">Follows after humanizing.</div>
       </div>
-      <div class="save-reminder" id="saveReminder">
-        <span class="save-reminder-icon">⚠</span>
-        <div>
-          <strong>Save your article before closing.</strong>
-          Articles aren't stored yet — copy or export it now. A dashboard to save &amp; access articles across devices is coming soon.
-        </div>
-        <button class="save-reminder-dismiss" onclick="this.closest('.save-reminder').classList.remove('visible')">✕</button>
-      </div>
     </div>
 
   </div>
@@ -1258,6 +1258,13 @@
     <!-- Implementation guide -->
     <div class="impl-guide-wrap">
       <div class="impl-guide-card">
+
+        <!-- TEMP: remove once Supabase persistence is added -->
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(212,133,74,0.08);border:1px solid rgba(212,133,74,0.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#8c887f;line-height:1.5;">
+          <span style="font-size:13px;flex-shrink:0;">⚠</span>
+          <span><strong style="color:#f0ece4;font-weight:600;">Copy or save this article before you close.</strong> Articles aren't stored yet — they'll be gone when you close the tab.</span>
+        </div>
+        <!-- end TEMP -->
 
         <div class="impl-guide-hd">
           <div class="impl-guide-eyebrow">next steps</div>
@@ -1922,7 +1929,7 @@ async function runPipeline() {
   btn.textContent = '⟳ Generating…';
   document.getElementById('copyBtn').classList.remove('visible');
   document.getElementById('previewBtn').classList.remove('visible');
-  document.getElementById('saveReminder').classList.remove('visible');
+  document.getElementById('saveBanner').classList.remove('visible');
 
   // Reset all panels
   for (let i = 1; i <= 6; i++) {
@@ -2008,7 +2015,7 @@ async function runPipeline() {
 
     document.getElementById('copyBtn').classList.add('visible');
     document.getElementById('previewBtn').classList.add('visible');
-    document.getElementById('saveReminder').classList.add('visible');
+    document.getElementById('saveBanner').classList.add('visible');
 
     // Scroll to final output
     document.getElementById('panel6').scrollIntoView({ behavior: 'smooth' });
