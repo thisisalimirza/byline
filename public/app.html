@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Byline — AI Article Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0c0a;
+    --surface: #191714;
+    --surface2: #221f1b;
+    --surface3: #2b2823;
+    --border: rgba(255,255,255,0.065);
+    --border-hover: rgba(255,255,255,0.13);
+    --text: #f0ece4;
+    --text-muted: #8c887f;
+    --text-dim: #504d47;
+
+    --accent: #d4854a;
+    --accent-soft: rgba(212,133,74,0.12);
+    --accent-glow: rgba(212,133,74,0.22);
+
+    --a1: #e8903a;
+    --a2: #5aa3e5;
+    --a3: #4ec99a;
+    --a4: #e87a6a;
+    --a5: #a97df0;
+
+    --a1d: rgba(232,144,58,0.1);
+    --a2d: rgba(90,163,229,0.1);
+    --a3d: rgba(78,201,154,0.1);
+    --a4d: rgba(232,122,106,0.1);
+    --a5d: rgba(169,125,240,0.1);
+
+    --mono: 'DM Mono', monospace;
+    --sans: 'Plus Jakarta Sans', sans-serif;
+    --display: 'Fraunces', Georgia, serif;
+
+    --r: 10px;
+    --r-sm: 7px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 0 1.75rem;
+    height: 58px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display);
+    font-size: 17px; font-weight: 700;
+    color: #0d0c0a;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px var(--accent-glow);
+  }
+  .logo-name {
+    font-family: var(--display);
+    font-size: 20px; font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  /* Step progress in header */
+  .pipeline-vis {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 0;
+  }
+  .pipe-node {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 6px;
+    border-radius: 100px;
+    transition: all 0.3s ease;
+  }
+  .pipe-node-num {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 9px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .pipe-node-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-dim);
+    transition: color 0.3s;
+    white-space: nowrap;
+  }
+  .pipe-arrow { color: var(--text-dim); font-size: 11px; padding: 0 1px; opacity: 0.35; }
+
+  .pipe-node.active-1 .pipe-node-num { border-color: var(--a1); color: var(--a1); background: var(--a1d); }
+  .pipe-node.active-1 .pipe-node-label { color: var(--a1); }
+  .pipe-node.active-2 .pipe-node-num { border-color: var(--a2); color: var(--a2); background: var(--a2d); }
+  .pipe-node.active-2 .pipe-node-label { color: var(--a2); }
+  .pipe-node.active-3 .pipe-node-num { border-color: var(--a3); color: var(--a3); background: var(--a3d); }
+  .pipe-node.active-3 .pipe-node-label { color: var(--a3); }
+  .pipe-node.active-4 .pipe-node-num { border-color: var(--a4); color: var(--a4); background: var(--a4d); }
+  .pipe-node.active-4 .pipe-node-label { color: var(--a4); }
+  .pipe-node.active-5 .pipe-node-num { border-color: var(--a5); color: var(--a5); background: var(--a5d); }
+  .pipe-node.active-5 .pipe-node-label { color: var(--a5); }
+
+  .pipe-node.done-1 .pipe-node-num { border-color: rgba(232,144,58,0.35); background: var(--a1d); color: rgba(232,144,58,0.55); }
+  .pipe-node.done-1 .pipe-node-label { color: rgba(232,144,58,0.45); }
+  .pipe-node.done-2 .pipe-node-num { border-color: rgba(90,163,229,0.35); background: var(--a2d); color: rgba(90,163,229,0.55); }
+  .pipe-node.done-2 .pipe-node-label { color: rgba(90,163,229,0.45); }
+  .pipe-node.done-3 .pipe-node-num { border-color: rgba(78,201,154,0.35); background: var(--a3d); color: rgba(78,201,154,0.55); }
+  .pipe-node.done-3 .pipe-node-label { color: rgba(78,201,154,0.45); }
+  .pipe-node.done-4 .pipe-node-num { border-color: rgba(232,122,106,0.35); background: var(--a4d); color: rgba(232,122,106,0.55); }
+  .pipe-node.done-4 .pipe-node-label { color: rgba(232,122,106,0.45); }
+  .pipe-node.done-5 .pipe-node-num { border-color: rgba(169,125,240,0.35); background: var(--a5d); color: rgba(169,125,240,0.55); }
+  .pipe-node.done-5 .pipe-node-label { color: rgba(169,125,240,0.45); }
+
+  main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 58px); overflow: hidden; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    overflow-y: auto;
+  }
+
+  /* Card containers */
+  .sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .sidebar-card-title {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--text-dim);
+  }
+
+  .field-label {
+    font-size: 12px; font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+
+  input[type="text"], input[type="password"], textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px; font-weight: 400;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    resize: none;
+    line-height: 1.5;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+    border-color: var(--border-hover);
+    background: var(--surface3);
+  }
+  input::placeholder, textarea::placeholder { color: var(--text-dim); }
+  select {
+    cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238c887f'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 11px center; padding-right: 30px;
+  }
+  select option { background: #191714; }
+
+  .api-key-wrapper { position: relative; }
+  .api-key-wrapper input { padding-right: 54px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em; }
+  .toggle-key {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text-muted);
+    font-family: var(--mono); font-size: 10px; cursor: pointer; letter-spacing: 0.04em;
+  }
+  .toggle-key:hover { color: var(--text); }
+
+  /* Audience type toggle */
+  .type-toggle { display: flex; gap: 5px; }
+  .type-btn {
+    flex: 1; padding: 7px 4px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    cursor: pointer; text-align: center; transition: all 0.2s;
+  }
+  .type-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .type-btn.active { background: var(--surface3); border-color: var(--border-hover); color: var(--text); }
+
+  /* Promotion grid */
+  .promo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .promo-btn {
+    padding: 9px 10px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    cursor: pointer; text-align: left;
+    transition: all 0.2s; display: flex; flex-direction: column; gap: 3px;
+  }
+  .promo-btn:hover { border-color: var(--border-hover); }
+  .promo-btn.active { background: var(--surface3); border-color: var(--border-hover); }
+  .promo-btn.active.style-none  { border-color: var(--text-dim); }
+  .promo-btn.active.style-soft  { border-color: var(--a2); background: var(--a2d); }
+  .promo-btn.active.style-ctx   { border-color: var(--a3); background: var(--a3d); }
+  .promo-btn.active.style-conv  { border-color: var(--accent); background: var(--accent-soft); }
+  .promo-name { font-size: 12px; font-weight: 600; color: var(--text-muted); line-height: 1; }
+  .promo-btn.active .promo-name { color: var(--text); }
+  .promo-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+  .promo-btn.active .promo-desc { color: var(--text-muted); }
+
+  .product-fields { transition: opacity 0.25s; display: flex; flex-direction: column; gap: 0.65rem; }
+  .product-fields.inactive { opacity: 0.28; pointer-events: none; }
+
+  /* Advanced settings */
+  .advanced-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--text-dim);
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    cursor: pointer; width: 100%;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .advanced-toggle:hover { color: var(--text-muted); border-color: var(--border-hover); }
+  .adv-toggle-icon { margin-left: auto; font-size: 10px; transition: transform 0.22s; color: var(--text-dim); }
+  .advanced-toggle.open .adv-toggle-icon { transform: rotate(180deg); }
+  .advanced-section { display: none; }
+  .advanced-section.open { display: block; margin-top: 0.5rem; }
+
+  /* Agent config accordions */
+  .agent-config {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-sm); overflow: hidden; margin-bottom: 5px;
+  }
+  .agent-config:last-child { margin-bottom: 0; }
+  .agent-config-header {
+    padding: 8px 11px; display: flex; align-items: center; gap: 8px;
+    cursor: pointer; user-select: none;
+  }
+  .agent-config-header:hover { background: var(--surface2); }
+  .agent-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .agent-config-title { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+  .agent-config-chevron { margin-left: auto; color: var(--text-dim); font-size: 10px; transition: transform 0.2s; }
+  .agent-config-body { display: none; padding: 0 11px 11px; border-top: 1px solid var(--border); }
+  .agent-config-body.open { display: block; }
+  .agent-config-body textarea { margin-top: 8px; font-family: var(--mono); font-size: 11px; line-height: 1.65; min-height: 120px; }
+
+  /* Generate button */
+  .run-btn {
+    width: 100%; padding: 13px;
+    background: var(--accent); color: #0d0c0a;
+    border: none; border-radius: var(--r);
+    font-family: var(--sans); font-size: 14px; font-weight: 700;
+    letter-spacing: 0.01em; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+    margin-top: auto; flex-shrink: 0;
+    box-shadow: 0 2px 14px var(--accent-glow);
+  }
+  .run-btn:hover { opacity: 0.9; box-shadow: 0 4px 22px var(--accent-glow); }
+  .run-btn:active { transform: scale(0.99); }
+  .run-btn:disabled { opacity: 0.28; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .error-msg {
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: #ff7070;
+    background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.18);
+    border-radius: var(--r-sm); padding: 10px 13px; display: none; line-height: 1.5;
+  }
+
+  /* ── Output panels ── */
+  .output-area { overflow-y: auto; display: flex; flex-direction: column; }
+
+  .agent-panel {
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    min-height: 160px; flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .agent-panel:last-child { border-bottom: none; flex: 1; }
+
+  .agent-panel.active-1 { background: rgba(232,144,58,0.02); }
+  .agent-panel.active-2 { background: rgba(90,163,229,0.02); }
+  .agent-panel.active-3 { background: rgba(78,201,154,0.02); }
+  .agent-panel.active-4 { background: rgba(232,122,106,0.02); }
+  .agent-panel.active-5 { background: rgba(169,125,240,0.02); }
+
+  .agent-panel-header {
+    padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0; position: sticky; top: 0;
+    background: var(--bg); z-index: 1;
+  }
+
+  .agent-step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-dim); flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .agent-panel.active-1 .agent-step-num { border-color: var(--a1); color: var(--a1); background: var(--a1d); }
+  .agent-panel.active-2 .agent-step-num { border-color: var(--a2); color: var(--a2); background: var(--a2d); }
+  .agent-panel.active-3 .agent-step-num { border-color: var(--a3); color: var(--a3); background: var(--a3d); }
+  .agent-panel.active-4 .agent-step-num { border-color: var(--a4); color: var(--a4); background: var(--a4d); }
+  .agent-panel.active-5 .agent-step-num { border-color: var(--a5); color: var(--a5); background: var(--a5d); }
+
+  .agent-label { font-size: 13px; font-weight: 600; }
+  .label-1 { color: var(--a1); }
+  .label-2 { color: var(--a2); }
+  .label-3 { color: var(--a3); }
+  .label-4 { color: var(--a4); }
+  .label-5 { color: var(--a5); }
+
+  .agent-status-pill {
+    font-family: var(--mono); font-size: 10px;
+    padding: 2px 8px; border-radius: 100px;
+    color: var(--text-dim); border: 1px solid var(--border);
+    background: var(--surface); transition: all 0.3s;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .agent-status-pill.running {
+    animation: pulse 1.5s ease-in-out infinite;
+    color: var(--accent); border-color: rgba(212,133,74,0.3); background: var(--accent-soft);
+  }
+
+  .copy-btn {
+    margin-left: auto; padding: 3px 11px;
+    background: none; border: 1px solid var(--border); border-radius: 100px;
+    color: var(--text-muted); font-family: var(--sans); font-size: 11px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; display: none;
+  }
+  .copy-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .copy-btn.visible { display: inline-block; }
+
+  .agent-panel-body { padding: 1.1rem 1.5rem; flex: 1; overflow-y: auto; }
+  .agent-output-text {
+    font-family: var(--mono); font-size: 12px; line-height: 1.85;
+    color: var(--text-dim); white-space: pre-wrap; word-break: break-word;
+  }
+  .agent-output-text.filled { color: var(--text-muted); }
+
+  .agent-panel.final-panel .agent-panel-header { border-bottom-color: rgba(169,125,240,0.2); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+  .preview-article-btn {
+    padding: 4px 13px; background: var(--a5);
+    border: none; border-radius: 100px;
+    color: #0d0c0a; font-family: var(--sans); font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.2s; display: none;
+  }
+  .preview-article-btn:hover { opacity: 0.82; }
+  .preview-article-btn.visible { display: inline-block; }
+
+  /* ════════════════════ Preview Overlay ════════════════════ */
+  .preview-overlay {
+    position: fixed; inset: 0; background: #f5f1ea;
+    z-index: 100; display: none; flex-direction: column; overflow: hidden;
+  }
+  .preview-overlay.open { display: flex; }
+
+  .preview-topbar {
+    background: #fff; border-bottom: 1px solid #e8e2d8;
+    padding: 0.7rem 1.5rem; display: flex; align-items: center;
+    gap: 1rem; flex-shrink: 0;
+  }
+  .preview-back-btn {
+    background: none; border: 1px solid #d8d2c8; border-radius: 7px;
+    padding: 5px 14px; font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: #666; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .preview-back-btn:hover { background: #eeead8; color: #222; }
+  .preview-topbar-label { font-size: 12px; color: #bbb; font-weight: 500; letter-spacing: 0.04em; }
+  .preview-topbar-stats {
+    display: flex; gap: 1.25rem; margin-left: auto; flex-wrap: wrap; align-items: center;
+  }
+  .preview-stat { font-family: var(--mono); font-size: 10px; color: #bbb; white-space: nowrap; }
+  .preview-stat span { color: #444; }
+  .preview-stat.seo-good span { color: #16a34a; }
+  .preview-stat.seo-warn span { color: #d97706; }
+  .preview-stat.seo-bad  span { color: #dc2626; }
+
+  .preview-scroll { overflow-y: auto; flex: 1; }
+
+  /* ════════════════════ SEO Analysis Panel ════════════════════ */
+  .preview-seo-wrap { max-width: 700px; margin: 0 auto; padding: 0 2rem 2rem; }
+  .preview-seo-card {
+    background: #fff; border: 1px solid #e8e2d8; border-radius: 12px; overflow: hidden;
+  }
+  .preview-seo-hd {
+    padding: 1.1rem 1.5rem; border-bottom: 1px solid #f0ebe2;
+    display: flex; align-items: center; gap: 0.85rem;
+  }
+  .preview-seo-title-group { flex: 1; }
+  .preview-seo-eyebrow {
+    font-family: var(--sans); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em; color: #bbb; margin-bottom: 2px;
+  }
+  .preview-seo-title { font-size: 15px; font-weight: 600; color: #111; }
+  .seo-score-pill {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 100px; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .seo-score-pill.green { background: #d1fae5; color: #065f46; }
+  .seo-score-pill.amber { background: #fef3c7; color: #92400e; }
+  .seo-score-pill.red   { background: #fee2e2; color: #991b1b; }
+  .seo-score-pill.neutral { background: #f0ebe2; color: #999; }
+
+  .preview-seo-metrics {
+    padding: 1.25rem 1.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem 2.5rem;
+  }
+  .seo-metric-block {}
+  .seo-metric-label {
+    font-family: var(--sans); font-size: 11px; font-weight: 600;
+    color: #888; margin-bottom: 0.45rem;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .seo-metric-label .seo-metric-val {
+    font-family: var(--mono); font-size: 11px; color: #444; font-weight: 500;
+  }
+  .seo-metric-track {
+    height: 5px; background: #f0ebe2; border-radius: 100px; overflow: hidden; margin-bottom: 0.35rem;
+  }
+  .seo-metric-fill {
+    height: 100%; border-radius: 100px;
+    transition: width 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 0%;
+  }
+  .seo-metric-fill.green { background: #22c55e; }
+  .seo-metric-fill.amber { background: #f59e0b; }
+  .seo-metric-fill.red   { background: #ef4444; }
+  .seo-metric-hint { font-size: 10px; color: #c5bdb0; font-style: italic; }
+
+  .preview-seo-divider { height: 1px; background: #f0ebe2; margin: 0 1.5rem; }
+
+  .preview-seo-badges {
+    padding: 1.2rem 1.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
+  }
+  .seo-badge-item {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.7rem 0.85rem; background: #faf6f0;
+    border-radius: 8px; border: 1px solid #ece7de;
+  }
+  .seo-badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 4px;
+    transition: background 0.3s;
+  }
+  .seo-badge-dot.green { background: #22c55e; }
+  .seo-badge-dot.amber { background: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.18); }
+  .seo-badge-dot.red   { background: #ef4444; }
+  .seo-badge-dot.neutral { background: #d8d2c8; }
+  .seo-badge-name {
+    font-family: var(--sans); font-size: 11px; font-weight: 600;
+    color: #555; margin-bottom: 2px;
+  }
+  .seo-badge-text { font-size: 10.5px; color: #999; line-height: 1.45; }
+
+  /* ════════════════════ Save Draft / Toast ════════════════════ */
+  .save-draft-btn {
+    padding: 5px 14px; background: none; border: 1px solid #d8d2c8; border-radius: 7px;
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: #555; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: none;
+  }
+  .save-draft-btn:hover { background: #eeead8; color: #222; border-color: #bbb; }
+  .save-draft-btn.visible { display: inline-block; }
+  .save-draft-btn.saved { border-color: #16a34a; color: #16a34a; background: #f0fdf4; }
+
+  .draft-toast {
+    position: fixed; bottom: 1.75rem; right: 1.75rem; z-index: 200;
+    background: #1c1a18; color: #f0ece4; border-radius: 12px;
+    padding: 1rem 1.25rem; font-family: var(--sans);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transform: translateY(calc(100% + 2.5rem)); opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+    max-width: 290px; pointer-events: none;
+  }
+  .draft-toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .draft-toast-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .draft-toast-note { font-size: 11px; color: rgba(240,236,228,0.5); line-height: 1.5; }
+
+  /* Saved Drafts tab */
+  .draft-item {
+    padding: 0.9rem 0; border-bottom: 1px solid #f5f0e8;
+    display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: center;
+  }
+  .draft-item:last-child { border-bottom: none; }
+  .draft-item-title {
+    font-size: 13px; font-weight: 600; color: #222; margin-bottom: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;
+  }
+  .draft-item-meta { font-family: var(--mono); font-size: 10px; color: #bbb; }
+  .draft-item-actions { display: flex; gap: 0.45rem; flex-shrink: 0; }
+  .draft-item-actions .impl-btn { padding: 5px 10px; font-size: 11px; }
+  .draft-item-actions .impl-btn.danger { color: #dc2626; border-color: #fca5a5; }
+  .draft-item-actions .impl-btn.danger:hover { background: #fee2e2; }
+  .draft-local-note {
+    margin-top: 1rem; padding: 0.7rem 1rem; background: #fdf8ee;
+    border-radius: 7px; font-size: 11.5px; color: #92400e; line-height: 1.55;
+    border: 1px solid #fde68a;
+  }
+
+  .preview-article-wrap { max-width: 700px; margin: 0 auto; padding: 3.5rem 2rem 1.5rem; }
+  .preview-kicker {
+    font-family: var(--sans); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em; color: #bbb; margin-bottom: 1rem;
+  }
+  .preview-h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 40px; font-weight: 700; line-height: 1.14;
+    color: #111; margin-bottom: 1.5rem; letter-spacing: -0.025em;
+  }
+  .preview-meta-box {
+    background: #eef2ff; border-left: 3px solid #818cf8;
+    padding: 0.8rem 1rem; border-radius: 0 7px 7px 0; margin-bottom: 2.5rem;
+  }
+  .preview-meta-label {
+    font-family: var(--sans); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #818cf8; margin-bottom: 4px;
+  }
+  .preview-meta-text { font-size: 13px; color: #4338ca; line-height: 1.6; }
+  .preview-rule { height: 1px; background: #e8e2d8; margin-bottom: 2.5rem; }
+  .preview-content {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px; line-height: 1.88; color: #1c1c1a;
+  }
+  .preview-content h2 {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-size: 21px; font-weight: 700; color: #111;
+    margin: 2.5rem 0 0.75rem; letter-spacing: -0.01em; line-height: 1.3;
+  }
+  .preview-content h3 {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-size: 17px; font-weight: 600; color: #333;
+    margin: 2rem 0 0.6rem; line-height: 1.4;
+  }
+  .preview-content p { margin-bottom: 1.55rem; }
+  .preview-content strong { font-weight: 700; color: #111; }
+  .preview-content em { font-style: italic; }
+  .preview-content code {
+    font-family: var(--mono); font-size: 0.82em;
+    background: #ede8df; padding: 2px 6px; border-radius: 3px; color: #444;
+  }
+
+  /* ════════════════════ Implementation Guide ════════════════════ */
+  .impl-guide-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem 5rem; }
+  .impl-guide-card {
+    background: #fff; border: 1px solid #e8e2d8; border-radius: 12px; overflow: hidden;
+  }
+  .impl-guide-hd { padding: 1.25rem 1.5rem; border-bottom: 1px solid #f0ebe2; }
+  .impl-guide-eyebrow {
+    font-family: var(--sans); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em; color: #bbb; margin-bottom: 4px;
+  }
+  .impl-guide-title { font-size: 16px; font-weight: 600; color: #111; }
+  .impl-tabs {
+    display: flex; overflow-x: auto; border-bottom: 1px solid #f0ebe2;
+    padding: 0 1.5rem; scrollbar-width: none;
+  }
+  .impl-tabs::-webkit-scrollbar { display: none; }
+  .impl-tab {
+    padding: 0.7rem 1rem; font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: #999; cursor: pointer; border: none; background: none;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .impl-tab:hover { color: #555; }
+  .impl-tab.active { color: #111; border-bottom-color: #111; }
+  .impl-tab-body { padding: 1.5rem; display: none; }
+  .impl-tab-body.active { display: block; }
+  .impl-tab-desc { font-size: 13px; color: #666; margin-bottom: 1rem; line-height: 1.55; }
+  .impl-copy-row { display: flex; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+  .impl-btn {
+    padding: 8px 16px; border: 1px solid #e0d9ce; border-radius: 7px;
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: #555; background: #f8f3ea; cursor: pointer; transition: all 0.15s;
+  }
+  .impl-btn:hover { background: #eeead8; border-color: #ccc; }
+  .impl-btn.primary { background: #111; border-color: #111; color: #fff; }
+  .impl-btn.primary:hover { background: #2a2a2a; }
+  .impl-steps { list-style: none; counter-reset: impl-step; }
+  .impl-steps li {
+    counter-increment: impl-step; padding: 0.7rem 0 0.7rem 2.25rem;
+    position: relative; font-size: 13.5px; color: #555; line-height: 1.6;
+    border-bottom: 1px solid #f5f0e8;
+  }
+  .impl-steps li:last-child { border-bottom: none; }
+  .impl-steps li::before {
+    content: counter(impl-step); position: absolute; left: 0; top: 0.72rem;
+    width: 20px; height: 20px; background: #ede8df; border-radius: 50%;
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    color: #888; line-height: 20px; text-align: center;
+  }
+  .impl-steps li strong { color: #222; font-weight: 600; }
+  .impl-steps li code {
+    font-family: var(--mono); font-size: 11px; background: #ede8df;
+    padding: 1px 5px; border-radius: 3px; color: #555;
+  }
+  .impl-note {
+    margin-top: 0.85rem; padding: 0.75rem 1rem; background: #faf6ee;
+    border-radius: 7px; font-size: 12.5px; color: #888; line-height: 1.55;
+    font-style: italic; border: 1px solid #ece7de;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">
+    <div class="logo-mark">B</div>
+    <div class="logo-name">Byline</div>
+  </a>
+  <div class="pipeline-vis">
+    <div class="pipe-node" id="pn-1">
+      <span class="pipe-node-num">1</span>
+      <span class="pipe-node-label">Plan</span>
+    </div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-node" id="pn-2">
+      <span class="pipe-node-num">2</span>
+      <span class="pipe-node-label">Research</span>
+    </div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-node" id="pn-3">
+      <span class="pipe-node-num">3</span>
+      <span class="pipe-node-label">Write</span>
+    </div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-node" id="pn-4">
+      <span class="pipe-node-num">4</span>
+      <span class="pipe-node-label">Refine</span>
+    </div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-node" id="pn-5">
+      <span class="pipe-node-num">5</span>
+      <span class="pipe-node-label">Polish</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <aside class="sidebar">
+
+    <!-- API Key -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">API Key</div>
+      <div class="api-key-wrapper">
+        <input type="password" id="apiKey" placeholder="sk-ant-..." />
+        <button class="toggle-key" onclick="toggleKey()">show</button>
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Your Article -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">Your Article</div>
+
+      <div>
+        <div class="field-label">What do you want to write about?</div>
+        <textarea id="topic" rows="2" placeholder="e.g. how local businesses can get found on Google"></textarea>
+      </div>
+
+      <div>
+        <div class="field-label">Target Keyword</div>
+        <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
+      </div>
+
+      <div>
+        <div class="field-label">Who is this for?</div>
+        <input type="text" id="audience" placeholder="e.g. small business owners with no marketing budget" />
+      </div>
+
+      <div>
+        <div class="field-label">Audience Type</div>
+        <div class="type-toggle">
+          <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
+          <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
+          <button class="type-btn" id="btnBoth" onclick="setType('General')">General</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="field-label">Writing Style</div>
+        <select id="tone">
+          <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
+          <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
+          <option value="investigative and mildly skeptical — questions assumptions, surfaces what others miss">Investigative</option>
+          <option value="practical and actionable — every claim connects to something the reader can do">Practical</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="field-label">AI Model</div>
+        <select id="model">
+          <option value="claude-opus-4-6">Opus — Best Quality</option>
+          <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
+          <option value="claude-sonnet-4-20250514">Sonnet 4.5</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Promote Your Brand -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">Promote Your Brand</div>
+
+      <div>
+        <div class="field-label">Product or Service Name</div>
+        <input type="text" id="productName" placeholder="e.g. Acme CRM, FlowHero, Notion" />
+      </div>
+
+      <div class="product-fields inactive" id="productFields">
+        <div>
+          <div class="field-label">What it does</div>
+          <textarea id="productDesc" rows="2" placeholder="e.g. a CRM for small sales teams — closes deals faster without Salesforce's complexity"></textarea>
+        </div>
+        <div>
+          <div class="field-label">Website URL</div>
+          <input type="text" id="productUrl" placeholder="e.g. https://yourproduct.com" />
+        </div>
+      </div>
+
+      <div>
+        <div class="field-label">How to mention it</div>
+        <div class="promo-grid">
+          <button class="promo-btn active style-none" id="promoNone" onclick="setPromo('none')">
+            <span class="promo-name">None</span>
+            <span class="promo-desc">purely informational</span>
+          </button>
+          <button class="promo-btn style-soft" id="promoSoft" onclick="setPromo('soft')">
+            <span class="promo-name">Soft</span>
+            <span class="promo-desc">one natural mention</span>
+          </button>
+          <button class="promo-btn style-ctx" id="promoContextual" onclick="setPromo('contextual')">
+            <span class="promo-name">Contextual</span>
+            <span class="promo-desc">problem → solution</span>
+          </button>
+          <button class="promo-btn style-conv" id="promoConvert" onclick="setPromo('convert')">
+            <span class="promo-name">Convert</span>
+            <span class="promo-desc">drive action</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Settings -->
+    <button class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
+      ⚙ Advanced Settings
+      <span class="adv-toggle-icon">▼</span>
+    </button>
+    <div class="advanced-section" id="advancedSection">
+      <div class="agent-config">
+        <div class="agent-config-header" onclick="toggleConfig(1)">
+          <div class="agent-dot" style="background:var(--a1)"></div>
+          <span class="agent-config-title">Planning</span>
+          <span class="agent-config-chevron" id="chev1">▼</span>
+        </div>
+        <div class="agent-config-body" id="cfg1">
+          <textarea id="sys1" rows="7"></textarea>
+        </div>
+      </div>
+      <div class="agent-config">
+        <div class="agent-config-header" onclick="toggleConfig(2)">
+          <div class="agent-dot" style="background:var(--a2)"></div>
+          <span class="agent-config-title">Research</span>
+          <span class="agent-config-chevron" id="chev2">▼</span>
+        </div>
+        <div class="agent-config-body" id="cfg2">
+          <textarea id="sys2" rows="7"></textarea>
+        </div>
+      </div>
+      <div class="agent-config">
+        <div class="agent-config-header" onclick="toggleConfig(3)">
+          <div class="agent-dot" style="background:var(--a3)"></div>
+          <span class="agent-config-title">Writing</span>
+          <span class="agent-config-chevron" id="chev3">▼</span>
+        </div>
+        <div class="agent-config-body" id="cfg3">
+          <textarea id="sys3" rows="7"></textarea>
+        </div>
+      </div>
+      <div class="agent-config">
+        <div class="agent-config-header" onclick="toggleConfig(4)">
+          <div class="agent-dot" style="background:var(--a4)"></div>
+          <span class="agent-config-title">Refining</span>
+          <span class="agent-config-chevron" id="chev4">▼</span>
+        </div>
+        <div class="agent-config-body" id="cfg4">
+          <textarea id="sys4" rows="7"></textarea>
+        </div>
+      </div>
+      <div class="agent-config">
+        <div class="agent-config-header" onclick="toggleConfig(5)">
+          <div class="agent-dot" style="background:var(--a5)"></div>
+          <span class="agent-config-title">SEO Polish</span>
+          <span class="agent-config-chevron" id="chev5">▼</span>
+        </div>
+        <div class="agent-config-body" id="cfg5">
+          <textarea id="sys5" rows="7"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate Article</button>
+
+  </aside>
+
+  <div class="output-area" id="outputArea">
+
+    <div class="agent-panel" id="panel1">
+      <div class="agent-panel-header">
+        <div class="agent-step-num">1</div>
+        <span class="agent-label label-1">Planning Your Article</span>
+        <span class="agent-status-pill" id="pill1">—</span>
+      </div>
+      <div class="agent-panel-body">
+        <div class="agent-output-text" id="out1">Hit Generate Article to begin.</div>
+      </div>
+    </div>
+
+    <div class="agent-panel" id="panel2">
+      <div class="agent-panel-header">
+        <div class="agent-step-num">2</div>
+        <span class="agent-label label-2">Gathering Research</span>
+        <span class="agent-status-pill" id="pill2">—</span>
+      </div>
+      <div class="agent-panel-body">
+        <div class="agent-output-text" id="out2">Follows after planning.</div>
+      </div>
+    </div>
+
+    <div class="agent-panel" id="panel3">
+      <div class="agent-panel-header">
+        <div class="agent-step-num">3</div>
+        <span class="agent-label label-3">Writing First Draft</span>
+        <span class="agent-status-pill" id="pill3">—</span>
+      </div>
+      <div class="agent-panel-body">
+        <div class="agent-output-text" id="out3">Follows after research.</div>
+      </div>
+    </div>
+
+    <div class="agent-panel" id="panel4">
+      <div class="agent-panel-header">
+        <div class="agent-step-num">4</div>
+        <span class="agent-label label-4">Refining the Voice</span>
+        <span class="agent-status-pill" id="pill4">—</span>
+      </div>
+      <div class="agent-panel-body">
+        <div class="agent-output-text" id="out4">Follows after writing.</div>
+      </div>
+    </div>
+
+    <div class="agent-panel final-panel" id="panel5">
+      <div class="agent-panel-header">
+        <div class="agent-step-num">5</div>
+        <span class="agent-label label-5">Final Polish &amp; SEO</span>
+        <span class="agent-status-pill" id="pill5">—</span>
+        <button class="copy-btn" id="copyBtn" onclick="copyArticle()">Copy</button>
+        <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview Article →</button>
+      </div>
+      <div class="agent-panel-body">
+        <div class="agent-output-text" id="out5">Follows after refining.</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ════════════════════ Preview Overlay ════════════════════ -->
+<div class="preview-overlay" id="previewOverlay">
+
+  <div class="preview-topbar">
+    <button class="preview-back-btn" onclick="closePreview()">← back to pipeline</button>
+    <span class="preview-topbar-label">article preview</span>
+    <button class="save-draft-btn" id="saveDraftBtn" onclick="saveDraft()">Save Draft</button>
+    <div class="preview-topbar-stats">
+      <div class="preview-stat" id="statWords">words: <span id="previewWordCount">—</span></div>
+      <div class="preview-stat" id="statRead">read: <span id="previewReadTime">—</span></div>
+      <div class="preview-stat" id="statTitleLen">title: <span id="previewTitleLen">—</span> chars</div>
+      <div class="preview-stat" id="statMetaLen">meta: <span id="previewMetaLen">—</span> chars</div>
+    </div>
+  </div>
+
+  <div class="preview-scroll">
+
+    <!-- Article -->
+    <div class="preview-article-wrap">
+      <div class="preview-kicker">blog post preview</div>
+      <h1 class="preview-h1" id="previewTitle"></h1>
+      <div class="preview-meta-box">
+        <div class="preview-meta-label">Meta Description (SEO)</div>
+        <div class="preview-meta-text" id="previewMetaDesc"></div>
+      </div>
+      <div class="preview-rule"></div>
+      <div class="preview-content" id="previewContent"></div>
+    </div>
+
+    <!-- SEO Analysis -->
+    <div class="preview-seo-wrap">
+      <div class="preview-seo-card">
+
+        <div class="preview-seo-hd">
+          <div class="preview-seo-title-group">
+            <div class="preview-seo-eyebrow">analysis</div>
+            <div class="preview-seo-title">SEO Report</div>
+          </div>
+          <span class="seo-score-pill neutral" id="seoScorePill">—</span>
+        </div>
+
+        <div class="preview-seo-metrics">
+          <div class="seo-metric-block">
+            <div class="seo-metric-label">
+              Title Length
+              <span class="seo-metric-val" id="seoTitleVal">—</span>
+            </div>
+            <div class="seo-metric-track">
+              <div class="seo-metric-fill" id="seoBarTitle"></div>
+            </div>
+            <div class="seo-metric-hint">Ideal: 40–65 characters</div>
+          </div>
+
+          <div class="seo-metric-block">
+            <div class="seo-metric-label">
+              Meta Description
+              <span class="seo-metric-val" id="seoMetaVal">—</span>
+            </div>
+            <div class="seo-metric-track">
+              <div class="seo-metric-fill" id="seoBarMeta"></div>
+            </div>
+            <div class="seo-metric-hint">Ideal: 140–165 characters</div>
+          </div>
+
+          <div class="seo-metric-block">
+            <div class="seo-metric-label">
+              Word Count
+              <span class="seo-metric-val" id="seoWordsVal">—</span>
+            </div>
+            <div class="seo-metric-track">
+              <div class="seo-metric-fill" id="seoBarWords"></div>
+            </div>
+            <div class="seo-metric-hint">Ideal: 1,000–2,500 words</div>
+          </div>
+
+          <div class="seo-metric-block">
+            <div class="seo-metric-label">
+              H2 Subheadings
+              <span class="seo-metric-val" id="seoH2Val">—</span>
+            </div>
+            <div class="seo-metric-track">
+              <div class="seo-metric-fill" id="seoBarH2"></div>
+            </div>
+            <div class="seo-metric-hint">Ideal: 3–8 subheadings</div>
+          </div>
+        </div>
+
+        <div class="preview-seo-divider"></div>
+
+        <div class="preview-seo-badges">
+          <div class="seo-badge-item">
+            <div class="seo-badge-dot neutral" id="seoDotKwTitle"></div>
+            <div>
+              <div class="seo-badge-name">Keyword in Title</div>
+              <div class="seo-badge-text" id="seoBadgeKwTitle">—</div>
+            </div>
+          </div>
+          <div class="seo-badge-item">
+            <div class="seo-badge-dot neutral" id="seoDotKwBody"></div>
+            <div>
+              <div class="seo-badge-name">Keyword Density</div>
+              <div class="seo-badge-text" id="seoBadgeKwBody">—</div>
+            </div>
+          </div>
+          <div class="seo-badge-item">
+            <div class="seo-badge-dot neutral" id="seoDotKwFirst"></div>
+            <div>
+              <div class="seo-badge-name">Keyword in Intro</div>
+              <div class="seo-badge-text" id="seoBadgeKwFirst">—</div>
+            </div>
+          </div>
+          <div class="seo-badge-item">
+            <div class="seo-badge-dot neutral" id="seoDotMeta"></div>
+            <div>
+              <div class="seo-badge-name">Meta CTA</div>
+              <div class="seo-badge-text" id="seoBadgeMeta">—</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Implementation guide -->
+    <div class="impl-guide-wrap">
+      <div class="impl-guide-card">
+
+        <div class="impl-guide-hd">
+          <div class="impl-guide-eyebrow">next steps</div>
+          <div class="impl-guide-title">How to publish this article</div>
+        </div>
+
+        <div class="impl-tabs">
+          <button class="impl-tab active" data-tab="Copy" onclick="switchImplTab('Copy')">Copy &amp; Export</button>
+          <button class="impl-tab" data-tab="WP"      onclick="switchImplTab('WP')">WordPress</button>
+          <button class="impl-tab" data-tab="Webflow" onclick="switchImplTab('Webflow')">Webflow</button>
+          <button class="impl-tab" data-tab="Ghost"   onclick="switchImplTab('Ghost')">Ghost / Substack</button>
+          <button class="impl-tab" data-tab="CMS"     onclick="switchImplTab('CMS')">Any CMS</button>
+          <button class="impl-tab" data-tab="Drafts"  onclick="switchImplTab('Drafts')">Saved Drafts</button>
+        </div>
+
+        <!-- Copy & Export -->
+        <div class="impl-tab-body active" id="implTabCopy">
+          <p class="impl-tab-desc">Export the article in whichever format your platform needs.</p>
+          <div class="impl-copy-row">
+            <button class="impl-btn primary" onclick="copyPreviewText('markdown', this)">Copy Markdown</button>
+            <button class="impl-btn"         onclick="copyPreviewText('html', this)">Copy HTML</button>
+            <button class="impl-btn"         onclick="downloadArticle()">Download .txt</button>
+          </div>
+          <p class="impl-note">Markdown includes the title as an H1 and the meta description as a blockquote. HTML wraps everything in a semantic &lt;article&gt; tag with the meta as a comment at the top.</p>
+        </div>
+
+        <!-- WordPress -->
+        <div class="impl-tab-body" id="implTabWP">
+          <ol class="impl-steps">
+            <li>In WordPress, go to <code>Posts → Add New</code></li>
+            <li>Paste the title into the title field at the top of the editor</li>
+            <li>In Gutenberg, add a <code>Classic</code> block and paste the article body — this preserves H2 headings and paragraph structure cleanly</li>
+            <li>If you have <strong>Yoast SEO</strong> or <strong>Rank Math</strong>, scroll to the SEO panel and paste the meta description into the "Meta Description" field</li>
+            <li>Set a featured image, assign a category, and add 3–5 tags related to the keyword</li>
+            <li>Hit <code>Preview</code> to check formatting, then <code>Publish</code></li>
+          </ol>
+          <p class="impl-note">Tip: If headings aren't rendering correctly in Gutenberg, switch to the Code editor view and paste the HTML-formatted version instead.</p>
+        </div>
+
+        <!-- Webflow -->
+        <div class="impl-tab-body" id="implTabWebflow">
+          <ol class="impl-steps">
+            <li>Open your Webflow CMS collection and create a new blog post item</li>
+            <li>Paste the title into the Name / Title field</li>
+            <li>Click into the Rich Text body field and paste the article — Webflow preserves heading levels and paragraph breaks automatically</li>
+            <li>Go to the <strong>SEO Settings</strong> tab on the collection item and paste the meta description there</li>
+            <li>Set a clean URL slug using the target keyword, lowercase and hyphenated (e.g. <code>local-seo-small-business</code>)</li>
+            <li>Publish the item, then submit the URL to Google Search Console for faster indexing</li>
+          </ol>
+          <p class="impl-note">If your Rich Text element uses custom styles in the Designer, make sure H2 and paragraph styles are defined in your global CMS styles — otherwise pasted headings may inherit unexpected styling.</p>
+        </div>
+
+        <!-- Ghost / Substack -->
+        <div class="impl-tab-body" id="implTabGhost">
+          <ol class="impl-steps">
+            <li><strong>Ghost:</strong> Go to <code>Posts → New Post</code> and paste the title at the top</li>
+            <li>Ghost supports Markdown natively — paste the Markdown version directly into the editor for the cleanest result</li>
+            <li>Click the settings gear (⚙), expand <code>Meta data</code>, and paste the meta description plus a custom slug</li>
+            <li><strong>Substack:</strong> Create a new post, paste the title into the subject line, and paste the body into the editor</li>
+            <li>For Substack, the title doubles as the email subject line — make sure it creates curiosity without being clickbait</li>
+            <li>Add a header image and publish (or schedule for your audience's peak open time)</li>
+          </ol>
+          <p class="impl-note">Ghost's Markdown editor renders the article live as you paste, so you can spot formatting issues before publishing.</p>
+        </div>
+
+        <!-- Saved Drafts -->
+        <div class="impl-tab-body" id="implTabDrafts">
+          <p class="drafts-empty">No saved drafts yet. Click <strong>Save Draft</strong> in the topbar to save this article to your browser.</p>
+        </div>
+
+        <!-- Any CMS -->
+        <div class="impl-tab-body" id="implTabCMS">
+          <ol class="impl-steps">
+            <li><strong>Title:</strong> The text after <code>TITLE:</code> goes into your CMS title or headline field</li>
+            <li><strong>Meta description:</strong> The text after <code>META:</code> goes into your SEO plugin or CMS meta field — keep it under 160 characters</li>
+            <li><strong>Body:</strong> Everything after the <code>---</code> divider is the article. Paste it into your rich text or body field</li>
+            <li><strong>URL slug:</strong> Use the target keyword, lowercase and hyphenated (e.g. <code>local-seo-small-business</code>)</li>
+            <li><strong>Internal links:</strong> After publishing, edit the post and add 2–3 links to relevant pages on your site — this distributes page authority</li>
+            <li><strong>Indexing:</strong> Submit the URL in Google Search Console under <code>URL Inspection → Request Indexing</code> to get it crawled within hours</li>
+          </ol>
+          <p class="impl-note">For faster ranking: share the published URL in 1–2 relevant communities or newsletters within the first week — early traffic signals freshness to Google's algorithm.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- ══════════════════════════════════════════════════════════ -->
+
+<script>
+// ── System prompts ──────────────────────────────────────────────────────────
+const PROMPTS = {
+  1: `You are a content strategist. Do NOT write prose — produce a concise strategic brief to guide writing a genuinely valuable article.
+
+Given the topic, keyword, audience, and article type, output these sections:
+
+ANGLE: The most counterintuitive or underexplored truth about this topic. Not "here is what X is" — find the take that makes a reader say "I didn't know that." One sentence.
+
+READER PROFILE: Who exactly is reading this? What do they already know? What frustrates them? What outcome do they want? 2-3 sentences.
+
+WHY THIS ARTICLE WINS: Why should someone read this over the 10 other articles on this topic? One sentence.
+
+CONTENT PILLARS: 3-4 core arguments this article should make, ordered by reader value (most immediately useful first). Each as a one-sentence claim — not a vague label.
+
+TONE DIRECTION: Specific voice note. E.g. "like a knowledgeable colleague over coffee, not a professor" or "direct and skeptical, not a cheerleader."
+
+AVOID: 2-3 specific clichés or structural mistakes other articles make on this topic.`,
+
+  2: `You are a research specialist. Find the concrete material that makes articles worth reading. You will receive a topic, keyword, and strategic brief.
+
+Produce raw research material — NOT prose, NOT an outline. Just material.
+
+STATISTICS: 5-7 specific data points with plausible named sources and years. Be specific: "X% of Y according to Z (year)" not "studies show X matters."
+
+EXAMPLES: 3-4 real-world named examples — specific companies, people, products, or events. No hypotheticals. "When Spotify did X in 2022..." not "imagine a company that..."
+
+CONTRARIAN FINDINGS: 2 things that contradict the common assumption about this topic. These are the most valuable pieces in the article.
+
+EXPERT ANGLE: 1-2 things a recognized authority in this field has said, written, or done that relates directly to the topic.
+
+MISCONCEPTIONS: Common mistakes or wrong beliefs the target reader likely holds that the article should address directly.
+
+Specificity is everything. Vague material ("research shows X is important") is useless.`,
+
+  3: `You are a professional writer who understands both quality journalism and how people actually read online. You will receive a strategic brief, research notes, topic, keyword, audience, and tone direction.
+
+VOICE RULES:
+- Have an opinion and defend it. Don't just report — argue.
+- Use specific, named examples. "A Fortune 500 company" is weak. "When Netflix shifted to algorithm-driven recommendations in 2015..." is strong.
+- Vary sentence length. Short sentences hit hard. Then a longer, more complex sentence can carry the nuance when an idea needs room. Monotonous rhythm is the clearest AI tell.
+- Write how an intelligent person would actually say it. If a sentence sounds like a content mill wrote it, rewrite it.
+
+ONLINE FORMAT RULES — these are non-negotiable:
+- Maximum 2-3 sentences per paragraph. Most paragraphs should be 1-2 sentences. Online readers scan before they read. Walls of text get abandoned before the good argument inside them is ever found.
+- One idea per paragraph. If a paragraph makes two distinct points, it's two paragraphs.
+- White space is not wasted space. A two-sentence paragraph followed by a line break is not lazy — it's how online writing gets read to the end.
+- H2 subheading every 150-200 words, no exceptions. Readers navigate by scanning headers. Someone should be able to understand the article's argument from the H2s alone.
+- Subheadings must be specific claims or mini-arguments, never category labels. "Why Most SEO Advice Backfires" beats "Common Mistakes". "The Number That Changes the Calculation" beats "Key Statistics".
+- Opening paragraph: 1-2 sentences only. No warm-up, no throat-clearing, no scene-setting. Drop the reader straight into the sharpest insight. They decide in 3 seconds whether to keep reading.
+- Closing paragraph: 1-3 sentences. End on a specific thought that lands — not a summary, not a call to action, not "in conclusion."
+- Mentally do the scroll test before finishing: if any section looks visually dense when skimming, break it up.
+
+BANNED WORDS — do not use any of these under any circumstances:
+delve, tapestry, realm, pivotal, underscore, vibrant, meticulous, intricate, interplay, garner, testament, bolstered, enduring, fostering, landscape (metaphorical), align with, enhance (as a standalone verb claim), showcasing, swiftly, leverage/leveraging, utilize, robust, crucial, holistic, nuanced, multifaceted, seamlessly, game-changer, paradigm shift, groundbreaking, unlock, navigate (metaphorical), harness, elevate, beacon, revolutionize, comprehensive, cutting-edge, transformative, commendable, impactful
+
+BANNED PHRASES:
+"stands as a testament to", "in today's world", "in the age of", "at its core", "it's important to note", "it's worth noting", "needless to say", "it goes without saying", "not only X but also Y" (more than once), "in conclusion", "in summary", "to summarize"
+
+BANNED STRUCTURAL PATTERNS:
+- Do NOT open with a question
+- Do NOT start with "In today's [adjective] world..." or "In an era of..."
+- Do NOT end paragraphs with a summarizing platitude ("This is why X matters")
+- Do NOT use three-item comma-separated lists more than twice in the entire article
+- Do NOT start two consecutive sentences with the same word
+- Do NOT use bold text for emphasis (no bolding at all)
+
+SEO: Weave the target keyword naturally in the first 100 words, 2-3 times in the body, and once near or in a subheading. Use semantic variations. Do not keyword-stuff.
+
+Write a complete article of 800-1100 words. Use H2 subheadings every 150-200 words throughout — mandatory, not conditional on length.`,
+
+  4: `You are a forensic editor specializing in removing AI writing patterns. You will receive a draft article. Do not explain your edits — just output the clean, revised article.
+
+Work through these checks in order:
+
+1. VOCABULARY AUDIT — find and replace:
+"Additionally" → restructure the sentence or use "Also," or cut the connector entirely
+"Furthermore" / "Moreover" → cut and restructure naturally
+"Crucial" / "Vital" / "Essential" → either cut, or explain WHY instead of just asserting
+"Journey" (metaphorical) → describe what actually happens
+"Comprehensive" → cut or specify exactly what is covered
+"Significant" / "Significantly" → replace with actual numbers or specifics
+Check every word in this list and remove any instance: delve, tapestry, realm, pivotal, underscore, vibrant, meticulous, intricate, testament, foster, leverage, utilize, robust, holistic, nuanced, multifaceted, seamlessly, groundbreaking, unlock, harness, elevate, beacon, swiftly, revolutionize, cutting-edge, transformative, commendable, impactful
+
+2. STRUCTURAL AUDIT:
+"It is important to..." / "It is worth noting that..." → rewrite as direct statements
+Any paragraph ending with a platitude → cut or replace with something specific
+Find 3+ consecutive sentences of similar length → break the rhythm
+Check the opening sentence: is it genuinely gripping, or does it state an obvious fact? Rewrite if weak.
+Check the closing: does it end with a specific, memorable thought or a vague call to action? Fix if vague.
+
+3. TONE AUDIT:
+Hedge phrases ("many experts believe," "some would argue," "it could be said") → either commit to the claim or cut it
+Passive voice hedges ("it has been found that," "it is known that") → make active and specific
+Corporate or press-release language → make it direct and honest
+
+4. RHYTHM AUDIT:
+Scan for any stretch where 3+ sentences share the same approximate length — vary it.
+Make sure there is at least one very short sentence (3-6 words) somewhere in the article.
+Make sure at least one sentence is genuinely long and complex (30+ words).
+
+5. ONLINE READABILITY PASS — do this last:
+Find every paragraph with 4 or more sentences → split into two at the most natural break. No exceptions.
+Find any body section running more than 200 words without an H2 subheading → add one. The subheading must be a specific claim or mini-argument ("The Part Most Guides Skip"), not a category label ("Overview").
+Count the sentences in the opening paragraph: if it's 3 or more, trim to 2. The hook must land fast.
+Scan the full article as if you're quickly scrolling on a phone. Any block that looks visually dense — 5+ unbroken lines — add a paragraph break.
+Check every H2 subheading: if it's a vague label ("Background", "Why It Matters", "The Solution"), rewrite it as a specific claim that makes a reader want to read the section.
+Verify the closing paragraph is 1-3 sentences and ends on a specific, memorable thought — not a summary and not "start today."
+
+Output only the final revised article. No preamble, no explanation.`,
+
+  5: `You are a senior editor and SEO specialist doing a final pass. You will receive a polished article and the target keyword.
+
+EDITORIAL PASS:
+- Is every paragraph earning its place? Cut anything that doesn't add new information or forward momentum.
+- Does the article have a clear argument, or is it just a collection of facts? If the latter, find the thread and strengthen it.
+- Is the opening genuinely hooky and 1-2 sentences? A reader decides in 3 seconds. If the opening is 3+ sentences or starts with context-setting, trim it.
+- Is the ending memorable and short? Not "In conclusion..." — end on a specific thought that lands in 1-3 sentences.
+
+SCANNABILITY PASS:
+- Count paragraphs with 4+ sentences — each one should be split. Online readers scan first.
+- Is there an H2 subheading visible within the first 200 words? If not, add one.
+- Read only the H2 subheadings in sequence. Can you understand what the article argues from headings alone? If not, rewrite the vague ones as specific claims.
+- Is there at least one H2 subheading per 200-word section throughout? If a section is missing one, add it.
+
+SEO PASS:
+- Confirm the target keyword appears naturally in the first 100 words, 2-3 times in the body, and at least once in or near a subheading.
+- If any keyword appearances feel forced, rewrite them to sound natural.
+- Subheadings must be specific claims that also contain semantic keyword variations — not generic labels like "Introduction", "Overview", or "Conclusion."
+
+Output in this exact format:
+
+TITLE: [A compelling headline with the target keyword — specific and intriguing, not generic]
+META: [A 150-160 character meta description with the keyword and a clear value proposition]
+
+---
+
+[The final, complete article with no preamble]`
+};
+
+// ── State ───────────────────────────────────────────────────────────────────
+let articleType = 'B2B';
+
+function setType(t) {
+  articleType = t;
+  ['B2B','B2C','General'].forEach(type => {
+    document.getElementById('btn' + type).classList.toggle('active', type === t);
+  });
+}
+
+function toggleKey() {
+  const inp = document.getElementById('apiKey');
+  const btn = inp.nextElementSibling;
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'hide'; }
+  else { inp.type = 'password'; btn.textContent = 'show'; }
+}
+
+function toggleConfig(n) {
+  const body = document.getElementById('cfg' + n);
+  const chev = document.getElementById('chev' + n);
+  const open = body.classList.toggle('open');
+  chev.textContent = open ? '▲' : '▼';
+}
+
+function toggleAdvanced() {
+  const btn  = document.getElementById('advancedToggle');
+  const sec  = document.getElementById('advancedSection');
+  const open = sec.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+
+function setPipeNode(n, state) {
+  const el = document.getElementById('pn-' + n);
+  el.className = 'pipe-node' + (state ? ' ' + state + '-' + n : '');
+}
+
+function setPanel(n, state) {
+  const panel = document.getElementById('panel' + n);
+  panel.className = 'agent-panel' + (n === 5 ? ' final-panel' : '') + (state ? ' active-' + n : '');
+}
+
+function setPill(n, text, running) {
+  const pill = document.getElementById('pill' + n);
+  pill.textContent = text;
+  pill.className = 'agent-status-pill' + (running ? ' running' : '');
+}
+
+function setOutput(n, text, filled) {
+  const el = document.getElementById('out' + n);
+  el.textContent = text;
+  el.className = 'agent-output-text' + (filled ? ' filled' : '');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
+
+function scrollPanelToBottom(n) {
+  const body = document.getElementById('out' + n).parentElement;
+  body.scrollTop = body.scrollHeight;
+}
+
+function copyArticle() {
+  const text = document.getElementById('out5').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1800);
+  });
+}
+
+// ── Promotion state & helpers ────────────────────────────────────────────────
+let promoStyle = 'none';
+
+function setPromo(style) {
+  promoStyle = style;
+  ['none','soft','contextual','convert'].forEach(s => {
+    const key = s === 'contextual' ? 'Contextual' : s === 'convert' ? 'Convert' : s === 'soft' ? 'Soft' : 'None';
+    document.getElementById('promo' + key).classList.toggle('active', s === style);
+  });
+  document.getElementById('productFields').classList.toggle('inactive', style === 'none');
+}
+
+// Builds the strategist note — just enough to pick the right angle
+function buildStrategistNote(name, desc, style) {
+  if (!name || style === 'none') return '';
+  const notes = {
+    soft:        'The angle should be one where this product could plausibly appear as a passing reference — but do NOT plan for it explicitly.',
+    contextual:  'Choose an angle and content pillars that naturally surface a problem this product solves — so its mention later feels earned, not inserted.',
+    convert:     'The angle and content pillars should build a convincing case for why the problem this product solves is worth taking seriously. Lead the reader to feel the pain before the solution is offered.'
+  };
+  return `\n\nPRODUCT CONTEXT (angle guidance only):\nProduct: "${name}"${desc ? ` — ${desc}` : ''}\nPromotion approach: ${style}\nNote: ${notes[style] || ''}`;
+}
+
+// Builds the full writer instructions, style-specific
+function buildWriterProductCtx(name, desc, url, style) {
+  if (!name || style === 'none') return '';
+  const urlLine = url ? `\nProduct URL: ${url}` : '';
+
+  if (style === 'soft') {
+    return `\n\n── PRODUCT MENTION (Soft) ──
+This article is written by the team behind "${name}"${desc ? ` (${desc})` : ''}.${urlLine}
+Mention "${name}" exactly once, naturally, without interrupting reading flow. Write it as a knowledgeable author casually referencing a tool they use — not an ad. No CTA, no "check out", no "try". Just a mention.${url ? ' Only include the URL if a hyperlink would feel completely natural, like an inline citation — otherwise omit it.' : ''}`;
+  }
+
+  if (style === 'contextual') {
+    return `\n\n── PRODUCT MENTION (Contextual) ──
+This article is written by the team behind "${name}"${desc ? ` (${desc})` : ''}.${urlLine}
+- Find the moment in the article where the reader most acutely feels the problem. Introduce "${name}" there as one clear solution — not the only one.
+- Mention "${name}" 2–3 times total. The first is the problem→solution moment. Later mentions reinforce capability, not the pitch.
+${url ? `- One mention should contain a natural hyperlink to: ${url}` : ''}
+- Tone: a trusted peer recommending something that genuinely helped them
+- Banned near product mentions: "check out", "try it free", "sign up today", "click here", "game-changing", "industry-leading", "revolutionary", "powerful solution"
+- The product earns its place by being the most relevant answer to a real problem in the article.`;
+  }
+
+  if (style === 'convert') {
+    return `\n\n── PRODUCT MENTION (Conversion) ──
+This article is designed to move qualified readers toward taking action on "${name}"${desc ? ` (${desc})` : ''}.${urlLine}
+- Build the article around a problem that "${name}" directly and credibly solves
+- Establish the problem compellingly first — introduce the product only after the reader feels the pain, not before
+- Mention "${name}" 3–4 times with natural variation in phrasing
+- Close with a specific, non-pushy CTA: tell the reader the exact next step and the outcome they'll get. Pattern: "If you want to [outcome], [product name] [does X] — [start/learn more] at [url]"
+- The article must deliver genuine standalone value — a reader who never buys should still find it worth reading
+- Banned language: "sign up now", "don't miss out", "limited time", "game-changer", "revolutionary", "best-in-class"`;
+  }
+
+  return '';
+}
+
+// Builds the humanizer's product guard-rail note
+function buildHumanizerNote(name, style) {
+  if (!name || style === 'none') return '';
+  return `\n\n[EDITORIAL NOTE — NOT PART OF ARTICLE]: After your full edit pass, do one additional check: any mentions of "${name}" must read as a trusted colleague's natural recommendation — not ad copy. If you find any salesy, promotional, or advertorial language around those mentions, rewrite it to sound like organic prose. Output only the complete revised article.`;
+}
+
+// ── Core streaming call ──────────────────────────────────────────────────────
+async function streamAgent(apiKey, model, maxTokens, systemPrompt, userMessage, outEl, panelN) {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      apiKey,
+      model,
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error?.message || 'API error ' + response.status);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+  outEl.className = 'agent-output-text filled';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value);
+    for (const line of chunk.split('\n')) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') continue;
+      try {
+        const parsed = JSON.parse(data);
+        if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+          fullText += parsed.delta.text;
+          outEl.textContent = fullText;
+          scrollPanelToBottom(panelN);
+        }
+      } catch(e) {}
+    }
+  }
+
+  return fullText;
+}
+
+// ── Pipeline orchestration ───────────────────────────────────────────────────
+async function runPipeline() {
+  const apiKey  = document.getElementById('apiKey').value.trim();
+  const topic   = document.getElementById('topic').value.trim();
+  const keyword = document.getElementById('keyword').value.trim();
+  const audience = document.getElementById('audience').value.trim();
+  const tone    = document.getElementById('tone').value;
+  const model   = document.getElementById('model').value;
+
+  const sys = [1,2,3,4,5].map(n => document.getElementById('sys' + n).value.trim());
+
+  // ── Product / promotion context ──
+  const productName = document.getElementById('productName').value.trim();
+  const productDesc = document.getElementById('productDesc').value.trim();
+  const productUrl  = document.getElementById('productUrl').value.trim();
+  const strategistNote  = buildStrategistNote(productName, productDesc, promoStyle);
+  const writerProductCtx = buildWriterProductCtx(productName, productDesc, productUrl, promoStyle);
+  const humanizerNote    = buildHumanizerNote(productName, promoStyle);
+
+  hideError();
+  if (!apiKey)  { showError('Please enter your Anthropic API key.'); return; }
+  if (!topic)   { showError('Please enter an article topic.'); return; }
+  if (!keyword) { showError('Please enter a target keyword.'); return; }
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.textContent = '⟳ Generating…';
+  document.getElementById('copyBtn').classList.remove('visible');
+  document.getElementById('previewBtn').classList.remove('visible');
+
+  // Reset all panels
+  for (let i = 1; i <= 5; i++) {
+    setPipeNode(i, null); setPanel(i, null); setPill(i, '—', false);
+  }
+  setOutput(1, '', false);
+  setOutput(2, 'Follows after planning.', false);
+  setOutput(3, 'Follows after research.', false);
+  setOutput(4, 'Follows after writing.', false);
+  setOutput(5, 'Follows after refining.', false);
+
+  // Scroll output area to top
+  document.getElementById('outputArea').scrollTop = 0;
+
+  try {
+    const audienceNote = audience ? `\nTarget audience: ${audience}` : '';
+    const keywordNote  = keyword  ? `\nTarget keyword: ${keyword}`   : '';
+
+    // ── Agent 1: Strategist ──
+    setPipeNode(1, 'active'); setPanel(1, 'active'); setPill(1, 'working…', true);
+    const out1El = document.getElementById('out1');
+    const brief = await streamAgent(
+      apiKey, model, 1200, sys[0],
+      `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\nTone preference: ${tone}${strategistNote}`,
+      out1El, 1
+    );
+    setPipeNode(1, 'done'); setPanel(1, null); setPill(1, 'done ✓', false);
+
+    // ── Agent 2: Researcher ──
+    setPipeNode(2, 'active'); setPanel(2, 'active'); setPill(2, 'working…', true);
+    setOutput(2, '', false);
+    const out2El = document.getElementById('out2');
+    const research = await streamAgent(
+      apiKey, model, 1500, sys[1],
+      `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\n\nStrategic brief:\n${brief}`,
+      out2El, 2
+    );
+    setPipeNode(2, 'done'); setPanel(2, null); setPill(2, 'done ✓', false);
+
+    // ── Agent 3: Writer ──
+    setPipeNode(3, 'active'); setPanel(3, 'active'); setPill(3, 'working…', true);
+    setOutput(3, '', false);
+    const out3El = document.getElementById('out3');
+    const draft = await streamAgent(
+      apiKey, model, 4096, sys[2],
+      `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\nTone: ${tone}\n\nStrategic brief:\n${brief}\n\nResearch notes:\n${research}${writerProductCtx}`,
+      out3El, 3
+    );
+    setPipeNode(3, 'done'); setPanel(3, null); setPill(3, 'done ✓', false);
+
+    // ── Agent 4: Humanizer ──
+    setPipeNode(4, 'active'); setPanel(4, 'active'); setPill(4, 'working…', true);
+    setOutput(4, '', false);
+    const out4El = document.getElementById('out4');
+    const humanized = await streamAgent(
+      apiKey, model, 4096, sys[3],
+      draft + humanizerNote,
+      out4El, 4
+    );
+    setPipeNode(4, 'done'); setPanel(4, null); setPill(4, 'done ✓', false);
+
+    // ── Agent 5: SEO Editor ──
+    setPipeNode(5, 'active'); setPanel(5, 'active'); setPill(5, 'working…', true);
+    setOutput(5, '', false);
+    const out5El = document.getElementById('out5');
+    await streamAgent(
+      apiKey, model, 2048, sys[4],
+      `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${humanized}`,
+      out5El, 5
+    );
+    setPipeNode(5, 'done'); setPanel(5, null); setPill(5, 'done ✓', false);
+
+    document.getElementById('copyBtn').classList.add('visible');
+    document.getElementById('previewBtn').classList.add('visible');
+
+    // Scroll to final output
+    document.getElementById('panel5').scrollIntoView({ behavior: 'smooth' });
+
+  } catch(err) {
+    showError('Error: ' + err.message);
+    for (let i = 1; i <= 5; i++) { setPill(i, '—', false); setPanel(i, null); setPipeNode(i, null); }
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✦ Generate Article';
+}
+
+// ── Preview helpers ──────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function inlineMarkdown(text) {
+  let t = escHtml(text);
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/\*(.+?)\*/g,     '<em>$1</em>');
+  t = t.replace(/`(.+?)`/g,       '<code>$1</code>');
+  return t;
+}
+
+function markdownToHtml(md) {
+  return md.split(/\n\n+/).map(block => {
+    const t = block.trim();
+    if (!t) return '';
+    if (t.startsWith('### ')) return `<h3>${inlineMarkdown(t.slice(4).trim())}</h3>`;
+    if (t.startsWith('## '))  return `<h2>${inlineMarkdown(t.slice(3).trim())}</h2>`;
+    if (t.startsWith('# '))   return `<h1>${inlineMarkdown(t.slice(2).trim())}</h1>`;
+    const lines = t.split('\n').map(l => inlineMarkdown(l.trim())).filter(Boolean);
+    return `<p>${lines.join(' ')}</p>`;
+  }).filter(Boolean).join('\n');
+}
+
+function parseArticle(raw) {
+  const titleMatch = raw.match(/^TITLE:\s*(.+)/m);
+  const metaMatch  = raw.match(/^META:\s*(.+)/m);
+  const divIdx     = raw.indexOf('\n---');
+  const body = divIdx !== -1
+    ? raw.slice(divIdx + 4).trim()
+    : (metaMatch ? raw.slice(raw.indexOf(metaMatch[0]) + metaMatch[0].length).trim() : raw.trim());
+  return {
+    title: titleMatch ? titleMatch[1].trim() : '',
+    meta:  metaMatch  ? metaMatch[1].trim()  : '',
+    body
+  };
+}
+
+function openPreview() {
+  const raw = document.getElementById('out5').textContent;
+  if (!raw || raw.startsWith('Waiting')) return;
+
+  const { title, meta, body } = parseArticle(raw);
+
+  // Stats
+  const wordCount = body.split(/\s+/).filter(Boolean).length;
+  const readTime  = Math.max(1, Math.ceil(wordCount / 220));
+
+  // SEO scoring (ideal ranges)
+  const titleLen   = title.length;
+  const metaLen    = meta.length;
+  const titleClass = titleLen >= 40 && titleLen <= 65  ? 'seo-good' : titleLen < 40  ? 'seo-warn' : 'seo-bad';
+  const metaClass  = metaLen  >= 140 && metaLen  <= 165 ? 'seo-good' : metaLen  < 140 ? 'seo-warn' : 'seo-bad';
+
+  // Populate article
+  document.getElementById('previewTitle').textContent    = title || '(No title parsed — check agent 5 output format)';
+  document.getElementById('previewMetaDesc').textContent = meta  || '(No meta description parsed)';
+  document.getElementById('previewContent').innerHTML    = markdownToHtml(body);
+
+  // Populate stats bar
+  document.getElementById('previewWordCount').textContent = wordCount.toLocaleString();
+  document.getElementById('previewReadTime').textContent  = readTime + ' min read';
+  document.getElementById('previewTitleLen').textContent  = titleLen;
+  document.getElementById('previewMetaLen').textContent   = metaLen;
+  document.getElementById('statTitleLen').className = 'preview-stat ' + titleClass;
+  document.getElementById('statMetaLen').className  = 'preview-stat ' + metaClass;
+
+  // ─── SEO Analysis Panel ───────────────────────────────────────
+  // Helpers — defined before use (arrow functions, no hoisting needed)
+  const _setBar = (barId, valId, rawVal, maxVal, suffix, color) => {
+    const pct = Math.min(100, Math.round((rawVal / maxVal) * 100));
+    const bar = document.getElementById(barId);
+    const val = document.getElementById(valId);
+    if (!bar) return;
+    bar.className = 'seo-metric-fill ' + color;
+    bar.dataset.targetPct = pct;   // animate after overlay opens
+    bar.style.width = '0%';        // reset so transition always fires
+    if (val) val.textContent = rawVal + (suffix ? '\u202f' + suffix : '');
+  };
+  const _setBadge = (dotId, textId, color, text) => {
+    const dot = document.getElementById(dotId);
+    const el  = document.getElementById(textId);
+    if (dot) dot.className = 'seo-badge-dot ' + color;
+    if (el)  el.textContent = text;
+  };
+
+  try {
+    const h2Count   = (body.match(/^## /mg) || []).length;
+    const kw        = (document.getElementById('keyword').value || '').trim().toLowerCase();
+    const kwInTitle = kw ? title.toLowerCase().includes(kw) : null;
+    const kwInFirst = kw ? body.toLowerCase().slice(0, 600).includes(kw) : null;
+    const kwCount   = kw ? (body.toLowerCase().split(kw).length - 1) : 0;
+    const kwDensity = (kw && wordCount > 0) ? (kwCount / wordCount * 100) : null;
+    const metaHasCTA = /\b(learn|discover|find out|see how|explore|get|start|read|download|uncover)\b/i.test(meta);
+
+    // Bars (values set now; widths animate after overlay opens)
+    const titleBarColor = titleLen >= 40 && titleLen <= 65 ? 'green' : titleLen < 40 ? 'amber' : 'red';
+    const metaBarColor  = metaLen  >= 140 && metaLen  <= 165 ? 'green' : metaLen  < 140 ? 'amber' : 'red';
+    const wordsBarColor = wordCount >= 1000 && wordCount <= 2500 ? 'green' : 'amber';
+    const h2BarColor    = h2Count  >= 3    && h2Count  <= 8    ? 'green' : 'amber';
+
+    _setBar('seoBarTitle', 'seoTitleVal', titleLen,  100,  'chars', titleBarColor);
+    _setBar('seoBarMeta',  'seoMetaVal',  metaLen,   200,  'chars', metaBarColor);
+    _setBar('seoBarWords', 'seoWordsVal', wordCount, 3000, 'words', wordsBarColor);
+    _setBar('seoBarH2',    'seoH2Val',    h2Count,   10,   null,    h2BarColor);
+
+    // Keyword badges
+    if (kw) {
+      _setBadge('seoDotKwTitle', 'seoBadgeKwTitle',
+        kwInTitle ? 'green' : 'red',
+        kwInTitle ? 'Found in title ✓' : 'Missing — try adding it early');
+      const densityColor = kwDensity >= 0.5 && kwDensity <= 2.5 ? 'green' : kwDensity < 0.5 ? 'amber' : 'red';
+      _setBadge('seoDotKwBody', 'seoBadgeKwBody',
+        densityColor,
+        kwCount + '× used · ' + (kwDensity !== null ? kwDensity.toFixed(1) + '% density' : '—'));
+      _setBadge('seoDotKwFirst', 'seoBadgeKwFirst',
+        kwInFirst ? 'green' : 'amber',
+        kwInFirst ? 'In first paragraph ✓' : 'Try adding to intro paragraph');
+    } else {
+      ['seoDotKwTitle','seoDotKwBody','seoDotKwFirst'].forEach(id =>
+        _setBadge(id, id.replace('seoDot','seoBadge'), 'amber', 'Set a target keyword in the sidebar'));
+    }
+    _setBadge('seoDotMeta', 'seoBadgeMeta',
+      metaHasCTA ? 'green' : 'amber',
+      metaHasCTA ? 'Has action phrase ✓' : 'Consider adding a CTA phrase');
+
+    // Overall score pill
+    const checks = [
+      titleBarColor === 'green', metaBarColor === 'green',
+      wordsBarColor === 'green', h2BarColor === 'green',
+      metaHasCTA,
+      kw ? kwInTitle : true,
+      kw ? (kwDensity >= 0.5 && kwDensity <= 2.5) : true,
+      kw ? kwInFirst : true
+    ];
+    const scorePct = Math.round(checks.filter(Boolean).length / checks.length * 100);
+    const pill = document.getElementById('seoScorePill');
+    if (pill) {
+      pill.textContent = scorePct + '% score';
+      pill.className   = 'seo-score-pill ' + (scorePct >= 75 ? 'green' : scorePct >= 45 ? 'amber' : 'red');
+    }
+  } catch(seoErr) {
+    console.warn('SEO panel error:', seoErr);
+  }
+  // ─────────────────────────────────────────────────────────────
+
+  // Show save-draft button, populate drafts tab, reset to first impl tab
+  document.getElementById('saveDraftBtn').classList.add('visible');
+  renderDraftsTab();
+  switchImplTab('Copy');
+
+  // Open overlay
+  document.getElementById('previewOverlay').classList.add('open');
+  document.querySelector('.preview-scroll').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+
+  // Animate SEO bars AFTER the overlay is visible (double-rAF ensures layout commit)
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.seo-metric-fill[data-target-pct]').forEach(el => {
+      el.style.width = el.dataset.targetPct + '%';
+    });
+  }));
+}
+
+function closePreview() {
+  document.getElementById('previewOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Draft management ─────────────────────────────────────────────────────────
+function _getDrafts() {
+  try { return JSON.parse(localStorage.getItem('byline_drafts') || '[]'); } catch(e) { return []; }
+}
+function _saveDrafts(arr) {
+  localStorage.setItem('byline_drafts', JSON.stringify(arr));
+}
+
+function saveDraft() {
+  const raw = document.getElementById('out5').textContent;
+  if (!raw || raw.startsWith('Follows')) return;
+  const { title, meta, body } = parseArticle(raw);
+  const topic   = (document.getElementById('topic').value   || '').trim();
+  const keyword = (document.getElementById('keyword').value || '').trim();
+  const label   = title || topic || 'Untitled Draft';
+
+  let drafts = _getDrafts();
+  if (drafts.length && drafts[0].title === label) {
+    Object.assign(drafts[0], { meta, body, savedAt: new Date().toISOString() });
+  } else {
+    drafts.unshift({ id: Date.now(), title: label, meta, body, topic, keyword,
+                     savedAt: new Date().toISOString() });
+  }
+  if (drafts.length > 30) drafts.length = 30;
+  _saveDrafts(drafts);
+
+  const btn = document.getElementById('saveDraftBtn');
+  btn.classList.add('saved');
+  btn.textContent = 'Saved \u2713';
+  setTimeout(() => { btn.classList.remove('saved'); btn.textContent = 'Save Draft'; }, 2500);
+
+  showDraftToast();
+  renderDraftsTab();
+}
+
+function showDraftToast() {
+  const toast = document.getElementById('draftToast');
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 3800);
+}
+
+function renderDraftsTab() {
+  const container = document.getElementById('implTabDrafts');
+  if (!container) return;
+  container.textContent = '';
+
+  const drafts = _getDrafts();
+
+  if (drafts.length === 0) {
+    const p = document.createElement('p');
+    p.className = 'impl-tab-desc';
+    p.textContent = 'No saved drafts yet. Click Save Draft in the topbar to save this article.';
+    const note = document.createElement('div');
+    note.className = 'draft-local-note';
+    note.textContent = '\uD83D\uDCBE Drafts live in your browser\u2019s local storage \u2014 this device only, not synced across devices.';
+    container.appendChild(p);
+    container.appendChild(note);
+    return;
+  }
+
+  const list = document.createElement('div');
+  drafts.forEach(function(d) {
+    const date = new Date(d.savedAt).toLocaleDateString('en-US',
+      { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    const item = document.createElement('div');
+    item.className = 'draft-item';
+
+    const info = document.createElement('div');
+    info.className = 'draft-item-info';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'draft-item-title';
+    titleEl.textContent = d.title;
+
+    const metaEl = document.createElement('div');
+    metaEl.className = 'draft-item-meta';
+    metaEl.textContent = (d.keyword ? d.keyword + '  \u00b7  ' : '') + date;
+
+    info.appendChild(titleEl);
+    info.appendChild(metaEl);
+
+    const actions = document.createElement('div');
+    actions.className = 'draft-item-actions';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'impl-btn';
+    copyBtn.textContent = 'Copy MD';
+    (function(draftId, btn) {
+      btn.addEventListener('click', function() { copyDraft(draftId, btn); });
+    })(d.id, copyBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'impl-btn danger';
+    delBtn.textContent = 'Delete';
+    (function(draftId) {
+      delBtn.addEventListener('click', function() { deleteDraft(draftId); });
+    })(d.id);
+
+    actions.appendChild(copyBtn);
+    actions.appendChild(delBtn);
+    item.appendChild(info);
+    item.appendChild(actions);
+    list.appendChild(item);
+  });
+  container.appendChild(list);
+
+  const note = document.createElement('div');
+  note.className = 'draft-local-note';
+  note.textContent = '\uD83D\uDCBE ' + drafts.length + ' draft' + (drafts.length > 1 ? 's' : '') +
+    ' in your browser\u2019s local storage \u2014 this device only.';
+  container.appendChild(note);
+}
+
+function copyDraft(id, btn) {
+  const d = _getDrafts().find(function(x) { return x.id === id; });
+  if (!d) return;
+  navigator.clipboard.writeText('# ' + d.title + '\n\n> ' + d.meta + '\n\n---\n\n' + d.body)
+    .then(function() {
+      if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Copy MD'; }, 1500); }
+    });
+}
+
+function deleteDraft(id) {
+  _saveDrafts(_getDrafts().filter(function(x) { return x.id !== id; }));
+  renderDraftsTab();
+}
+
+function switchImplTab(tab) {
+  document.querySelectorAll('.impl-tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.impl-tab-body').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.impl-tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('implTab' + tab).classList.add('active');
+}
+
+function copyPreviewText(format, btn) {
+  const raw = document.getElementById('out5').textContent;
+  const { title, meta, body } = parseArticle(raw);
+  let text;
+  if (format === 'markdown') {
+    text = `# ${title}\n\n> ${meta}\n\n---\n\n${body}`;
+  } else {
+    const bodyHtml = markdownToHtml(body);
+    text = `<!-- Meta Description: ${meta} -->\n<article>\n<h1>${escHtml(title)}</h1>\n\n${bodyHtml}\n</article>`;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+
+function downloadArticle() {
+  const raw = document.getElementById('out5').textContent;
+  const { title, meta, body } = parseArticle(raw);
+  const content = `TITLE: ${title}\nMETA: ${meta}\n\n---\n\n${body}`;
+  const slug = (title || 'article')
+    .replace(/[^a-z0-9\s]/gi, '')
+    .replace(/\s+/g, '-')
+    .toLowerCase()
+    .slice(0, 60);
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = slug + '.txt';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ESC key closes preview
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePreview(); });
+
+// ── Init: populate system prompts from constants ─────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  for (let n = 1; n <= 5; n++) {
+    document.getElementById('sys' + n).value = PROMPTS[n];
+  }
+});
+</script>
+
+<!-- Draft toast notification -->
+<div class="draft-toast" id="draftToast">
+  <div class="draft-toast-title">Draft saved ✓</div>
+  <div class="draft-toast-note">Stored in your browser only — won't sync across devices or browsers.</div>
+</div>
+
+</body>
+</html>
