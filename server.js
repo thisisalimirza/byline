@@ -148,9 +148,10 @@ app.get('/success', async (req, res) => {
     const credits = parseInt(session.metadata.credits, 10) || 10;
 
     await storageSet(`credit:${token}`, {
-      remaining:  credits,
-      used:       0,
-      created_at: new Date().toISOString(),
+      remaining:       credits,
+      used:            0,
+      created_at:      new Date().toISOString(),
+      stripeSessionId: session_id,
     });
     await storageSet(`session:${session_id}`, token); // idempotency record
 
