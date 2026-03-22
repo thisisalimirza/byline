@@ -17,6 +17,15 @@ const CREDIT_PACKS = {
   studio:  { price: 2500, credits: 75, label: '75 Articles' },
 };
 
+// ── Refund policy ─────────────────────────────────────────────────────────────
+// Minimum fraction of original credits that must still REMAIN for a self-serve
+// refund to be allowed. Examples:
+//   1.0  → no refunds once any credit is used        (most restrictive)
+//   0.5  → refund allowed if ≥ 50 % of credits remain (current policy)
+//   0.0  → always allow a refund regardless of usage  (most generous)
+// To revert to "zero usage" policy, change 0.5 → 1.0.
+const REFUND_MIN_REMAINING_PCT = 0.5;
+
 // ── Storage abstraction ───────────────────────────────────────────────────────
 // Uses Upstash Redis in production (env vars injected by Vercel marketplace).
 // Falls back to in-memory Map for local dev — credits reset on server restart,
@@ -175,9 +184,11 @@ app.get('/api/refund-eligible', async (req, res) => {
   const entry = await storageGet(`credit:${token}`);
   if (!entry) return res.json({ eligible: false, reason: 'Purchase not found on this device/browser' });
   if (!entry.stripeSessionId) return res.json({ eligible: false, reason: 'Older purchase — email us for a manual refund' });
-  if ((entry.used || 0) > 0) {
-    const total = entry.remaining + entry.used;
-    return res.json({ eligible: false, reason: `${entry.used} of ${total} credits already used` });
+  const usedCredits = entry.used || 0;
+  const totalCredits = entry.remaining + usedCredits;
+  const remainingPct = totalCredits > 0 ? entry.remaining / totalCredits : 1;
+  if (remainingPct < REFUND_MIN_REMAINING_PCT) {
+    return res.json({ eligible: false, reason: `${usedCredits} of ${totalCredits} credits already used` });
   }
   // Look up amount from Stripe session for display
   let amount = null;
@@ -203,11 +214,14 @@ app.post('/api/refund', async (req, res) => {
   if (!entry) return res.status(404).json({ error: 'Credit token not found. Make sure you\'re on the same device and browser where you purchased.' });
   if (!entry.stripeSessionId) return res.status(400).json({ error: 'No purchase found for this token.' });
 
-  // Don't refund if credits have been substantially used
-  const originalCredits = entry.remaining + (entry.used || 0);
-  if ((entry.used || 0) > 0) {
+  // Don't refund if too many credits have been used (controlled by REFUND_MIN_REMAINING_PCT)
+  const usedCredits = entry.used || 0;
+  const originalCredits = entry.remaining + usedCredits;
+  const remainingPct = originalCredits > 0 ? entry.remaining / originalCredits : 1;
+  if (remainingPct < REFUND_MIN_REMAINING_PCT) {
+    const threshold = Math.floor(REFUND_MIN_REMAINING_PCT * 100);
     return res.status(400).json({
-      error: `You've already used ${entry.used} of your ${originalCredits} credits. Refunds are only available before any credits are consumed.`
+      error: `You've used ${usedCredits} of your ${originalCredits} credits. Refunds are available while ${threshold}% or more of your credits remain unused.`
     });
   }
 
