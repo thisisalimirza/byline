@@ -636,15 +636,37 @@ footer {
   color: var(--text-dim); margin: 16px 0 8px; border: none;
 }
 .compare-article p { margin-bottom: 10px; font-size: 12.5px; }
-.anno-bad  { background: rgba(239,68,68,0.12); color: #f87171; border-radius: 3px; padding: 1px 4px; }
-.anno-good { background: rgba(34,197,94,0.1);  color: #4ade80; border-radius: 3px; padding: 1px 4px; }
+.anno-bad  { background: rgba(239,68,68,0.18); color: #fca5a5; border-radius: 3px; padding: 1px 5px; font-weight: 600; }
+.anno-good { background: rgba(34,197,94,0.15); color: #6ee7b7; border-radius: 3px; padding: 1px 5px; font-weight: 600; }
+.anno-wrap { position: relative; margin-bottom: 16px; }
 .anno {
-  display: flex; align-items: flex-start; gap: 6px;
-  font-size: 10.5px; border-radius: 5px; padding: 5px 8px; margin: -4px 0 10px;
-  line-height: 1.45;
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 11px; border-radius: 7px; padding: 8px 11px;
+  line-height: 1.45; position: relative; margin-top: 8px;
+  border: 1px solid;
 }
-.anno.bad  { background: rgba(239,68,68,0.06); color: #f87171; border-left: 2px solid rgba(239,68,68,0.35); }
-.anno.good { background: rgba(34,197,94,0.06); color: #4ade80; border-left: 2px solid rgba(34,197,94,0.35); }
+.anno::before {
+  content: ''; position: absolute; top: -6px; left: 16px;
+  width: 0; height: 0;
+  border-left: 6px solid transparent; border-right: 6px solid transparent;
+}
+.anno.bad  { background: rgba(239,68,68,0.1); color: #fca5a5; border-color: rgba(239,68,68,0.3); font-weight: 500; }
+.anno.bad::before  { border-bottom: 6px solid rgba(239,68,68,0.3); }
+.anno.good { background: rgba(34,197,94,0.08); color: #6ee7b7; border-color: rgba(34,197,94,0.28); font-weight: 500; }
+.anno.good::before { border-bottom: 6px solid rgba(34,197,94,0.28); }
+.prompt-banner {
+  text-align: center; margin-bottom: 20px;
+  font-size: 11px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 12px; justify-content: center;
+}
+.prompt-banner::before, .prompt-banner::after {
+  content: ''; flex: 1; height: 1px; background: var(--border); max-width: 120px;
+}
+.prompt-pill {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 100px; padding: 5px 14px; font-size: 11px;
+  color: var(--text-muted); font-style: italic; white-space: nowrap;
+}
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
@@ -709,14 +731,14 @@ footer {
           <div class="mock-dot mock-dot-y"></div>
           <div class="mock-dot mock-dot-g"></div>
         </div>
-        <div class="mock-url">localhost:3000</div>
+        <div class="mock-url">byline.so</div>
       </div>
       <div class="mock-body">
         <!-- Sidebar -->
         <div class="mock-sidebar">
           <div class="mock-card">
-            <div class="mock-card-title">API Key</div>
-            <div class="mock-field"></div>
+            <div class="mock-card-title">Credits</div>
+            <div class="mock-field mock-field-sm" style="width:40%;background:rgba(212,133,74,0.25)"></div>
           </div>
           <div class="mock-card">
             <div class="mock-card-title">Your Article</div>
@@ -862,78 +884,111 @@ footer {
 
     <!-- ── Topic 0: Local SEO ── -->
     <div class="compare-panel active" id="topic-0">
+      <div class="prompt-banner" style="grid-column:1/-1;">
+        <span class="prompt-pill">Prompt: "Write an article on how small businesses can improve their local SEO"</span>
+      </div>
       <div class="compare-col ai-col">
         <span class="col-badge ai-badge">Generic AI</span>
         <div class="compare-article">
           <h1>How to Improve Your Local SEO: A Complete Guide</h1>
-          <p><span class="anno-bad">In today's competitive digital landscape</span>, local SEO is <span class="anno-bad">crucial</span> for small businesses looking to attract more customers in their area. By implementing the right strategies, you can improve your visibility in local search results and drive more traffic to your business.</p>
-          <div class="anno bad">❌ Banned opener + vague claim — "crucial" for whom, how, and why?</div>
+          <div class="anno-wrap">
+            <p><span class="anno-bad">In today's competitive digital landscape</span>, local SEO is <span class="anno-bad">crucial</span> for small businesses looking to attract more customers in their area. By implementing the right strategies, you can improve your visibility in local search results.</p>
+            <div class="anno bad">❌ Banned opener. "Crucial" is asserted with no explanation of why, for whom, or by how much.</div>
+          </div>
           <h2>Why Local SEO Matters for Your Business</h2>
-          <p>Local SEO is <span class="anno-bad">more important than ever</span> because it helps potential customers find you when they're searching for products and services in your area. <span class="anno-bad">There are several effective strategies</span> you can implement to improve your local search rankings.</p>
-          <div class="anno bad">❌ "More important than ever" = filler. No strategy is named, let alone explained.</div>
+          <div class="anno-wrap">
+            <p>Local SEO is <span class="anno-bad">more important than ever</span> because it helps potential customers find you. <span class="anno-bad">There are several effective strategies</span> you can implement to improve your search rankings.</p>
+            <div class="anno bad">❌ "More important than ever" is pure filler. No single strategy is named, let alone explained.</div>
+          </div>
         </div>
       </div>
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
           <h1>The Local SEO Trick That Google Built for Small Businesses (Not Chains)</h1>
-          <p><span class="anno-good">Domino's has a 50-person SEO team.</span> You have thirty minutes on a Tuesday. Yet independent restaurants outrank them on Google Maps regularly — not because they found a loophole, but because Google's local algorithm rewards something chains structurally can't fake.</p>
-          <div class="anno good">✓ Named contrast creates instant tension. Reader immediately knows whose side we're on.</div>
+          <div class="anno-wrap">
+            <p><span class="anno-good">Domino's has a 50-person SEO team.</span> You have thirty minutes on a Tuesday. Yet independent restaurants outrank them on Google Maps regularly — because Google's local algorithm rewards something chains structurally can't fake.</p>
+            <div class="anno good">✓ Named contrast creates instant tension. Reader knows exactly whose side we're on before the second sentence.</div>
+          </div>
           <h2>The Metric 91% of Local Businesses Are Ignoring</h2>
-          <p>Review response time is now a confirmed ranking signal, according to a <span class="anno-good">2023 BrightLocal study of 34,000 business profiles</span>. Businesses responding within 24 hours ranked <span class="anno-good">1.3 positions higher</span> in Map Pack results on average.</p>
-          <div class="anno good">✓ Named source, sample size, year, and exact number — not "studies show it's significant."</div>
+          <div class="anno-wrap">
+            <p>Review response time is now a confirmed ranking signal, per a <span class="anno-good">2023 BrightLocal study of 34,000 profiles</span>. Businesses responding within 24 hours ranked <span class="anno-good">1.3 positions higher</span> in Map Pack results on average.</p>
+            <div class="anno good">✓ Named source, sample size, year, exact number — not "studies show it matters."</div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ── Topic 1: SaaS Content ── -->
     <div class="compare-panel" id="topic-1">
+      <div class="prompt-banner" style="grid-column:1/-1;">
+        <span class="prompt-pill">Prompt: "Write an article about SaaS content marketing strategy"</span>
+      </div>
       <div class="compare-col ai-col">
         <span class="col-badge ai-badge">Generic AI</span>
         <div class="compare-article">
           <h1>The Ultimate Guide to SaaS Content Marketing in 2024</h1>
-          <p>Content marketing has become <span class="anno-bad">an essential strategy</span> for SaaS companies looking to grow their user base and reduce churn. By creating <span class="anno-bad">valuable, relevant content</span>, you can attract potential customers, build trust, and drive conversions.</p>
-          <div class="anno bad">❌ "Essential" + "valuable, relevant" are filler adjectives with zero information content.</div>
+          <div class="anno-wrap">
+            <p>Content marketing has become <span class="anno-bad">an essential strategy</span> for SaaS companies. By creating <span class="anno-bad">valuable, relevant content</span>, you can attract potential customers, build trust, and drive conversions.</p>
+            <div class="anno bad">❌ "Essential," "valuable," "relevant" — three adjectives, zero information. Could describe any product in any industry.</div>
+          </div>
           <h2>Why Content Marketing is Crucial for SaaS</h2>
-          <p>Content marketing is important for SaaS companies because <span class="anno-bad">buyers do extensive research before making purchasing decisions</span>. By being present at each stage of the buyer's journey, you can guide potential customers from awareness to consideration to purchase.</p>
-          <div class="anno bad">❌ States the obvious, adds nothing. This paragraph could be cut without losing a single insight.</div>
+          <div class="anno-wrap">
+            <p>Content marketing is important because <span class="anno-bad">buyers do extensive research before making purchasing decisions</span>. By being present at each stage of the buyer's journey, you can guide potential customers toward purchase.</p>
+            <div class="anno bad">❌ States the obvious. This paragraph could be deleted without losing a single insight.</div>
+          </div>
         </div>
       </div>
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
           <h1>Why Intercom Grew to $50M ARR Publishing Less Than Their Competitors</h1>
-          <p><span class="anno-good">Intercom published fewer blog posts than almost every competitor in their category.</span> Their editorial team rejected more pitches than they accepted. In a market where content volume was the growth strategy, they bet that one genuinely useful piece would outperform ten mediocre ones.</p>
-          <div class="anno good">✓ Counterintuitive angle with a named company. Reader's assumption is challenged immediately.</div>
+          <div class="anno-wrap">
+            <p><span class="anno-good">Intercom published fewer blog posts than almost every competitor in their category.</span> Their team rejected more pitches than they accepted. In a market where content volume was the growth strategy, they bet the opposite.</p>
+            <div class="anno good">✓ Counterintuitive hook with a named company. Reader's assumption is challenged before the end of sentence one.</div>
+          </div>
           <h2>The Conversion Gap No One Talks About</h2>
-          <p>HubSpot's research tracked <span class="anno-good">8,000 businesses over 18 months</span>. Companies publishing 16+ posts monthly got 3.5x more traffic. What the headline buries: <span class="anno-good">the correlation between publishing frequency and trial signups was near zero.</span></p>
-          <div class="anno good">✓ Specific sample size and timeframe. Then a contrarian finding that reframes the entire statistic.</div>
+          <div class="anno-wrap">
+            <p>HubSpot tracked <span class="anno-good">8,000 businesses over 18 months</span>. High-frequency publishers got 3.5x more traffic. What the data buries: <span class="anno-good">the correlation between publishing frequency and trial signups was near zero.</span></p>
+            <div class="anno good">✓ Real sample size and timeframe. The contrarian finding reframes the whole statistic — not just reports it.</div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ── Topic 2: B2B Email ── -->
     <div class="compare-panel" id="topic-2">
+      <div class="prompt-banner" style="grid-column:1/-1;">
+        <span class="prompt-pill">Prompt: "Write an article on B2B email marketing best practices"</span>
+      </div>
       <div class="compare-col ai-col">
         <span class="col-badge ai-badge">Generic AI</span>
         <div class="compare-article">
           <h1>How to Create an Effective B2B Email Marketing Strategy</h1>
-          <p>Email marketing remains <span class="anno-bad">one of the most powerful tools</span> in the B2B marketer's toolkit. With an average ROI of $42 for every $1 spent, it's a channel that delivers results when done correctly. However, many B2B companies struggle to see significant returns.</p>
-          <div class="anno bad">❌ The $42 ROI stat is widely misattributed and uncited here. "When done correctly" is circular — obviously.</div>
+          <div class="anno-wrap">
+            <p>Email marketing remains <span class="anno-bad">one of the most powerful tools</span> in the B2B marketer's toolkit. With an average ROI of $42 for every $1 spent, it delivers results <span class="anno-bad">when done correctly</span>.</p>
+            <div class="anno bad">❌ The $42 ROI stat is widely misattributed and uncited. "When done correctly" is circular — as opposed to done incorrectly?</div>
+          </div>
           <h2>Best Practices for B2B Email Success</h2>
-          <p>To create effective B2B email campaigns, you need to focus on <span class="anno-bad">several key elements</span>. These include segmenting your audience, crafting compelling subject lines, personalizing your messages, and providing <span class="anno-bad">valuable content that resonates</span> with your readers.</p>
-          <div class="anno bad">❌ A list of vague recommendations with no specifics on how, when, or why any of them work.</div>
+          <div class="anno-wrap">
+            <p>Focus on <span class="anno-bad">several key elements</span>: segmenting your audience, crafting compelling subject lines, and providing <span class="anno-bad">valuable content that resonates</span> with your readers.</p>
+            <div class="anno bad">❌ Vague list with no specifics on how, when, or why any of these actually moves pipeline.</div>
+          </div>
         </div>
       </div>
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
           <h1>Drift Stopped Optimizing for Open Rates. Their Email Pipeline Grew 67%.</h1>
-          <p>In <span class="anno-good">Q3 2021</span>, Drift's demand generation team made a decision that looked like a mistake on paper: they stopped tracking open rates in weekly reviews. Open rates dropped 22% in the first month. Pipeline sourced from email grew <span class="anno-good">67% over the next two quarters.</span></p>
-          <div class="anno good">✓ Specific quarter, specific team, specific outcome — three numbers that make the reader stop scrolling.</div>
+          <div class="anno-wrap">
+            <p>In <span class="anno-good">Q3 2021</span>, Drift's demand gen team stopped tracking open rates entirely. Open rates dropped 22% in month one. Pipeline sourced from email grew <span class="anno-good">67% over the next two quarters.</span></p>
+            <div class="anno good">✓ Specific quarter, named team, two precise outcomes. Three numbers that make a reader stop mid-scroll.</div>
+          </div>
           <h2>Why the Metric Everyone Tracks Is the Wrong One</h2>
-          <p>The average business professional receives <span class="anno-good">121 emails a day (Radicati Group, 2023)</span>. Open rate optimization is a fight over fractional attention in an exhausted inbox. The teams generating pipeline have shifted from "how do we get them to open?" to <span class="anno-good">"what would make someone stop at 2pm on a Wednesday?"</span></p>
-          <div class="anno good">✓ Cited stat reframes the competitive landscape. The question at the end is vivid and memorable — not generic advice.</div>
+          <div class="anno-wrap">
+            <p>Business professionals receive <span class="anno-good">121 emails a day (Radicati Group, 2023)</span>. The teams generating pipeline ask a different question: <span class="anno-good">"What would make someone stop at 2pm on a Wednesday?"</span></p>
+            <div class="anno good">✓ Cited stat + a vivid, specific question that humanizes the reader — not generic "provide value" advice.</div>
+          </div>
         </div>
       </div>
     </div>
