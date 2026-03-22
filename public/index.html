@@ -603,19 +603,67 @@ footer {
 .compare-section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
 .compare-section .section-heading { text-align: center; }
 .compare-section .section-sub { text-align: center; margin: 0 auto 2.5rem; }
-.compare-tabs {
-  display: flex; justify-content: center; gap: 8px; margin-bottom: 2rem;
-}
-.compare-tab {
-  padding: 7px 18px; border-radius: 100px; font-family: var(--sans); font-size: 12px;
-  font-weight: 600; cursor: pointer; border: 1px solid var(--border);
-  background: transparent; color: var(--text-muted); transition: all 0.15s;
-}
-.compare-tab:hover { border-color: var(--border-hover); color: var(--text); }
-.compare-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .compare-panels { position: relative; }
-.compare-panel { display: none; }
-.compare-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.compare-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+
+/* ── ChatGPT window mockup ── */
+.compare-col.chatgpt-col { background: none; border: none; padding: 0; }
+.chatgpt-window {
+  border-radius: 12px; border: 1px solid #3d3d3d;
+  background: #212121; overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+.chatgpt-topbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-bottom: 1px solid #2d2d2d; background: #212121;
+}
+.chatgpt-brand { display: flex; align-items: center; gap: 7px; }
+.chatgpt-logo-bg {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.chatgpt-topbar-name { font-size: 13px; font-weight: 600; color: #ececec; }
+.chatgpt-model-pill {
+  margin-left: auto; font-size: 11px; color: #8e8ea0;
+  background: rgba(255,255,255,0.06); padding: 3px 9px; border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.chatgpt-scroll {
+  padding: 16px 14px 0; max-height: 540px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: #404040 transparent; position: relative;
+}
+.chatgpt-scroll::-webkit-scrollbar { width: 4px; }
+.chatgpt-scroll::-webkit-scrollbar-thumb { background: #404040; border-radius: 2px; }
+.chatgpt-user-row { display: flex; justify-content: flex-end; margin-bottom: 18px; }
+.chatgpt-user-bubble {
+  background: #2f2f2f; border-radius: 18px 18px 4px 18px;
+  padding: 10px 14px; font-size: 13px; color: #ececec;
+  max-width: 82%; line-height: 1.5;
+}
+.chatgpt-response-row { display: flex; gap: 10px; align-items: flex-start; padding-bottom: 20px; }
+.chatgpt-avatar {
+  width: 26px; height: 26px; border-radius: 50%; background: #10a37f;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+}
+.chatgpt-response-body { flex: 1; font-size: 13px; color: #d1d1d1; line-height: 1.65; }
+.chatgpt-response-body p { margin-bottom: 10px; font-size: 12.5px; }
+.chatgpt-response-body strong { color: #ececec; font-weight: 700; }
+.chatgpt-response-body ul { margin: 4px 0 10px 16px; padding: 0; }
+.chatgpt-response-body ul li { color: #c5c5d2; font-size: 12.5px; margin-bottom: 3px; line-height: 1.5; }
+.chatgpt-response-body blockquote {
+  border-left: 2px solid #404040; padding-left: 10px; margin: 6px 0 10px;
+  color: #a0a0b0; font-size: 12.5px; font-style: italic;
+}
+.chatgpt-section { margin-top: 14px; margin-bottom: 2px; }
+.chatgpt-scroll-fade {
+  position: sticky; bottom: 0; left: 0; right: 0; height: 70px;
+  background: linear-gradient(to bottom, rgba(33,33,33,0), #212121);
+  pointer-events: none; margin: -70px -14px 0; display: block;
+}
+.chatgpt-more-note {
+  text-align: center; padding: 10px 0 14px;
+  font-size: 11px; color: #565670;
+}
 .compare-col {
   border-radius: 12px; padding: 28px; border: 1px solid var(--border);
   background: #131210;
@@ -880,137 +928,135 @@ footer {
 <!-- ── Before/After Comparison ── -->
 <div class="compare-section">
   <div class="eyebrow" style="text-align:center;margin-bottom:10px;">See the difference</div>
-  <h2 class="section-heading">Generic AI vs.<br><em>writing that sounds human.</em></h2>
-  <p class="section-sub" style="max-width:560px;">Same prompt. One output went straight to the page. The other went through six stages — including a dedicated voice editor that makes it read like a person wrote it.</p>
-
-  <div class="compare-tabs">
-    <button class="compare-tab active" onclick="switchTopic(0)">Email Marketing</button>
-    <button class="compare-tab" onclick="switchTopic(1)">Content & SEO</button>
-    <button class="compare-tab" onclick="switchTopic(2)">Freelancing</button>
-  </div>
+  <h2 class="section-heading">ChatGPT vs.<br><em>writing that sounds human.</em></h2>
+  <p class="section-sub" style="max-width:580px;">Same prompt. The ChatGPT output went straight to the page. The Byline output went through six stages — including a dedicated voice editor that runs last, after SEO keywords are already locked in.</p>
 
   <div class="compare-panels">
-
-    <!-- ── Topic 0: Email Marketing ── -->
-    <div class="compare-panel active" id="topic-0">
+    <div class="compare-panel">
       <div class="prompt-banner" style="grid-column:1/-1;">
         <span class="prompt-pill">Prompt: "Write an article on why most B2B email campaigns get low reply rates"</span>
       </div>
-      <div class="compare-col ai-col">
-        <span class="col-badge ai-badge">Generic AI</span>
-        <div class="compare-article">
-          <h1>How to Improve Your B2B Email Marketing Strategy</h1>
-          <div class="anno-wrap">
-            <p><span class="anno-bad">In today's competitive business landscape</span>, email marketing remains <span class="anno-bad">one of the most powerful tools</span> available to B2B marketers. By crafting compelling messages that resonate with your target audience, you can significantly improve your response rates and drive meaningful engagement.</p>
-            <div class="anno bad">❌ Opener, filler claim, vague promise — all in one paragraph. Every sentence is 18–22 words. Monotone rhythm is the clearest AI tell.</div>
+
+      <!-- ── Left: ChatGPT interface ── -->
+      <div class="compare-col chatgpt-col">
+        <div class="chatgpt-window">
+
+          <!-- Top bar -->
+          <div class="chatgpt-topbar">
+            <div class="chatgpt-brand">
+              <div class="chatgpt-logo-bg">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M22.28 9.84a5.84 5.84 0 0 0-.5-4.8 5.9 5.9 0 0 0-6.36-2.83A5.87 5.87 0 0 0 11 .65a5.9 5.9 0 0 0-5.63 4.1 5.87 5.87 0 0 0-3.92 2.84 5.9 5.9 0 0 0 .73 6.92 5.84 5.84 0 0 0 .5 4.79 5.9 5.9 0 0 0 6.36 2.84 5.87 5.87 0 0 0 4.42 1.97 5.9 5.9 0 0 0 5.63-4.1 5.87 5.87 0 0 0 3.92-2.84 5.9 5.9 0 0 0-.73-6.33zm-8.78 12.3a4.37 4.37 0 0 1-2.8-1.02l.14-.08 4.65-2.68a.77.77 0 0 0 .38-.66v-6.55l1.97 1.13a.07.07 0 0 1 .04.06v5.42a4.4 4.4 0 0 1-4.38 4.38zM3.63 18.4a4.37 4.37 0 0 1-.52-2.94l.14.08 4.65 2.69a.77.77 0 0 0 .77 0l5.68-3.28v2.27a.07.07 0 0 1-.03.06L9.6 19.97a4.4 4.4 0 0 1-5.97-1.57zm-1.14-9.6a4.37 4.37 0 0 1 2.28-1.92v5.5a.77.77 0 0 0 .39.67l5.67 3.27-1.96 1.13a.07.07 0 0 1-.07 0L4.1 14.9a4.4 4.4 0 0 1-1.61-6.1zm16.16 3.77-5.68-3.28 1.96-1.13a.07.07 0 0 1 .07 0l4.7 2.72a4.4 4.4 0 0 1-.68 7.93v-5.5a.77.77 0 0 0-.37-.74zm1.95-2.96-.14-.08-4.64-2.7a.77.77 0 0 0-.77 0L9.37 10.1V7.83a.07.07 0 0 1 .03-.06l4.7-2.71a4.4 4.4 0 0 1 6.5 4.55zm-12.3 4.04-1.96-1.13a.07.07 0 0 1-.04-.06V6.97a4.4 4.4 0 0 1 7.22-3.38l-.14.08-4.65 2.68a.77.77 0 0 0-.38.66l-.05 6.54zm1.07-2.3 2.53-1.46 2.53 1.45v2.91l-2.53 1.46-2.53-1.46V11.35z" fill="#000"/>
+                </svg>
+              </div>
+              <span class="chatgpt-topbar-name">ChatGPT</span>
+            </div>
+            <span class="chatgpt-model-pill">GPT-4o</span>
           </div>
-          <h2>Key Factors That Affect Email Response Rates</h2>
-          <div class="anno-wrap">
-            <p>There are <span class="anno-bad">several important factors</span> to consider when trying to improve your email response rates. <span class="anno-bad">Many experts recommend</span> focusing on personalization, subject line optimization, and send-time testing. <span class="anno-bad">It is worth noting that</span> segmenting your list can also have a positive impact.</p>
-            <div class="anno bad">❌ "Many experts recommend" names nobody. Three consecutive sentences, same length, same structure. No opinion, no position — just assembled advice.</div>
+
+          <!-- Conversation -->
+          <div class="chatgpt-scroll">
+            <!-- User message -->
+            <div class="chatgpt-user-row">
+              <div class="chatgpt-user-bubble">Write an article on why most B2B email campaigns get low reply rates</div>
+            </div>
+
+            <!-- ChatGPT response -->
+            <div class="chatgpt-response-row">
+              <div class="chatgpt-avatar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22.28 9.84a5.84 5.84 0 0 0-.5-4.8 5.9 5.9 0 0 0-6.36-2.83A5.87 5.87 0 0 0 11 .65a5.9 5.9 0 0 0-5.63 4.1 5.87 5.87 0 0 0-3.92 2.84 5.9 5.9 0 0 0 .73 6.92 5.84 5.84 0 0 0 .5 4.79 5.9 5.9 0 0 0 6.36 2.84 5.87 5.87 0 0 0 4.42 1.97 5.9 5.9 0 0 0 5.63-4.1 5.87 5.87 0 0 0 3.92-2.84 5.9 5.9 0 0 0-.73-6.33zm-8.78 12.3a4.37 4.37 0 0 1-2.8-1.02l.14-.08 4.65-2.68a.77.77 0 0 0 .38-.66v-6.55l1.97 1.13a.07.07 0 0 1 .04.06v5.42a4.4 4.4 0 0 1-4.38 4.38zM3.63 18.4a4.37 4.37 0 0 1-.52-2.94l.14.08 4.65 2.69a.77.77 0 0 0 .77 0l5.68-3.28v2.27a.07.07 0 0 1-.03.06L9.6 19.97a4.4 4.4 0 0 1-5.97-1.57zm-1.14-9.6a4.37 4.37 0 0 1 2.28-1.92v5.5a.77.77 0 0 0 .39.67l5.67 3.27-1.96 1.13a.07.07 0 0 1-.07 0L4.1 14.9a4.4 4.4 0 0 1-1.61-6.1zm16.16 3.77-5.68-3.28 1.96-1.13a.07.07 0 0 1 .07 0l4.7 2.72a4.4 4.4 0 0 1-.68 7.93v-5.5a.77.77 0 0 0-.37-.74zm1.95-2.96-.14-.08-4.64-2.7a.77.77 0 0 0-.77 0L9.37 10.1V7.83a.07.07 0 0 1 .03-.06l4.7-2.71a4.4 4.4 0 0 1 6.5 4.55zm-12.3 4.04-1.96-1.13a.07.07 0 0 1-.04-.06V6.97a4.4 4.4 0 0 1 7.22-3.38l-.14.08-4.65 2.68a.77.77 0 0 0-.38.66l-.05 6.54zm1.07-2.3 2.53-1.46 2.53 1.45v2.91l-2.53 1.46-2.53-1.46V11.35z" fill="#fff" opacity=".9"/></svg>
+              </div>
+              <div class="chatgpt-response-body">
+
+                <div class="anno-wrap">
+                  <p>Most B2B email campaigns don't fail because email is "dead." They fail because they misunderstand how modern buyers think, decide, and respond. <span class="anno-bad">Low reply rates are usually the symptom of deeper strategic and execution issues.</span> Here's a closer look at why that happens—and what's really going wrong.</p>
+                  <div class="anno bad">❌ The opener re-states what everyone already thinks, then immediately offers to explain it. No hook. No position. The reader already knows email can work — they want to know why theirs doesn't.</div>
+                </div>
+
+                <div class="anno-wrap">
+                  <p class="chatgpt-section"><strong>1. They're Too Focused on the Sender, Not the Receiver</strong></p>
+                  <p>A common mistake in B2B outreach is making the message about your company instead of the prospect's problem. Many emails open with lines like: <em>"We're a leading provider of…"</em></p>
+                  <p>From the recipient's perspective, this is irrelevant. Decision-makers are busy and constantly filtering for one thing: "Does this help me solve a problem right now?"</p>
+                  <div class="anno bad">❌ Ten numbered sections in this article. That's not an article — it's a slide deck. Every section follows the same shape: bold heading → 1–2 sentences → bullet list. Readers don't experience numbered lists. They abandon them.</div>
+                </div>
+
+                <p class="chatgpt-section"><strong>2. Lack of Personalization (or Fake Personalization)</strong></p>
+                <p>Adding a first name or company name isn't real personalization anymore — it's table stakes. Buyers can instantly tell when an email is part of a mass send. Effective outreach requires context:</p>
+                <ul>
+                  <li>Recent company initiatives</li>
+                  <li>Role-specific challenges</li>
+                  <li>Industry trends affecting them</li>
+                </ul>
+
+                <div class="anno-wrap">
+                  <p class="chatgpt-section"><strong>3. Weak or Vague Value Proposition</strong></p>
+                  <p>Many campaigns fail because they don't clearly communicate value. Phrases like:</p>
+                  <ul>
+                    <li><span class="anno-bad">"Improve your efficiency"</span></li>
+                    <li><span class="anno-bad">"Drive growth"</span></li>
+                    <li><span class="anno-bad">"Optimize performance"</span></li>
+                  </ul>
+                  <p>…are too abstract. They sound nice but don't mean anything concrete.</p>
+                  <div class="anno bad">❌ These three bullets appear in AI responses to every email marketing prompt on the internet. They're abstract enough to apply to anything, which means they apply to nothing.</div>
+                </div>
+
+                <p class="chatgpt-section"><strong>4. Poor Targeting</strong></p>
+                <p>Even a well-written email won't perform if it's sent to the wrong audience. Common targeting issues include reaching out to people without decision-making power, contacting companies that don't fit the ideal customer profile, and ignoring timing.</p>
+
+                <p class="chatgpt-section"><strong>5. Overly Long or Complex Messaging</strong></p>
+                <p>Busy professionals don't read long emails from strangers. High-performing emails are short, focused on one idea, and easy to respond to quickly.</p>
+
+                <p class="chatgpt-section"><strong>6. No Clear Call-to-Action (or Too Many)</strong></p>
+                <p>Some emails don't ask for anything. Others ask for too much. A strong call-to-action is simple and low-friction: "Would you be open to a quick 10-minute chat next week?"</p>
+
+                <p class="chatgpt-section"><strong>7–9. Lack of Trust / Poor Timing / Over-Automation</strong></p>
+                <p>Automation tools have made it easy to scale outreach — but at the cost of authenticity. When every message feels automated, prospects disengage instantly.</p>
+
+                <div class="anno-wrap">
+                  <p class="chatgpt-section"><strong>10. Inbox Saturation and Buyer Fatigue</strong></p>
+                  <p>Finally, <span class="anno-bad">it's important to acknowledge</span> the environment: decision-makers are overwhelmed with emails daily.</p>
+                  <p><strong>Conclusion</strong></p>
+                  <p>Low reply rates in B2B email campaigns aren't caused by a single mistake — they're usually the result of multiple small misalignments. Improving results isn't about sending more emails. <span class="anno-bad">When campaigns shift from volume-driven to insight-driven, reply rates don't just improve — they become predictable.</span></p>
+                  <div class="anno bad">❌ Classic AI ending: a reframe that sounds meaningful but says nothing specific. "Volume-driven to insight-driven" could close any B2B marketing article ever written.</div>
+                </div>
+
+                <div class="chatgpt-scroll-fade"></div>
+              </div>
+            </div>
+            <div class="chatgpt-more-note">↑ Scroll to read — 10 sections, 0 named examples</div>
           </div>
+
         </div>
       </div>
+
+      <!-- ── Right: Byline ── -->
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
-          <h1>The Email Metric Your Whole Team Tracks (And Why It's the Wrong One)</h1>
           <div class="anno-wrap">
-            <p><span class="anno-good">Open rates are a comfort metric.</span> They tell you whether your subject line was clever — not whether anyone cared what was inside. Most B2B teams have been optimizing for the wrong signal for years.</p>
-            <div class="anno good">✓ Five words. Then ten. Then seventeen. Rhythm that builds — short punchy claim, then the explanation, then the consequence. This is a person thinking, not a template filling.</div>
+            <h1><span class="anno-good">How to Increase B2B Email Campaign Reply Rates from 1.4% to 8.7%</span></h1>
+            <div class="anno good">✓ The specific numbers are in the title. Readers immediately know this is about a concrete, measurable gap — not a generic "improve your email" article.</div>
           </div>
-          <h2>What Basecamp Found When They Stopped Caring About Open Rates</h2>
           <div class="anno-wrap">
-            <p><span class="anno-good">Basecamp's team stopped A/B testing subject lines entirely in 2022.</span> They switched to a single metric: reply rate. <span class="anno-good">Email-to-trial conversion doubled within a quarter.</span> They'd been optimizing for the wrong thing for two years, and the data had been hiding it the whole time.</p>
-            <div class="anno good">✓ Named company, year, exact outcome, and a kicker that admits a mistake. The last sentence takes a side — that's what a human writer does, not a machine summarizing best practices.</div>
+            <p>Your B2B email campaigns reply rates tell a different story than your open rates suggest. <span class="anno-good">While 73% of B2B marketers celebrate 20% open rates as success, the average reply rate sits at 1.4%.</span> This is backwards thinking, and it's costing companies millions.</p>
+            <div class="anno good">✓ Opinion stated in the third sentence with no hedging — "backwards thinking." ChatGPT's opener was a disclaimer. This is a position.</div>
+          </div>
+          <h2>Most "Best Practices" Kill B2B Email Campaign Conversations</h2>
+          <div class="anno-wrap">
+            <p><span class="anno-good">Drift's CEO David Cancel proved this in 2022 when he replaced company newsletters with personal emails from executives asking customers about their challenges. The result: 34% reply rates and $2.3M in pipeline generated.</span></p>
+            <div class="anno good">✓ Named person, named company, year, specific outcome, dollar figure. ChatGPT gave 10 sections of unnamed "best practices." This is one paragraph that makes the point concrete.</div>
+          </div>
+          <h2>The Real Metric That Matters</h2>
+          <div class="anno-wrap">
+            <p>Your reply rate isn't a secondary metric to track after open rates improve. It's the only metric that actually connects to revenue. <span class="anno-good">Everything else is just digital theater.</span></p>
+            <div class="anno good">✓ "Digital theater" is the kind of phrase someone with an opinion writes. ChatGPT's ending was "reply rates don't just improve—they become predictable" — a reframe that sounds meaningful and says nothing.</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ── Topic 1: Content & SEO ── -->
-    <div class="compare-panel" id="topic-1">
-      <div class="prompt-banner" style="grid-column:1/-1;">
-        <span class="prompt-pill">Prompt: "Write an article on why some blog posts rank on Google and others don't"</span>
-      </div>
-      <div class="compare-col ai-col">
-        <span class="col-badge ai-badge">Generic AI</span>
-        <div class="compare-article">
-          <h1>How to Write Blog Posts That Rank on Google: A Complete Guide</h1>
-          <div class="anno-wrap">
-            <p>Creating content that ranks on Google requires understanding <span class="anno-bad">several key factors</span>. Search engines have become increasingly sophisticated at detecting <span class="anno-bad">high-quality content that provides genuine value</span> to readers. By following SEO best practices, you can significantly improve your chances of ranking well in search results.</p>
-            <div class="anno bad">❌ "Several key factors" names nothing. "High-quality content that provides genuine value" means nothing. Three sentences, all 20+ words, all the same emotional temperature.</div>
-          </div>
-          <h2>Why Content Quality Matters for SEO</h2>
-          <div class="anno-wrap">
-            <p><span class="anno-bad">It is important to note that</span> search engines prioritize content that thoroughly addresses user intent. <span class="anno-bad">Additionally</span>, your content should be well-structured with clear headings and subheadings. <span class="anno-bad">Furthermore</span>, it is essential to conduct proper keyword research before writing.</p>
-            <div class="anno bad">❌ "It is important to note that," "Additionally," "Furthermore" — three consecutive AI filler transitions. Zero counterargument, zero complexity, zero opinion. Perfectly safe and completely forgettable.</div>
-          </div>
-        </div>
-      </div>
-      <div class="compare-col byline-col">
-        <span class="col-badge byline-badge">✦ Byline</span>
-        <div class="compare-article">
-          <h1>The SEO Advice That Fills Page One of Google (And Often Doesn't Work)</h1>
-          <div class="anno-wrap">
-            <p>Most articles about ranking on Google were written by people who haven't ranked anything competitive. <span class="anno-good">They're repeating what worked in 2018 on a topic that had no competition.</span> That's not dishonest — it's just useless for anyone trying to rank something that actually matters.</p>
-            <div class="anno good">✓ Takes an uncomfortable position in the first paragraph. The second sentence is 17 words, the third is 19 — but they feel different because one is a diagnosis and one is a concession. Complexity makes it real.</div>
-          </div>
-          <h2>What 3 Million Search Results Actually Show</h2>
-          <div class="anno-wrap">
-            <p>Ahrefs studied three million pages. The strongest predictor of ranking in position one wasn't backlinks or keyword density. <span class="anno-good">It was whether real humans had linked to it without being asked.</span> You can game almost every other signal. That one you can't.</p>
-            <div class="anno good">✓ Source cited, finding stated, implication drawn — then a two-sentence contrast that lands like a conclusion, not a summary. Short sentence at the end stops the reader cold.</div>
-          </div>
-        </div>
-      </div>
     </div>
-
-    <!-- ── Topic 2: Freelancing ── -->
-    <div class="compare-panel" id="topic-2">
-      <div class="prompt-banner" style="grid-column:1/-1;">
-        <span class="prompt-pill">Prompt: "Write an article on how freelancers can earn more without working more hours"</span>
-      </div>
-      <div class="compare-col ai-col">
-        <span class="col-badge ai-badge">Generic AI</span>
-        <div class="compare-article">
-          <h1>How Freelancers Can Increase Their Income Without Working More Hours</h1>
-          <div class="anno-wrap">
-            <p><span class="anno-bad">As a freelancer, managing your time effectively is crucial for success.</span> Without a traditional office structure, it can be challenging to maximize your earning potential. However, by implementing <span class="anno-bad">the right strategies</span>, you can significantly increase your income while maintaining a healthy work-life balance.</p>
-            <div class="anno bad">❌ "Crucial for success," "right strategies," "healthy work-life balance" — three phrases that appear in thousands of articles. The paragraph says nothing that isn't obvious to the person who Googled this.</div>
-          </div>
-          <h2>Strategies for Maximizing Your Freelance Income</h2>
-          <div class="anno-wrap">
-            <p><span class="anno-bad">Many successful freelancers</span> recommend raising your rates as the most direct path to earning more. <span class="anno-bad">It is also important to</span> focus on high-value clients and projects. <span class="anno-bad">Additionally</span>, developing specialized skills can help you command premium pricing in your market.</p>
-            <div class="anno bad">❌ "Many successful freelancers" — who? "It is also important to" is a phrase that adds nothing. Five sentences of advice, all hedged, none specific, no tension, no trade-off acknowledged.</div>
-          </div>
-        </div>
-      </div>
-      <div class="compare-col byline-col">
-        <span class="col-badge byline-badge">✦ Byline</span>
-        <div class="compare-article">
-          <h1>The Freelancer Productivity Trap (More Tools, Fewer Billable Hours)</h1>
-          <div class="anno-wrap">
-            <p><span class="anno-good">The average freelancer has four productivity apps and no productive hours.</span> The apps aren't the problem. The problem is that freelancers are optimizing the wrong thing — output volume instead of output value.</p>
-            <div class="anno good">✓ Thirteen words. Six words. Twenty-two words. Three sentences, three different lengths, three different weights. The rhythm pulls you forward. No AI writes like this without being told to.</div>
-          </div>
-          <h2>What Separates $60/Hour Freelancers From $180/Hour Ones</h2>
-          <div class="anno-wrap">
-            <p>It isn't discipline. <span class="anno-good">A 2023 survey of 5,000 independent workers found the single strongest predictor of hourly rate was how often someone turned down a project in the previous six months.</span> The high earners weren't more productive. They were more selective — and selectivity compounds in ways that hustle doesn't.</p>
-            <div class="anno good">✓ Two-word sentence lands the opinion, then the data, then the reframe. The last sentence takes a real position — "selectivity compounds, hustle doesn't" — the kind of claim a person with experience makes, not a language model averaging the internet.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div><!-- /compare-panels -->
 </div>
-
-<script>
-function switchTopic(n) {
-  document.querySelectorAll('.compare-panel').forEach((p,i) => p.classList.toggle('active', i === n));
-  document.querySelectorAll('.compare-tab').forEach((t,i) => t.classList.toggle('active', i === n));
-}
-</script>
 
 <!-- ── Pipeline steps ── -->
 <div class="pipeline-section" id="how-it-works">
