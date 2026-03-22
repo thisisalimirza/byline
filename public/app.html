@@ -135,6 +135,8 @@
   .pipe-node.active-4 .pipe-node-label { color: var(--a4); }
   .pipe-node.active-5 .pipe-node-num { border-color: var(--a5); color: var(--a5); background: var(--a5d); }
   .pipe-node.active-5 .pipe-node-label { color: var(--a5); }
+  .pipe-node.active-6 .pipe-node-num { border-color: #e8b84b; color: #e8b84b; background: rgba(232,184,75,0.08); }
+  .pipe-node.active-6 .pipe-node-label { color: #e8b84b; }
 
   .pipe-node.done-1 .pipe-node-num { border-color: rgba(232,144,58,0.35); background: var(--a1d); color: rgba(232,144,58,0.55); }
   .pipe-node.done-1 .pipe-node-label { color: rgba(232,144,58,0.45); }
@@ -146,6 +148,8 @@
   .pipe-node.done-4 .pipe-node-label { color: rgba(232,122,106,0.45); }
   .pipe-node.done-5 .pipe-node-num { border-color: rgba(169,125,240,0.35); background: var(--a5d); color: rgba(169,125,240,0.55); }
   .pipe-node.done-5 .pipe-node-label { color: rgba(169,125,240,0.45); }
+  .pipe-node.done-6 .pipe-node-num { border-color: rgba(232,184,75,0.35); background: rgba(232,184,75,0.05); color: rgba(232,184,75,0.55); }
+  .pipe-node.done-6 .pipe-node-label { color: rgba(232,184,75,0.45); }
 
   main { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 58px); overflow: hidden; }
 
@@ -836,6 +840,11 @@
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-5">
       <span class="pipe-node-num">5</span>
+      <span class="pipe-node-label">Humanize</span>
+    </div>
+    <div class="pipe-arrow">›</div>
+    <div class="pipe-node" id="pn-6">
+      <span class="pipe-node-num">6</span>
       <span class="pipe-node-label">Polish</span>
     </div>
   </div>
@@ -1019,11 +1028,21 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(5)">
           <div class="agent-dot" style="background:var(--a5)"></div>
-          <span class="agent-config-title">SEO Polish</span>
+          <span class="agent-config-title">Humanizing</span>
           <span class="agent-config-chevron" id="chev5">▼</span>
         </div>
         <div class="agent-config-body" id="cfg5">
           <textarea id="sys5" rows="7"></textarea>
+        </div>
+      </div>
+      <div class="agent-config">
+        <div class="agent-config-header" onclick="toggleConfig(6)">
+          <div class="agent-dot" style="background:#e8b84b"></div>
+          <span class="agent-config-title">SEO Polish</span>
+          <span class="agent-config-chevron" id="chev6">▼</span>
+        </div>
+        <div class="agent-config-body" id="cfg6">
+          <textarea id="sys6" rows="7"></textarea>
         </div>
       </div>
     </div>
@@ -1078,16 +1097,27 @@
       </div>
     </div>
 
-    <div class="agent-panel final-panel" id="panel5">
+    <div class="agent-panel" id="panel5">
       <div class="agent-panel-header">
         <div class="agent-step-num">5</div>
-        <span class="agent-label label-5">Final Polish &amp; SEO</span>
+        <span class="agent-label label-5">Humanizing the Voice</span>
         <span class="agent-status-pill" id="pill5">—</span>
+      </div>
+      <div class="agent-panel-body">
+        <div class="agent-output-text" id="out5">Follows after refining.</div>
+      </div>
+    </div>
+
+    <div class="agent-panel final-panel" id="panel6">
+      <div class="agent-panel-header">
+        <div class="agent-step-num">6</div>
+        <span class="agent-label label-6">Final Polish &amp; SEO</span>
+        <span class="agent-status-pill" id="pill6">—</span>
         <button class="copy-btn" id="copyBtn" onclick="copyArticle()">Copy</button>
         <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview Article →</button>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out5">Follows after refining.</div>
+        <div class="agent-output-text" id="out6">Follows after humanizing.</div>
       </div>
       <div class="save-reminder" id="saveReminder">
         <span class="save-reminder-icon">⚠</span>
@@ -1389,9 +1419,11 @@ SEO: Weave the target keyword naturally into the article — aim for 4-6 total u
 
 Write a complete article of 1000-1400 words. Use H2 subheadings every 150-200 words throughout — mandatory, not conditional on length.`,
 
-  4: `You are a forensic editor specializing in removing AI writing patterns and injecting genuine voice. You will receive a draft article. Work through all checks below, then run a self-audit pass before outputting the final article.
+  4: `You are a forensic editor specializing in removing AI writing patterns. You will receive a draft article. Do not explain your edits — just output the clean, revised article.
 
-1. VOCABULARY AUDIT — find and replace every instance:
+Work through these checks in order:
+
+1. VOCABULARY AUDIT — find and replace:
 "Additionally" → restructure or use "Also," or cut entirely
 "Furthermore" / "Moreover" → cut and restructure naturally
 "Crucial" / "Vital" / "Essential" → cut, or explain WHY it matters instead of asserting it
@@ -1400,54 +1432,65 @@ Write a complete article of 1000-1400 words. Use H2 subheadings every 150-200 wo
 "Significant" / "Significantly" → replace with actual numbers or specifics
 "Serves as" / "stands as" / "marks" / "represents" as a copula → replace with "is" or "are"
 "Not only X but Y" / "It's not just X, it's Y" → rewrite as a single direct claim
-"From X to Y, from A to B" false range constructions → replace with a plain list
-Em dash (—) overuse → replace most em dashes with commas or periods; keep one only if it genuinely adds punch
-Hyphenated corporate pairs (data-driven, high-quality, cross-functional, client-facing, decision-making, end-to-end, real-time) → remove hyphens unless grammatically required
-Remove all instances: delve, tapestry, realm, pivotal, underscore, vibrant, meticulous, intricate, testament, foster, leverage, utilize, robust, holistic, nuanced, multifaceted, seamlessly, groundbreaking, unlock, harness, elevate, beacon, swiftly, revolutionize, cutting-edge, transformative, commendable, impactful, showcasing, garnering, fostering, encompassing
+Em dash (—) overuse → replace most with commas or periods; keep at most one if it genuinely adds punch
+Hyphenated corporate pairs (data-driven, high-quality, cross-functional, end-to-end, real-time) → remove hyphens unless grammatically required
+Synonym cycling (protagonist / main character / central figure / hero all meaning the same thing) → pick one term and use it consistently
+Remove all instances: delve, tapestry, realm, pivotal, underscore, vibrant, meticulous, intricate, testament, foster, leverage, utilize, robust, holistic, nuanced, multifaceted, seamlessly, groundbreaking, unlock, harness, elevate, beacon, swiftly, revolutionize, cutting-edge, transformative, commendable, impactful, showcasing, garnering, encompassing
 
 2. STRUCTURAL AUDIT:
 "It is important to..." / "It is worth noting that..." → rewrite as direct statements
-Any paragraph ending with a platitude ("This is why X matters", "the future looks bright") → cut or replace with something specific
-Synonym cycling: if the same entity is called by 3+ different names (protagonist / main character / central figure / hero) → pick one and stick to it
-Rule-of-three forcing: ideas padded into groups of three for the appearance of completeness → collapse to what's actually true
-Bullet lists with bolded headers followed by colons → convert to prose unless the list genuinely needs to be scannable
-Generic positive closing ("exciting times lie ahead", "continue this journey toward excellence") → end on a specific, concrete thought instead
+Paragraphs ending with a platitude ("This is why X matters") → cut or replace with something specific
+Rule-of-three forcing: ideas padded into groups of three → collapse to what's actually true
+Bullet lists with bolded headers + colons → convert to prose unless genuinely list-like
+Vague attributions ("industry observers note," "experts say") → name a specific source or cut
 Check the opening sentence: gripping or obvious? Rewrite if weak.
 
 3. TONE AUDIT:
 Hedge phrases ("many experts believe," "some would argue," "it could be said") → commit or cut
-Passive voice hedges ("it has been found that," "it is known that") → make active and specific
-Excessive hedging ("could potentially possibly be argued that") → state the claim plainly
+Passive voice hedges ("it has been found that") → make active and specific
 Corporate or press-release language → make it direct and honest
-Vague attributions ("industry observers note," "experts say") → name a specific source or cut
 
 4. RHYTHM AUDIT:
-Scan for 3+ consecutive sentences of similar length → vary it
-At least one very short sentence (3-6 words) somewhere in the article
-At least one genuinely long, complex sentence (30+ words)
+Find 3+ consecutive sentences of the same approximate length → break the pattern
+Ensure at least one very short sentence (3-6 words) in the article
+Ensure at least one genuinely long, complex sentence (30+ words)
 
-5. VOICE AND SOUL — this is not optional:
-Sterile writing that is technically clean still reads as AI. After fixing patterns, ask: does this sound like a person with a perspective, or like assembled text?
-— If every paragraph is the same emotional temperature, vary it
-— If there are no opinions, only neutral reporting, add a defensible claim somewhere
-— If the writing acknowledges no uncertainty or complexity, add one moment of honest nuance
-— If sentence rhythm is monotonous even after the rhythm audit, break it further
-One vivid, specific detail (a named company, a precise number, a concrete scene) is worth three abstract sentences
-
-6. ONLINE READABILITY PASS:
+5. ONLINE READABILITY PASS:
 Paragraphs with 4+ sentences → split at the most natural break, no exceptions
 Any section running 200+ words without an H2 → add one as a specific claim, not a label
 Opening paragraph 3+ sentences → trim to 2; the hook must land fast
-Scan as if scrolling on a phone — any visually dense block (5+ unbroken lines) → add a break
 Every vague H2 label ("Background", "Overview", "Why It Matters") → rewrite as a specific claim
 Closing paragraph: 1-3 sentences, ends on a specific thought — not a summary, not "start today"
 
-SELF-AUDIT (do this before outputting):
-After completing all checks above, read the article and ask: "What still makes this obviously AI-generated?" Note any remaining tells (monotone rhythm, vague claims, missing specificity, soulless conclusions). Fix them. Then output the final article.
+Output only the revised article. No preamble, no explanation.`,
 
-Output only the final revised article. No preamble, no explanation, no self-audit commentary.`,
+  5: `You are a voice editor. You will receive an article that has already been mechanically cleaned of AI writing patterns. Your job is not to remove patterns — that work is done. Your only job is to make this read like it was written by a person who has genuine opinions, not assembled by a language model.
 
-  5: `You are a senior editor and SEO specialist doing a final pass. You will receive a polished article and the target keyword.
+PASS 1 — INJECT SOUL:
+Read the article and ask honestly: does this sound like a person with a perspective, or like assembled text?
+
+Work through these fixes:
+— Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
+— Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
+— Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
+— Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
+— The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
+
+PASS 2 — SELF-AUDIT:
+After your edits, read the article from the top and ask: "What still makes this obviously AI-generated?"
+
+Look for:
+- Every paragraph at the same emotional temperature (no peaks, no texture)
+- Vivid details that feel made up or generic
+- Opinions that are hedged into meaninglessness
+- A rhythm that's still too clean, too even
+- An ending that summarizes rather than concludes
+
+Fix what you find. Then output the final article.
+
+Output only the final article. No preamble, no explanation, no commentary about your changes.`,
+
+  6: `You are a senior editor and SEO specialist doing a final pass. You will receive a polished article and the target keyword.
 
 EDITORIAL PASS:
 - Is every paragraph earning its place? Cut anything that doesn't add new information or forward momentum.
@@ -1544,7 +1587,7 @@ function scrollPanelToBottom(n) {
 }
 
 function copyArticle() {
-  const text = document.getElementById('out5').textContent;
+  const text = document.getElementById('out6').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyBtn');
     btn.textContent = 'copied!';
@@ -1830,7 +1873,7 @@ async function runPipeline() {
   const tone      = document.getElementById('tone').value;
   const model     = document.getElementById('model').value;
 
-  const sys = [1,2,3,4,5].map(n => document.getElementById('sys' + n).value.trim());
+  const sys = [1,2,3,4,5,6].map(n => document.getElementById('sys' + n).value.trim());
 
   // ── Product / promotion context ──
   const productName = document.getElementById('productName').value.trim();
@@ -1882,7 +1925,7 @@ async function runPipeline() {
   document.getElementById('saveReminder').classList.remove('visible');
 
   // Reset all panels
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 6; i++) {
     setPipeNode(i, null); setPanel(i, null); setPill(i, '—', false);
   }
   setOutput(1, '', false);
@@ -1890,6 +1933,7 @@ async function runPipeline() {
   setOutput(3, 'Follows after research.', false);
   setOutput(4, 'Follows after writing.', false);
   setOutput(5, 'Follows after refining.', false);
+  setOutput(6, 'Follows after humanizing.', false);
 
   document.getElementById('outputArea').scrollTop = 0;
 
@@ -1929,38 +1973,49 @@ async function runPipeline() {
     );
     setPipeNode(3, 'done'); setPanel(3, null); setPill(3, 'done ✓', false);
 
-    // ── Agent 4: Humanizer ──
+    // ── Agent 4: Mechanical Refiner ──
     setPipeNode(4, 'active'); setPanel(4, 'active'); setPill(4, 'working…', true);
     setOutput(4, '', false);
     const out4El = document.getElementById('out4');
-    const humanized = await streamAgent(
+    const cleaned = await streamAgent(
       authMode, model, 4096, sys[3],
-      draft + humanizerNote,
+      draft,
       out4El, 4
     );
     setPipeNode(4, 'done'); setPanel(4, null); setPill(4, 'done ✓', false);
 
-    // ── Agent 5: SEO Editor ──
+    // ── Agent 5: Voice Humanizer ──
     setPipeNode(5, 'active'); setPanel(5, 'active'); setPill(5, 'working…', true);
     setOutput(5, '', false);
     const out5El = document.getElementById('out5');
-    await streamAgent(
-      authMode, model, 2048, sys[4],
-      `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${humanized}`,
+    const voiced = await streamAgent(
+      authMode, model, 4096, sys[4],
+      cleaned + humanizerNote,
       out5El, 5
     );
     setPipeNode(5, 'done'); setPanel(5, null); setPill(5, 'done ✓', false);
+
+    // ── Agent 6: SEO Editor ──
+    setPipeNode(6, 'active'); setPanel(6, 'active'); setPill(6, 'working…', true);
+    setOutput(6, '', false);
+    const out6El = document.getElementById('out6');
+    await streamAgent(
+      authMode, model, 2048, sys[5],
+      `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${voiced}`,
+      out6El, 6
+    );
+    setPipeNode(6, 'done'); setPanel(6, null); setPill(6, 'done ✓', false);
 
     document.getElementById('copyBtn').classList.add('visible');
     document.getElementById('previewBtn').classList.add('visible');
     document.getElementById('saveReminder').classList.add('visible');
 
     // Scroll to final output
-    document.getElementById('panel5').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('panel6').scrollIntoView({ behavior: 'smooth' });
 
   } catch(err) {
     showError('Error: ' + err.message);
-    for (let i = 1; i <= 5; i++) { setPill(i, '—', false); setPanel(i, null); setPipeNode(i, null); }
+    for (let i = 1; i <= 6; i++) { setPill(i, '—', false); setPanel(i, null); setPipeNode(i, null); }
   }
 
   btn.disabled = false;
@@ -2008,7 +2063,7 @@ function parseArticle(raw) {
 }
 
 function openPreview() {
-  const raw = document.getElementById('out5').textContent;
+  const raw = document.getElementById('out6').textContent;
   if (!raw || raw.startsWith('Waiting')) return;
 
   const { title, meta, body } = parseArticle(raw);
@@ -2147,7 +2202,7 @@ function _saveDrafts(arr) {
 }
 
 function saveDraft() {
-  const raw = document.getElementById('out5').textContent;
+  const raw = document.getElementById('out6').textContent;
   if (!raw || raw.startsWith('Follows')) return;
   const { title, meta, body } = parseArticle(raw);
   const topic   = (document.getElementById('topic').value   || '').trim();
@@ -2275,7 +2330,7 @@ function switchImplTab(tab) {
 }
 
 function copyPreviewText(format, btn) {
-  const raw = document.getElementById('out5').textContent;
+  const raw = document.getElementById('out6').textContent;
   const { title, meta, body } = parseArticle(raw);
   let text;
   if (format === 'markdown') {
@@ -2292,7 +2347,7 @@ function copyPreviewText(format, btn) {
 }
 
 function downloadArticle() {
-  const raw = document.getElementById('out5').textContent;
+  const raw = document.getElementById('out6').textContent;
   const { title, meta, body } = parseArticle(raw);
   const content = `TITLE: ${title}\nMETA: ${meta}\n\n---\n\n${body}`;
   const slug = (title || 'article')
@@ -2313,7 +2368,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closePreview
 
 // ── Init: populate system prompts from constants ─────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  for (let n = 1; n <= 5; n++) {
+  for (let n = 1; n <= 6; n++) {
     document.getElementById('sys' + n).value = PROMPTS[n];
   }
   handleUrlParams();   // handle ?token= from Stripe redirect

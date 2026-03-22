@@ -375,7 +375,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .steps-header { text-align: center; margin-bottom: 3.5rem; }
 .steps-header .section-sub { margin: 0 auto; }
 .steps-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -401,6 +401,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .step-3 .step-num-circle { border-color: var(--a3); color: var(--a3); }
 .step-4 .step-num-circle { border-color: var(--a4); color: var(--a4); }
 .step-5 .step-num-circle { border-color: var(--a5); color: var(--a5); }
+.step-6 .step-num-circle { border-color: #e8b84b; color: #e8b84b; }
 .step-name {
   font-size: 14px; font-weight: 700;
   color: var(--text); margin-bottom: 0.4rem;
@@ -410,6 +411,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .step-3 .step-name { color: var(--a3); }
 .step-4 .step-name { color: var(--a4); }
 .step-5 .step-name { color: var(--a5); }
+.step-6 .step-name { color: #e8b84b; }
 .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
 .step-tag {
   display: inline-block; margin-top: 0.75rem;
@@ -675,7 +677,7 @@ footer {
   .nav-links { display: none; }
   .why-grid, .promo-feature, .seo-feature { grid-template-columns: 1fr; gap: 2.5rem; }
   .steps-grid { grid-template-columns: 1fr 1fr; }
-  .steps-grid .step-card:last-child { grid-column: span 2; }
+  .steps-grid .step-card:last-child { grid-column: unset; }
   .features-grid { grid-template-columns: 1fr; }
   .faq-grid { grid-template-columns: 1fr; }
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
@@ -706,14 +708,14 @@ footer {
 <!-- ── Hero ── -->
 <div class="hero-section">
   <div class="hero-eyebrow">
-    <span>✦</span> Powered by Claude — <span>5-agent pipeline</span>
+    <span>✦</span> Powered by Claude — <span>6-stage writing pipeline</span>
   </div>
   <h1 class="hero-headline">
     Articles that rank.<br>
     Writing that sounds <em>genuinely human.</em>
   </h1>
   <p class="hero-sub">
-    Byline runs five specialized AI agents in sequence to write, refine, and
+    Byline runs six specialized AI agents in sequence to write, refine, humanize, and
     SEO-optimize articles that don't sound like they were written by a machine.
   </p>
   <div class="hero-actions">
@@ -731,7 +733,7 @@ footer {
           <div class="mock-dot mock-dot-y"></div>
           <div class="mock-dot mock-dot-g"></div>
         </div>
-        <div class="mock-url">byline.so</div>
+        <div class="mock-url">bylineblogs.com</div>
       </div>
       <div class="mock-body">
         <!-- Sidebar -->
@@ -788,13 +790,20 @@ footer {
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--text-dim);color:var(--text-dim)">4</div>
-              <span class="mock-step-label" style="color:var(--text-dim)">Refining the Voice</span>
+              <span class="mock-step-label" style="color:var(--text-dim)">Refining the Draft</span>
               <span class="mock-step-pill">—</span>
             </div>
           </div>
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--text-dim);color:var(--text-dim)">5</div>
+              <span class="mock-step-label" style="color:var(--text-dim)">Humanizing the Voice</span>
+              <span class="mock-step-pill">—</span>
+            </div>
+          </div>
+          <div class="mock-panel">
+            <div class="mock-panel-hd">
+              <div class="mock-step-num" style="border-color:var(--text-dim);color:var(--text-dim)">6</div>
               <span class="mock-step-label" style="color:var(--text-dim)">Final Polish &amp; SEO</span>
               <span class="mock-step-pill">—</span>
             </div>
@@ -809,15 +818,15 @@ footer {
 <div class="stats-bar">
   <div class="stats-inner">
     <div class="stat-item">
-      <div class="stat-num">5</div>
-      <div class="stat-label">Specialized AI agents per article</div>
+      <div class="stat-num">6</div>
+      <div class="stat-label">Writing stages, every article</div>
     </div>
     <div class="stat-item">
       <div class="stat-num"><em>~3</em></div>
       <div class="stat-label">Minutes from topic to finished article</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num">800<em>+</em></div>
+      <div class="stat-num">1,000<em>+</em></div>
       <div class="stat-label">Words, fully formatted and SEO-ready</div>
     </div>
     <div class="stat-item">
@@ -833,7 +842,7 @@ footer {
     <div>
       <div class="eyebrow">Why Byline</div>
       <h2 class="section-heading">Most AI writing<br>is <em>instantly recognizable.</em></h2>
-      <p class="section-sub">Generic openers. Walls of text. The same banned words appearing everywhere. Byline is built specifically to eliminate all of it — at every stage of the pipeline.</p>
+      <p class="section-sub">Generic openers. Walls of text. The same hollow phrases appearing in every article. Byline is built specifically to eliminate all of it — at every stage of the process.</p>
     </div>
     <div class="why-cards">
       <div class="why-card">
@@ -847,14 +856,14 @@ footer {
         <div class="why-card-icon">📊</div>
         <div class="why-card-text">
           <strong>Generic content doesn't rank</strong>
-          <p>Every article is shaped by a Strategist and then SEO-edited by a fifth agent that checks keyword placement, scannability, and subheading quality before the final output.</p>
+          <p>Every article is shaped by a Strategist and then SEO-edited by a sixth agent that checks keyword placement, scannability, and subheading quality before the final output.</p>
         </div>
       </div>
       <div class="why-card">
         <div class="why-card-icon">📄</div>
         <div class="why-card-text">
           <strong>Walls of text don't get read</strong>
-          <p>Byline enforces online writing rules modeled on Dickie Bush and Nicolas Cole: max 2–3 sentences per paragraph, H2 every 150–200 words, hooks that land in 1–2 sentences.</p>
+          <p>Byline enforces the rules that actually get articles read online: max 2–3 sentences per paragraph, a subheading every 150–200 words, and an opening that pulls you in within the first two sentences.</p>
         </div>
       </div>
       <div class="why-card">
@@ -871,123 +880,123 @@ footer {
 <!-- ── Before/After Comparison ── -->
 <div class="compare-section">
   <div class="eyebrow" style="text-align:center;margin-bottom:10px;">See the difference</div>
-  <h2 class="section-heading">Generic AI vs.<br><em>a pipeline built to rank.</em></h2>
-  <p class="section-sub" style="max-width:540px;">Same topic. Same prompt intent. One typed into ChatGPT, one through Byline's five-agent pipeline.</p>
+  <h2 class="section-heading">Generic AI vs.<br><em>writing that sounds human.</em></h2>
+  <p class="section-sub" style="max-width:560px;">Same prompt. One output went straight to the page. The other went through six stages — including a dedicated voice editor that makes it read like a person wrote it.</p>
 
   <div class="compare-tabs">
-    <button class="compare-tab active" onclick="switchTopic(0)">Local SEO</button>
-    <button class="compare-tab" onclick="switchTopic(1)">SaaS Content</button>
-    <button class="compare-tab" onclick="switchTopic(2)">B2B Email</button>
+    <button class="compare-tab active" onclick="switchTopic(0)">Email Marketing</button>
+    <button class="compare-tab" onclick="switchTopic(1)">Content & SEO</button>
+    <button class="compare-tab" onclick="switchTopic(2)">Freelancing</button>
   </div>
 
   <div class="compare-panels">
 
-    <!-- ── Topic 0: Local SEO ── -->
+    <!-- ── Topic 0: Email Marketing ── -->
     <div class="compare-panel active" id="topic-0">
       <div class="prompt-banner" style="grid-column:1/-1;">
-        <span class="prompt-pill">Prompt: "Write an article on how small businesses can improve their local SEO"</span>
+        <span class="prompt-pill">Prompt: "Write an article on why most B2B email campaigns get low reply rates"</span>
       </div>
       <div class="compare-col ai-col">
         <span class="col-badge ai-badge">Generic AI</span>
         <div class="compare-article">
-          <h1>How to Improve Your Local SEO: A Complete Guide</h1>
+          <h1>How to Improve Your B2B Email Marketing Strategy</h1>
           <div class="anno-wrap">
-            <p><span class="anno-bad">In today's competitive digital landscape</span>, local SEO is <span class="anno-bad">crucial</span> for small businesses looking to attract more customers in their area. By implementing the right strategies, you can improve your visibility in local search results.</p>
-            <div class="anno bad">❌ Banned opener. "Crucial" is asserted with no explanation of why, for whom, or by how much.</div>
+            <p><span class="anno-bad">In today's competitive business landscape</span>, email marketing remains <span class="anno-bad">one of the most powerful tools</span> available to B2B marketers. By crafting compelling messages that resonate with your target audience, you can significantly improve your response rates and drive meaningful engagement.</p>
+            <div class="anno bad">❌ Opener, filler claim, vague promise — all in one paragraph. Every sentence is 18–22 words. Monotone rhythm is the clearest AI tell.</div>
           </div>
-          <h2>Why Local SEO Matters for Your Business</h2>
+          <h2>Key Factors That Affect Email Response Rates</h2>
           <div class="anno-wrap">
-            <p>Local SEO is <span class="anno-bad">more important than ever</span> because it helps potential customers find you. <span class="anno-bad">There are several effective strategies</span> you can implement to improve your search rankings.</p>
-            <div class="anno bad">❌ "More important than ever" is pure filler. No single strategy is named, let alone explained.</div>
+            <p>There are <span class="anno-bad">several important factors</span> to consider when trying to improve your email response rates. <span class="anno-bad">Many experts recommend</span> focusing on personalization, subject line optimization, and send-time testing. <span class="anno-bad">It is worth noting that</span> segmenting your list can also have a positive impact.</p>
+            <div class="anno bad">❌ "Many experts recommend" names nobody. Three consecutive sentences, same length, same structure. No opinion, no position — just assembled advice.</div>
           </div>
         </div>
       </div>
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
-          <h1>The Local SEO Trick That Google Built for Small Businesses (Not Chains)</h1>
+          <h1>The Email Metric Your Whole Team Tracks (And Why It's the Wrong One)</h1>
           <div class="anno-wrap">
-            <p><span class="anno-good">Domino's has a 50-person SEO team.</span> You have thirty minutes on a Tuesday. Yet independent restaurants outrank them on Google Maps regularly — because Google's local algorithm rewards something chains structurally can't fake.</p>
-            <div class="anno good">✓ Named contrast creates instant tension. Reader knows exactly whose side we're on before the second sentence.</div>
+            <p><span class="anno-good">Open rates are a comfort metric.</span> They tell you whether your subject line was clever — not whether anyone cared what was inside. Most B2B teams have been optimizing for the wrong signal for years.</p>
+            <div class="anno good">✓ Five words. Then ten. Then seventeen. Rhythm that builds — short punchy claim, then the explanation, then the consequence. This is a person thinking, not a template filling.</div>
           </div>
-          <h2>The Metric 91% of Local Businesses Are Ignoring</h2>
+          <h2>What Basecamp Found When They Stopped Caring About Open Rates</h2>
           <div class="anno-wrap">
-            <p>Review response time is now a confirmed ranking signal, per a <span class="anno-good">2023 BrightLocal study of 34,000 profiles</span>. Businesses responding within 24 hours ranked <span class="anno-good">1.3 positions higher</span> in Map Pack results on average.</p>
-            <div class="anno good">✓ Named source, sample size, year, exact number — not "studies show it matters."</div>
+            <p><span class="anno-good">Basecamp's team stopped A/B testing subject lines entirely in 2022.</span> They switched to a single metric: reply rate. <span class="anno-good">Email-to-trial conversion doubled within a quarter.</span> They'd been optimizing for the wrong thing for two years, and the data had been hiding it the whole time.</p>
+            <div class="anno good">✓ Named company, year, exact outcome, and a kicker that admits a mistake. The last sentence takes a side — that's what a human writer does, not a machine summarizing best practices.</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── Topic 1: SaaS Content ── -->
+    <!-- ── Topic 1: Content & SEO ── -->
     <div class="compare-panel" id="topic-1">
       <div class="prompt-banner" style="grid-column:1/-1;">
-        <span class="prompt-pill">Prompt: "Write an article about SaaS content marketing strategy"</span>
+        <span class="prompt-pill">Prompt: "Write an article on why some blog posts rank on Google and others don't"</span>
       </div>
       <div class="compare-col ai-col">
         <span class="col-badge ai-badge">Generic AI</span>
         <div class="compare-article">
-          <h1>The Ultimate Guide to SaaS Content Marketing in 2024</h1>
+          <h1>How to Write Blog Posts That Rank on Google: A Complete Guide</h1>
           <div class="anno-wrap">
-            <p>Content marketing has become <span class="anno-bad">an essential strategy</span> for SaaS companies. By creating <span class="anno-bad">valuable, relevant content</span>, you can attract potential customers, build trust, and drive conversions.</p>
-            <div class="anno bad">❌ "Essential," "valuable," "relevant" — three adjectives, zero information. Could describe any product in any industry.</div>
+            <p>Creating content that ranks on Google requires understanding <span class="anno-bad">several key factors</span>. Search engines have become increasingly sophisticated at detecting <span class="anno-bad">high-quality content that provides genuine value</span> to readers. By following SEO best practices, you can significantly improve your chances of ranking well in search results.</p>
+            <div class="anno bad">❌ "Several key factors" names nothing. "High-quality content that provides genuine value" means nothing. Three sentences, all 20+ words, all the same emotional temperature.</div>
           </div>
-          <h2>Why Content Marketing is Crucial for SaaS</h2>
+          <h2>Why Content Quality Matters for SEO</h2>
           <div class="anno-wrap">
-            <p>Content marketing is important because <span class="anno-bad">buyers do extensive research before making purchasing decisions</span>. By being present at each stage of the buyer's journey, you can guide potential customers toward purchase.</p>
-            <div class="anno bad">❌ States the obvious. This paragraph could be deleted without losing a single insight.</div>
+            <p><span class="anno-bad">It is important to note that</span> search engines prioritize content that thoroughly addresses user intent. <span class="anno-bad">Additionally</span>, your content should be well-structured with clear headings and subheadings. <span class="anno-bad">Furthermore</span>, it is essential to conduct proper keyword research before writing.</p>
+            <div class="anno bad">❌ "It is important to note that," "Additionally," "Furthermore" — three consecutive AI filler transitions. Zero counterargument, zero complexity, zero opinion. Perfectly safe and completely forgettable.</div>
           </div>
         </div>
       </div>
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
-          <h1>Why Intercom Grew to $50M ARR Publishing Less Than Their Competitors</h1>
+          <h1>The SEO Advice That Fills Page One of Google (And Often Doesn't Work)</h1>
           <div class="anno-wrap">
-            <p><span class="anno-good">Intercom published fewer blog posts than almost every competitor in their category.</span> Their team rejected more pitches than they accepted. In a market where content volume was the growth strategy, they bet the opposite.</p>
-            <div class="anno good">✓ Counterintuitive hook with a named company. Reader's assumption is challenged before the end of sentence one.</div>
+            <p>Most articles about ranking on Google were written by people who haven't ranked anything competitive. <span class="anno-good">They're repeating what worked in 2018 on a topic that had no competition.</span> That's not dishonest — it's just useless for anyone trying to rank something that actually matters.</p>
+            <div class="anno good">✓ Takes an uncomfortable position in the first paragraph. The second sentence is 17 words, the third is 19 — but they feel different because one is a diagnosis and one is a concession. Complexity makes it real.</div>
           </div>
-          <h2>The Conversion Gap No One Talks About</h2>
+          <h2>What 3 Million Search Results Actually Show</h2>
           <div class="anno-wrap">
-            <p>HubSpot tracked <span class="anno-good">8,000 businesses over 18 months</span>. High-frequency publishers got 3.5x more traffic. What the data buries: <span class="anno-good">the correlation between publishing frequency and trial signups was near zero.</span></p>
-            <div class="anno good">✓ Real sample size and timeframe. The contrarian finding reframes the whole statistic — not just reports it.</div>
+            <p>Ahrefs studied three million pages. The strongest predictor of ranking in position one wasn't backlinks or keyword density. <span class="anno-good">It was whether real humans had linked to it without being asked.</span> You can game almost every other signal. That one you can't.</p>
+            <div class="anno good">✓ Source cited, finding stated, implication drawn — then a two-sentence contrast that lands like a conclusion, not a summary. Short sentence at the end stops the reader cold.</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── Topic 2: B2B Email ── -->
+    <!-- ── Topic 2: Freelancing ── -->
     <div class="compare-panel" id="topic-2">
       <div class="prompt-banner" style="grid-column:1/-1;">
-        <span class="prompt-pill">Prompt: "Write an article on B2B email marketing best practices"</span>
+        <span class="prompt-pill">Prompt: "Write an article on how freelancers can earn more without working more hours"</span>
       </div>
       <div class="compare-col ai-col">
         <span class="col-badge ai-badge">Generic AI</span>
         <div class="compare-article">
-          <h1>How to Create an Effective B2B Email Marketing Strategy</h1>
+          <h1>How Freelancers Can Increase Their Income Without Working More Hours</h1>
           <div class="anno-wrap">
-            <p>Email marketing remains <span class="anno-bad">one of the most powerful tools</span> in the B2B marketer's toolkit. With an average ROI of $42 for every $1 spent, it delivers results <span class="anno-bad">when done correctly</span>.</p>
-            <div class="anno bad">❌ The $42 ROI stat is widely misattributed and uncited. "When done correctly" is circular — as opposed to done incorrectly?</div>
+            <p><span class="anno-bad">As a freelancer, managing your time effectively is crucial for success.</span> Without a traditional office structure, it can be challenging to maximize your earning potential. However, by implementing <span class="anno-bad">the right strategies</span>, you can significantly increase your income while maintaining a healthy work-life balance.</p>
+            <div class="anno bad">❌ "Crucial for success," "right strategies," "healthy work-life balance" — three phrases that appear in thousands of articles. The paragraph says nothing that isn't obvious to the person who Googled this.</div>
           </div>
-          <h2>Best Practices for B2B Email Success</h2>
+          <h2>Strategies for Maximizing Your Freelance Income</h2>
           <div class="anno-wrap">
-            <p>Focus on <span class="anno-bad">several key elements</span>: segmenting your audience, crafting compelling subject lines, and providing <span class="anno-bad">valuable content that resonates</span> with your readers.</p>
-            <div class="anno bad">❌ Vague list with no specifics on how, when, or why any of these actually moves pipeline.</div>
+            <p><span class="anno-bad">Many successful freelancers</span> recommend raising your rates as the most direct path to earning more. <span class="anno-bad">It is also important to</span> focus on high-value clients and projects. <span class="anno-bad">Additionally</span>, developing specialized skills can help you command premium pricing in your market.</p>
+            <div class="anno bad">❌ "Many successful freelancers" — who? "It is also important to" is a phrase that adds nothing. Five sentences of advice, all hedged, none specific, no tension, no trade-off acknowledged.</div>
           </div>
         </div>
       </div>
       <div class="compare-col byline-col">
         <span class="col-badge byline-badge">✦ Byline</span>
         <div class="compare-article">
-          <h1>Drift Stopped Optimizing for Open Rates. Their Email Pipeline Grew 67%.</h1>
+          <h1>The Freelancer Productivity Trap (More Tools, Fewer Billable Hours)</h1>
           <div class="anno-wrap">
-            <p>In <span class="anno-good">Q3 2021</span>, Drift's demand gen team stopped tracking open rates entirely. Open rates dropped 22% in month one. Pipeline sourced from email grew <span class="anno-good">67% over the next two quarters.</span></p>
-            <div class="anno good">✓ Specific quarter, named team, two precise outcomes. Three numbers that make a reader stop mid-scroll.</div>
+            <p><span class="anno-good">The average freelancer has four productivity apps and no productive hours.</span> The apps aren't the problem. The problem is that freelancers are optimizing the wrong thing — output volume instead of output value.</p>
+            <div class="anno good">✓ Thirteen words. Six words. Twenty-two words. Three sentences, three different lengths, three different weights. The rhythm pulls you forward. No AI writes like this without being told to.</div>
           </div>
-          <h2>Why the Metric Everyone Tracks Is the Wrong One</h2>
+          <h2>What Separates $60/Hour Freelancers From $180/Hour Ones</h2>
           <div class="anno-wrap">
-            <p>Business professionals receive <span class="anno-good">121 emails a day (Radicati Group, 2023)</span>. The teams generating pipeline ask a different question: <span class="anno-good">"What would make someone stop at 2pm on a Wednesday?"</span></p>
-            <div class="anno good">✓ Cited stat + a vivid, specific question that humanizes the reader — not generic "provide value" advice.</div>
+            <p>It isn't discipline. <span class="anno-good">A 2023 survey of 5,000 independent workers found the single strongest predictor of hourly rate was how often someone turned down a project in the previous six months.</span> The high earners weren't more productive. They were more selective — and selectivity compounds in ways that hustle doesn't.</p>
+            <div class="anno good">✓ Two-word sentence lands the opinion, then the data, then the reframe. The last sentence takes a real position — "selectivity compounds, hustle doesn't" — the kind of claim a person with experience makes, not a language model averaging the internet.</div>
           </div>
         </div>
       </div>
@@ -1008,8 +1017,8 @@ function switchTopic(n) {
   <div class="pipeline-inner">
     <div class="steps-header">
       <div class="eyebrow">The Pipeline</div>
-      <h2 class="section-heading">Five agents.<br><em>One article that earns its place.</em></h2>
-      <p class="section-sub">Each agent has one job. They pass their output to the next — so the writer gets a research brief, the humanizer gets a draft, and the SEO editor gets something already polished.</p>
+      <h2 class="section-heading">Six agents.<br><em>One article that earns its place.</em></h2>
+      <p class="section-sub">Each stage has one job and hands off to the next. The writer gets a real research brief. The cleanup stage gets a full draft. The SEO stage gets something already polished. No step is trying to do everything at once.</p>
     </div>
     <div class="steps-grid">
       <div class="step-card step-1">
@@ -1028,16 +1037,22 @@ function switchTopic(n) {
         <div class="step-num-circle">3</div>
         <div class="step-name">Writer</div>
         <p class="step-desc">Writes the full article using the brief and research. Enforces 50+ specific rules covering banned words, paragraph length, subheading cadence, and voice.</p>
-        <span class="step-tag">800–1,100 words</span>
+        <span class="step-tag">1,000–1,400 words</span>
       </div>
       <div class="step-card step-4">
         <div class="step-num-circle">4</div>
-        <div class="step-name">Humanizer</div>
-        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — eliminating AI tells and ensuring every paragraph reads like a confident human wrote it.</p>
+        <div class="step-name">Refiner</div>
+        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing AI tells like copula avoidance, synonym cycling, and em dash overuse.</p>
         <span class="step-tag">removes AI patterns</span>
       </div>
       <div class="step-card step-5">
         <div class="step-num-circle">5</div>
+        <div class="step-name">Humanizer</div>
+        <p class="step-desc">Injects voice and soul — varying rhythm, adding a defensible opinion, replacing abstract passages with concrete specifics, and running a self-audit to catch what's still robotic.</p>
+        <span class="step-tag">adds soul &amp; voice</span>
+      </div>
+      <div class="step-card step-6">
+        <div class="step-num-circle">6</div>
         <div class="step-name">SEO Editor</div>
         <p class="step-desc">Does a final editorial, scannability, and SEO pass — then outputs the finished article with a keyword-optimized title and meta description ready to publish.</p>
         <span class="step-tag">title + meta + article</span>
@@ -1054,7 +1069,7 @@ function switchTopic(n) {
     <div class="feat-card">
       <div class="feat-icon">✍️</div>
       <div class="feat-name">Online-format writing rules</div>
-      <p class="feat-desc">Modeled on Dickie Bush and Nicolas Cole's framework: short paragraphs, mandatory subheadings, hooks that land in 2 sentences. Enforced at the writer and humanizer stage.</p>
+      <p class="feat-desc">Short paragraphs, mandatory subheadings, hooks that land in 2 sentences. These rules are enforced at every stage — not suggestions, hard constraints the pipeline can't skip.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">🔍</div>
@@ -1067,9 +1082,9 @@ function switchTopic(n) {
       <p class="feat-desc">Conversational, authoritative, investigative, or practical. The tone preference flows through every agent — from how the strategist frames the angle to how the humanizer shapes the rhythm.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🔒</div>
-      <div class="feat-name">Your API key, your data</div>
-      <p class="feat-desc">Byline runs entirely in your browser with your own Anthropic API key. Nothing is stored server-side. The server is a thin proxy — your article never touches a database.</p>
+      <div class="feat-icon">⚡</div>
+      <div class="feat-name">No account needed</div>
+      <p class="feat-desc">Pick a credit pack and start writing in under a minute. No sign-up, no subscription, no technical setup. Your articles are generated and delivered — nothing stored on our end.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">📤</div>
@@ -1078,8 +1093,8 @@ function switchTopic(n) {
     </div>
     <div class="feat-card">
       <div class="feat-icon">⚙️</div>
-      <div class="feat-name">Fully customizable prompts</div>
-      <p class="feat-desc">Every agent's system prompt is editable via Advanced Settings. Power users can tune each stage — or leave it alone and let the defaults do the work.</p>
+      <div class="feat-name">Fully customizable</div>
+      <p class="feat-desc">Want to change how any step works — the angle it takes, the tone it uses, how it formats the output? Every stage is adjustable in Settings. Or just leave the defaults and generate.</p>
     </div>
   </div>
 </section>
@@ -1187,15 +1202,15 @@ function switchTopic(n) {
     </div>
     <div class="faq-item">
       <div class="faq-q">How much does it cost per article?</div>
-      <p class="faq-a">That depends on which Claude model you select. A full pipeline run with Sonnet typically uses around 12,000–18,000 tokens total across all five agents — a few cents per article at API pricing.</p>
+      <p class="faq-a">Credits come in three packs: 10 articles for $5, 25 for $10, or 75 for $25. No monthly fee, no expiry. You use them when you need them.</p>
     </div>
     <div class="faq-item">
       <div class="faq-q">Will the articles actually rank on Google?</div>
       <p class="faq-a">Byline produces articles optimized for SEO — but ranking depends on your domain authority, competition, and how well you publish and promote the content. Byline handles the on-page writing; you handle the distribution.</p>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Can I edit the AI prompts?</div>
-      <p class="faq-a">Yes. Every agent's system prompt is fully editable via the Advanced Settings section. You can customize the strategist's brief format, the writer's rules, or the SEO editor's output structure.</p>
+      <div class="faq-q">Can I customize how it writes?</div>
+      <p class="faq-a">Yes. Each writing stage has instructions you can edit in Advanced Settings — you can change the angle it takes, the rules it follows, or how the final article is formatted. Most people don't need to touch these, but the option is there.</p>
     </div>
     <div class="faq-item">
       <div class="faq-q">How does the product promotion work?</div>
@@ -1206,12 +1221,12 @@ function switchTopic(n) {
       <p class="faq-a">The article preview includes step-by-step publishing guides for WordPress, Webflow, Ghost, Substack, and a generic guide for any CMS. You can also copy the article as Markdown, HTML, or plain text.</p>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Is there a word count limit?</div>
-      <p class="faq-a">The writer agent is prompted to produce 800–1,100 words by default. You can edit the system prompt to request longer or shorter articles — the humanizer and SEO editor will adapt accordingly.</p>
+      <div class="faq-q">How long are the articles?</div>
+      <p class="faq-a">Articles are typically 1,000–1,400 words by default — long enough to rank, short enough to actually get read. If you want longer or shorter, you can adjust it in the settings.</p>
     </div>
     <div class="faq-item">
       <div class="faq-q">How is Byline different from ChatGPT or other AI writers?</div>
-      <p class="faq-a">Most AI writers produce one pass of text. Byline runs five specialized agents sequentially — strategy, research, writing, humanizing, and SEO editing — each with strict rules that the previous stage can't override.</p>
+      <p class="faq-a">Most AI tools generate one pass of text and call it done. Byline runs six stages — planning, research, writing, cleanup, voice editing, and SEO — each purpose-built and passing its output to the next. The result reads and ranks differently because it's built differently.</p>
     </div>
   </div>
 </section>
@@ -1221,11 +1236,11 @@ function switchTopic(n) {
   <div class="cta-glow"></div>
   <div class="eyebrow">Get started</div>
   <h2 class="section-heading">Your next article,<br><em>written and ranked.</em></h2>
-  <p class="section-sub">Open Byline, enter your topic and API key, and let five agents do the work. Your article will be ready to publish in minutes.</p>
+  <p class="section-sub">Enter your topic, pick a credit, and let the pipeline run. Your article will be ready to publish in minutes.</p>
   <div class="cta-actions">
     <a href="/app" class="btn-hero">✦ Open Byline →</a>
   </div>
-  <p class="cta-note">Requires an Anthropic API key — bring your own, pay only what you use</p>
+  <p class="cta-note">No account needed — credits start at $5 for 10 articles</p>
 </div>
 
 <!-- ── Footer ── -->

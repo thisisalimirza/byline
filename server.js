@@ -84,7 +84,7 @@ app.post('/api/start-run', async (req, res) => {
   await storageSet(`credit:${creditToken}`, entry);
 
   const runToken = crypto.randomUUID();
-  await storageSet(`run:${runToken}`, { callsLeft: 5 }, 7200); // 2 hr TTL
+  await storageSet(`run:${runToken}`, { callsLeft: 6 }, 7200); // 2 hr TTL
 
   res.json({ runToken, remaining: entry.remaining });
 });
