@@ -991,6 +991,53 @@
     background: #ede8df; padding: 2px 6px; border-radius: 3px; color: #444;
   }
 
+  /* ════════════════════ Revision Panel ═════════════════════════ */
+  .revision-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem; }
+  .revision-card {
+    background: #fff; border: 1px solid #e8e2d8; border-radius: 12px;
+    padding: 1.4rem 1.5rem; margin-bottom: 0;
+  }
+  .revision-hd {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;
+  }
+  .revision-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #999; margin-bottom: 2px;
+  }
+  .revision-title { font-size: 14px; font-weight: 600; color: #111; }
+  .revision-icon {
+    width: 30px; height: 30px; border-radius: 8px; background: #f0ebe2;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+  .revision-body { display: flex; gap: 8px; align-items: flex-start; }
+  .revision-input {
+    flex: 1; font-family: var(--sans); font-size: 13px;
+    border: 1px solid #ddd; border-radius: 8px; padding: 9px 12px;
+    background: #fafaf8; color: #222; resize: vertical; min-height: 60px;
+    line-height: 1.5; outline: none;
+  }
+  .revision-input:focus { border-color: #aaa; background: #fff; }
+  .revision-input::placeholder { color: #aaa; }
+  .revision-btn {
+    padding: 9px 16px; font-size: 12px; font-weight: 600; font-family: var(--sans);
+    background: #111; color: #fff; border: none; border-radius: 8px; cursor: pointer;
+    white-space: nowrap; letter-spacing: 0.01em; transition: opacity 0.15s;
+  }
+  .revision-btn:hover { opacity: 0.82; }
+  .revision-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .revision-cost-note { font-size: 11px; color: #aaa; margin-top: 6px; }
+  .revision-streaming-wrap {
+    margin-top: 10px; display: none; background: #fafaf8;
+    border: 1px solid #e8e2d8; border-radius: 8px; padding: 10px 12px;
+    font-size: 12px; font-family: var(--mono); color: #555; max-height: 120px;
+    overflow-y: auto; white-space: pre-wrap; line-height: 1.5;
+  }
+  .revision-streaming-wrap.visible { display: block; }
+  .revision-status {
+    font-size: 12px; color: #888; margin-top: 8px; display: none;
+  }
+  .revision-status.visible { display: block; }
+
   /* ════════════════════ Implementation Guide ════════════════════ */
   .impl-guide-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem 5rem; }
   .impl-guide-card {
@@ -1145,6 +1192,8 @@
     .pack-grid { grid-template-columns: 1fr; }
     .promo-grid { grid-template-columns: 1fr; }
     .preview-seo-badges { grid-template-columns: 1fr 1fr; }
+    .revision-body { flex-direction: column; }
+    .revision-btn { width: 100%; }
   }
 </style>
 </head>
@@ -1628,6 +1677,28 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Revision panel -->
+    <div class="revision-wrap" id="revisionWrap">
+      <div class="revision-card">
+        <div class="revision-hd">
+          <div class="revision-icon">✦</div>
+          <div>
+            <div class="revision-eyebrow">refine</div>
+            <div class="revision-title">Revise this article</div>
+          </div>
+        </div>
+        <div class="revision-body">
+          <textarea class="revision-input" id="revisionInput"
+            placeholder="e.g. Make it more conversational, add a section on pricing, shorten by 200 words…"
+            rows="2"></textarea>
+          <button class="revision-btn" id="revisionBtn" onclick="reviseArticle()">Revise →</button>
+        </div>
+        <div class="revision-cost-note" id="revisionCostNote">Uses 1 credit per revision.</div>
+        <div class="revision-status" id="revisionStatus"></div>
+        <div class="revision-streaming-wrap" id="revisionStreaming"></div>
       </div>
     </div>
 
@@ -2661,6 +2732,20 @@ function openPreview() {
   renderDraftsTab();
   switchImplTab('Copy');
 
+  // Update revision cost note based on auth mode
+  const _revCostNote = document.getElementById('revisionCostNote');
+  if (_revCostNote) {
+    const _hasOwnKey = (document.getElementById('apiKey').value || '').trim().length > 0;
+    _revCostNote.textContent = _hasOwnKey
+      ? 'Uses your Anthropic API key — no extra credit cost.'
+      : 'Uses 1 credit per revision.';
+  }
+  // Reset revision UI state
+  const _revStatus = document.getElementById('revisionStatus');
+  const _revStream = document.getElementById('revisionStreaming');
+  if (_revStatus) { _revStatus.style.display = 'none'; _revStatus.textContent = ''; }
+  if (_revStream) { _revStream.classList.remove('visible'); _revStream.textContent = ''; }
+
   // Open overlay
   document.getElementById('previewOverlay').classList.add('open');
   document.getElementById('completionBar').classList.remove('visible');
@@ -2686,6 +2771,150 @@ function closePreview() {
     saveBtn.onclick = saveDraft;
     _previewingDraftId = null;
   }
+}
+
+// ── Article revision ──────────────────────────────────────────────────────────
+async function reviseArticle() {
+  const instruction = document.getElementById('revisionInput').value.trim();
+  if (!instruction) {
+    document.getElementById('revisionInput').focus();
+    return;
+  }
+
+  const raw = document.getElementById('out6').textContent;
+  if (!raw || raw.startsWith('Waiting') || raw.startsWith('Follows')) return;
+
+  const ownApiKey = document.getElementById('apiKey').value.trim();
+  const model     = document.getElementById('model').value;
+
+  const btn       = document.getElementById('revisionBtn');
+  const statusEl  = document.getElementById('revisionStatus');
+  const streamEl  = document.getElementById('revisionStreaming');
+  const costNote  = document.getElementById('revisionCostNote');
+
+  btn.disabled = true;
+  btn.textContent = 'Revising…';
+  streamEl.textContent = '';
+  streamEl.classList.add('visible');
+  statusEl.style.display = 'none';
+
+  let authMode;
+  try {
+    if (ownApiKey) {
+      authMode = { type: 'key', apiKey: ownApiKey };
+    } else if (_creditToken) {
+      statusEl.textContent = 'Deducting 1 credit…';
+      statusEl.style.display = 'block';
+      const r = await fetch('/api/start-run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creditToken: _creditToken })
+      });
+      if (!r.ok) {
+        const err = await r.json();
+        throw new Error(err.error || 'Not enough credits');
+      }
+      const d = await r.json();
+      authMode = { type: 'run', runToken: d.runToken };
+      updateCreditDisplay(d.remaining);
+    } else {
+      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+    }
+
+    statusEl.textContent = 'Revising…';
+    statusEl.style.display = 'block';
+
+    const revisionSystemPrompt = `You are an expert editor. You will receive a complete article and a specific revision instruction.
+
+Apply the instruction carefully while preserving the article's format, voice, and overall structure unless the instruction explicitly changes them.
+
+Always return the full revised article in exactly this format:
+TITLE: [title]
+META: [meta description, 140-165 characters]
+
+---
+
+[article body in markdown]
+
+Do not add commentary, preamble, or explanations — only the revised article.`;
+
+    const authPayload = authMode.type === 'key'
+      ? { apiKey: authMode.apiKey }
+      : { runToken: authMode.runToken };
+
+    const revResponse = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...authPayload,
+        model,
+        max_tokens: 4096,
+        system: revisionSystemPrompt,
+        messages: [{ role: 'user', content: `Here is the article to revise:\n\n${raw}\n\n---\n\nRevision instruction: ${instruction}` }]
+      })
+    });
+
+    if (!revResponse.ok) {
+      const err = await revResponse.json();
+      throw new Error(err.error?.message || 'API error ' + revResponse.status);
+    }
+
+    const revReader = revResponse.body.getReader();
+    const revDecoder = new TextDecoder();
+    let revised = '';
+    while (true) {
+      const { done, value } = await revReader.read();
+      if (done) break;
+      const chunk = revDecoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+            revised += parsed.delta.text;
+            streamEl.textContent = revised;
+          }
+        } catch(e) {}
+      }
+    }
+
+    if (revised && revised.includes('---')) {
+      const revisedTrimmed = revised.trim();
+      // Update out6 (source of truth) so save/copy/preview all use revised version
+      document.getElementById('out6').textContent = revisedTrimmed;
+      // If viewing a saved draft, update the draft in localStorage too
+      if (_previewingDraftId !== null) {
+        const { title, meta, body } = parseArticle(revisedTrimmed);
+        let drafts = _getDrafts();
+        const idx = drafts.findIndex(x => x.id === _previewingDraftId);
+        if (idx !== -1) {
+          drafts[idx] = { ...drafts[idx], title: title || drafts[idx].title, meta, body,
+                          savedAt: new Date().toISOString() };
+          _saveDrafts(drafts);
+        }
+      }
+      // Refresh the full preview (stats, SEO, content)
+      openPreview();
+
+      statusEl.textContent = 'Article updated ✓ — scroll up to see changes.';
+      statusEl.style.display = 'block';
+      streamEl.classList.remove('visible');
+      document.getElementById('revisionInput').value = '';
+      // Scroll preview to top so user sees the updated article
+      document.querySelector('.preview-scroll').scrollTop = 0;
+    } else {
+      throw new Error('Unexpected response format from revision agent.');
+    }
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.display = 'block';
+    streamEl.classList.remove('visible');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Revise →';
 }
 
 // ── Draft management ─────────────────────────────────────────────────────────
