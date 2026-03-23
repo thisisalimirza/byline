@@ -848,6 +848,7 @@
     color: #555; margin-bottom: 2px;
   }
   .seo-badge-text { font-size: 10.5px; color: #999; line-height: 1.45; }
+  .seo-badge-item.full-width { grid-column: 1 / -1; }
 
   /* ════════════════════ Save Draft / Toast ════════════════════ */
   .save-draft-btn {
@@ -1038,6 +1039,86 @@
   }
   .revision-status.visible { display: block; }
 
+  /* ════════════════════ Article Remixer ════════════════════════ */
+  .remix-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem; }
+  .remix-card {
+    background: #fff; border: 1px solid #e8e2d8; border-radius: 12px; overflow: hidden;
+  }
+  .remix-hd {
+    padding: 1.1rem 1.5rem; border-bottom: 1px solid #f0ebe2;
+    display: flex; align-items: center; gap: 0.85rem;
+  }
+  .remix-hd-icon {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #a97df0 0%, #5aa3e5 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #fff; font-weight: 700;
+  }
+  .remix-hd-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #bbb; margin-bottom: 2px;
+  }
+  .remix-hd-title { font-size: 15px; font-weight: 600; color: #111; }
+  .remix-body { padding: 1.25rem 1.5rem; }
+  .remix-desc {
+    font-size: 12.5px; color: #888; margin: 0 0 1rem; line-height: 1.5;
+  }
+  .remix-formats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0;
+  }
+  .remix-chip {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.75rem 0.9rem; border-radius: 10px;
+    border: 1.5px solid #e8e2d8; background: #faf8f5;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    text-align: left; font-family: var(--sans);
+  }
+  .remix-chip:hover { border-color: #bbb; background: #f5f0e8; }
+  .remix-chip.active { border-color: #a97df0; background: #f8f4ff;
+    box-shadow: 0 0 0 2px rgba(169,125,240,0.12); }
+  .remix-chip.loading { opacity: 0.65; cursor: default; pointer-events: none; }
+  .remix-chip-icon {
+    width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  .remix-chip-icon.li  { background: #dbeafe; color: #1d4ed8; }
+  .remix-chip-icon.ugc { background: #fee2e2; color: #dc2626; }
+  .remix-chip-icon.twt { background: #f0f9ff; color: #0284c7; }
+  .remix-chip-icon.eml { background: #d1fae5; color: #065f46; }
+  .remix-chip-label { font-size: 12px; font-weight: 600; color: #222; line-height: 1.2; }
+  .remix-chip-sub   { font-size: 10px; color: #aaa; margin-top: 1px; }
+  .remix-output {
+    margin-top: 0.9rem; display: none;
+    border: 1px solid #e8e2d8; border-radius: 10px; overflow: hidden;
+  }
+  .remix-output.visible { display: block; }
+  .remix-output-label {
+    padding: 8px 14px; background: #f5f0e8;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: #999;
+    border-bottom: 1px solid #e8e2d8;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .remix-output-label-name { color: #555; }
+  .remix-output-box {
+    padding: 1rem 1.1rem; font-size: 13px; color: #333; line-height: 1.7;
+    white-space: pre-wrap; font-family: var(--sans); background: #fff;
+    max-height: 420px; overflow-y: auto;
+  }
+  .remix-output-footer {
+    padding: 0.6rem 1rem; background: #faf8f5; border-top: 1px solid #f0ebe2;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .remix-credit-note { font-size: 11px; color: #bbb; }
+  .remix-copy-btn {
+    padding: 6px 14px; font-size: 12px; font-weight: 600;
+    font-family: var(--sans); background: #111; color: #fff;
+    border: none; border-radius: 7px; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .remix-copy-btn:hover { opacity: 0.8; }
+
   /* ════════════════════ Implementation Guide ════════════════════ */
   .impl-guide-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem 5rem; }
   .impl-guide-card {
@@ -1194,6 +1275,7 @@
     .preview-seo-badges { grid-template-columns: 1fr 1fr; }
     .revision-body { flex-direction: column; }
     .revision-btn { width: 100%; }
+    .remix-formats { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -1675,6 +1757,13 @@
               <div class="seo-badge-text" id="seoBadgeMeta">—</div>
             </div>
           </div>
+          <div class="seo-badge-item full-width">
+            <div class="seo-badge-dot neutral" id="seoDotReadability"></div>
+            <div>
+              <div class="seo-badge-name">Readability</div>
+              <div class="seo-badge-text" id="seoBadgeReadability">—</div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -1699,6 +1788,63 @@
         <div class="revision-cost-note" id="revisionCostNote">Uses 1 credit per revision.</div>
         <div class="revision-status" id="revisionStatus"></div>
         <div class="revision-streaming-wrap" id="revisionStreaming"></div>
+      </div>
+    </div>
+
+    <!-- Article Remixer -->
+    <div class="remix-wrap" id="remixWrap">
+      <div class="remix-card">
+        <div class="remix-hd">
+          <div class="remix-hd-icon">↺</div>
+          <div>
+            <div class="remix-hd-eyebrow">repurpose</div>
+            <div class="remix-hd-title">Remix this article</div>
+          </div>
+        </div>
+        <div class="remix-body">
+          <p class="remix-desc">Turn your article into a different format — ready to post anywhere.</p>
+          <div class="remix-formats">
+            <button class="remix-chip" id="remixChip-linkedin" onclick="generateRemix('linkedin')">
+              <div class="remix-chip-icon li">in</div>
+              <div>
+                <div class="remix-chip-label">LinkedIn Post</div>
+                <div class="remix-chip-sub">Stop-the-scroll hook + insights</div>
+              </div>
+            </button>
+            <button class="remix-chip" id="remixChip-ugc" onclick="generateRemix('ugc')">
+              <div class="remix-chip-icon ugc">▶</div>
+              <div>
+                <div class="remix-chip-label">UGC / TikTok Script</div>
+                <div class="remix-chip-sub">Hook → payoff → CTA</div>
+              </div>
+            </button>
+            <button class="remix-chip" id="remixChip-thread" onclick="generateRemix('thread')">
+              <div class="remix-chip-icon twt">𝕏</div>
+              <div>
+                <div class="remix-chip-label">Twitter / X Thread</div>
+                <div class="remix-chip-sub">5-8 tweets, hook first</div>
+              </div>
+            </button>
+            <button class="remix-chip" id="remixChip-email" onclick="generateRemix('email')">
+              <div class="remix-chip-icon eml">✉</div>
+              <div>
+                <div class="remix-chip-label">Email Newsletter</div>
+                <div class="remix-chip-sub">Subject + preview + body</div>
+              </div>
+            </button>
+          </div>
+          <div class="remix-output" id="remixOutput">
+            <div class="remix-output-label">
+              <span class="remix-output-label-name" id="remixOutputLabel">output</span>
+              <span id="remixOutputStatus"></span>
+            </div>
+            <div class="remix-output-box" id="remixOutputBox"></div>
+            <div class="remix-output-footer">
+              <span class="remix-credit-note" id="remixCreditNote"></span>
+              <button class="remix-copy-btn" id="remixCopyBtn" onclick="copyRemix(this)" style="display:none">Copy</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2585,6 +2731,24 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Flesch-Kincaid readability ───────────────────────────────────────────────
+function _countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g, '');
+  if (word.length <= 3) return 1;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+  word = word.replace(/^y/, '');
+  const m = word.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
+
+function fleschReadingEase(text) {
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+  const words     = text.trim().split(/\s+/).filter(Boolean);
+  if (!sentences.length || !words.length) return null;
+  const syllables = words.reduce((n, w) => n + _countSyllables(w), 0);
+  return 206.835 - 1.015 * (words.length / sentences.length) - 84.6 * (syllables / words.length);
+}
+
 function inlineMarkdown(text) {
   let t = escHtml(text);
   t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -2707,6 +2871,27 @@ function openPreview() {
       metaHasCTA ? 'green' : 'amber',
       metaHasCTA ? 'Has action phrase ✓' : 'Consider adding a CTA phrase');
 
+    // Flesch-Kincaid Readability
+    const fkScore = fleschReadingEase(body);
+    let fkColor, fkLabel;
+    if (fkScore === null) {
+      fkColor = 'neutral'; fkLabel = '—';
+    } else if (fkScore >= 60 && fkScore < 80) {
+      fkColor = 'green';
+      fkLabel = Math.round(fkScore) + ' · ' + (fkScore >= 70 ? 'Fairly Easy' : 'Standard') + ' — ideal for web ✓';
+    } else if (fkScore >= 80) {
+      fkColor = 'amber';
+      fkLabel = Math.round(fkScore) + ' · Very Easy — may read as too simple';
+    } else if (fkScore >= 45) {
+      fkColor = 'amber';
+      fkLabel = Math.round(fkScore) + ' · Fairly Difficult — consider shorter sentences';
+    } else {
+      fkColor = 'red';
+      fkLabel = Math.round(fkScore) + ' · Difficult — simplify for broader audiences';
+    }
+    _setBadge('seoDotReadability', 'seoBadgeReadability', fkColor, fkLabel);
+    const fkGood = fkScore !== null && fkScore >= 45 && fkScore < 80;
+
     // Overall score pill
     const checks = [
       titleBarColor === 'green', metaBarColor === 'green',
@@ -2714,7 +2899,8 @@ function openPreview() {
       metaHasCTA,
       kw ? kwInTitle : true,
       kw ? (kwDensity >= 0.5 && kwDensity <= 2.5) : true,
-      kw ? kwInFirst : true
+      kw ? kwInFirst : true,
+      fkGood
     ];
     const scorePct = Math.round(checks.filter(Boolean).length / checks.length * 100);
     const pill = document.getElementById('seoScorePill');
@@ -2745,6 +2931,12 @@ function openPreview() {
   const _revStream = document.getElementById('revisionStreaming');
   if (_revStatus) { _revStatus.style.display = 'none'; _revStatus.textContent = ''; }
   if (_revStream) { _revStream.classList.remove('visible'); _revStream.textContent = ''; }
+
+  // Reset remix UI state
+  document.querySelectorAll('.remix-chip').forEach(c => c.classList.remove('active', 'loading'));
+  const _remixOut = document.getElementById('remixOutput');
+  if (_remixOut) _remixOut.classList.remove('visible');
+  _activeRemixFormat = null;
 
   // Open overlay
   document.getElementById('previewOverlay').classList.add('open');
@@ -2915,6 +3107,203 @@ Do not add commentary, preamble, or explanations — only the revised article.`;
 
   btn.disabled = false;
   btn.textContent = 'Revise →';
+}
+
+// ── Article Remixer ───────────────────────────────────────────────────────────
+const REMIX_PROMPTS = {
+  linkedin: {
+    label: 'LinkedIn Post',
+    system: `You are an expert LinkedIn content creator. Transform the provided article into a high-performing LinkedIn post.
+
+Rules:
+— Open with 1-3 short lines that create immediate curiosity or share a counterintuitive insight. Do NOT start with "I" as the first word. Do NOT use "Excited to share" or similar filler.
+— Follow with 4-6 of the most valuable insights from the article, each as a short, punchy line. Use strategic line breaks — one idea per line, with blank lines between sections.
+— End with ONE specific question that invites genuine conversation (not "Thoughts?" or "What do you think?").
+— Total length: 150-250 words. No hashtags. No em dashes for decoration. No bullet-point listicle formatting.
+— Voice: direct, confident, opinionated. This should sound like the author's own perspective, not a press release or content summary.
+
+Output only the LinkedIn post — no preamble or explanation.`
+  },
+  ugc: {
+    label: 'UGC / TikTok Script',
+    system: `You are a social video script writer who understands stop-the-scroll UGC content. Transform the provided article into a TikTok/Reels script.
+
+Use exactly these labeled sections:
+
+[HOOK — 3 sec]
+One sentence that creates immediate curiosity or pattern-interrupts. E.g. "Nobody tells you that..." or "This is why [common thing] doesn't actually work..."
+
+[PROBLEM — 10 sec]
+Establish the gap or frustration the article addresses. 2-3 conversational sentences. Speak directly to the viewer.
+
+[INSIGHT 1 — 10 sec]
+[INSIGHT 2 — 10 sec]
+[INSIGHT 3 — 10 sec]
+The 3 most actionable or surprising points from the article. Each spoken conversationally with a specific example or number. Short sentences only.
+
+[CTA — 5 sec]
+One natural, low-pressure close. E.g. "Save this for later" or "Link in bio for the full breakdown."
+
+Keep language simple and spoken. No jargon. Write how someone actually talks on camera.
+
+Output only the script with the labeled sections — no preamble.`
+  },
+  thread: {
+    label: 'Twitter / X Thread',
+    system: `You are a Twitter/X thread writer. Transform the provided article into a compelling thread that earns engagement.
+
+Structure:
+— Tweet 1 (Hook): The sharpest insight from the article as a standalone provocative statement. Must create immediate curiosity without being clickbait. End with "Thread ↓" on its own line.
+— Tweets 2-7: Each expands on one distinct insight from the article. Maximum 280 characters each. Each tweet should be able to stand alone as a useful thought. No filler. Vary sentence length.
+— Final tweet: One-sentence key takeaway + "Full article: [paste your URL]"
+
+Rules: No hashtags. No numbered formatting like "1/" inside tweets. No "In this thread..." opener. Each tweet ends at a natural stopping point that makes the reader want more.
+
+Separate each tweet with a blank line. Output only the thread — no preamble.`
+  },
+  email: {
+    label: 'Email Newsletter',
+    system: `You are an email newsletter writer. Transform the provided article into a compelling newsletter edition.
+
+Output in exactly this format:
+
+SUBJECT: [5-8 words, specific and curiosity-driven — not generic, no clickbait]
+PREVIEW: [50-90 chars of preview text that complements the subject without repeating it]
+
+---
+
+[2-sentence intro that hooks the reader without summarizing the entire article. Drop them into the most interesting insight immediately.]
+
+[3-4 key takeaways from the article. Each as a short section: one bolded lead-in sentence, then 2-3 sentences of expansion. Use ** for bold.]
+
+[1-2 sentence close with a specific forward-looking thought or question. Not "I hope this was helpful." Not "See you next time."]
+
+— [Your name]
+
+Rules: conversational but focused, no filler phrases, no "I hope this email finds you well", no "In conclusion", no "In today's edition".
+
+Output only the newsletter — no preamble.`
+  }
+};
+
+let _activeRemixFormat = null;
+
+async function generateRemix(format) {
+  const raw = document.getElementById('out6').textContent;
+  if (!raw || raw.startsWith('Waiting') || raw.startsWith('Follows')) return;
+
+  const ownApiKey = document.getElementById('apiKey').value.trim();
+  const model     = document.getElementById('model').value;
+
+  // Update chip states
+  document.querySelectorAll('.remix-chip').forEach(c => {
+    c.classList.remove('active', 'loading');
+  });
+  const activeChip = document.getElementById('remixChip-' + format);
+  if (activeChip) activeChip.classList.add('active', 'loading');
+  _activeRemixFormat = format;
+
+  // Prepare output area
+  const outputEl  = document.getElementById('remixOutput');
+  const outputBox = document.getElementById('remixOutputBox');
+  const labelEl   = document.getElementById('remixOutputLabel');
+  const statusEl  = document.getElementById('remixOutputStatus');
+  const copyBtn   = document.getElementById('remixCopyBtn');
+  const creditEl  = document.getElementById('remixCreditNote');
+
+  outputEl.classList.add('visible');
+  outputBox.textContent = '';
+  labelEl.textContent   = REMIX_PROMPTS[format].label;
+  statusEl.textContent  = 'Generating…';
+  copyBtn.style.display = 'none';
+
+  const hasOwnKey = ownApiKey.length > 0;
+  creditEl.textContent = hasOwnKey ? 'Uses your API key' : 'Uses 1 credit';
+
+  let authMode;
+  try {
+    if (ownApiKey) {
+      authMode = { type: 'key', apiKey: ownApiKey };
+    } else if (_creditToken) {
+      const r = await fetch('/api/start-run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creditToken: _creditToken })
+      });
+      if (!r.ok) {
+        const err = await r.json();
+        throw new Error(err.error || 'Not enough credits');
+      }
+      const d = await r.json();
+      authMode = { type: 'run', runToken: d.runToken };
+      updateCreditDisplay(d.remaining);
+    } else {
+      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+    }
+
+    const authPayload = authMode.type === 'key'
+      ? { apiKey: authMode.apiKey }
+      : { runToken: authMode.runToken };
+
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...authPayload,
+        model,
+        max_tokens: 1024,
+        system: REMIX_PROMPTS[format].system,
+        messages: [{ role: 'user', content: `Here is the article to remix:\n\n${raw}` }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || 'API error ' + resp.status);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let result = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+            result += parsed.delta.text;
+            outputBox.textContent = result;
+            outputBox.scrollTop = outputBox.scrollHeight;
+          }
+        } catch(e) {}
+      }
+    }
+
+    statusEl.textContent = 'Done ✓';
+    copyBtn.style.display = 'block';
+    copyBtn.dataset.content = result;
+
+  } catch(err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    outputBox.textContent = '';
+  }
+
+  if (activeChip) activeChip.classList.remove('loading');
+}
+
+function copyRemix(btn) {
+  const text = btn.dataset.content || document.getElementById('remixOutputBox').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
 }
 
 // ── Draft management ─────────────────────────────────────────────────────────
