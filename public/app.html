@@ -51,7 +51,7 @@
     font-weight: 400;
     min-height: 100vh;
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto auto 1fr;
   }
 
   /* ── Header ── */
@@ -150,6 +150,37 @@
   .pipe-node.done-5 .pipe-node-label { color: rgba(169,125,240,0.45); }
   .pipe-node.done-6 .pipe-node-num { border-color: rgba(232,184,75,0.35); background: rgba(232,184,75,0.05); color: rgba(232,184,75,0.55); }
   .pipe-node.done-6 .pipe-node-label { color: rgba(232,184,75,0.45); }
+
+  /* ── Pipeline progress bar ── */
+  #pipelineProgress {
+    height: 2px; background: var(--surface2); flex-shrink: 0; position: relative; overflow: hidden;
+  }
+  #pipelineProgressFill {
+    position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3), var(--a5));
+    background-size: 300% 100%;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    animation: progressShimmer 2s linear infinite;
+  }
+  #pipelineProgressFill.complete { animation: none; background: var(--a3); }
+  @keyframes progressShimmer {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  /* ── Streaming cursor ── */
+  .agent-output-text.streaming::after {
+    content: '▋';
+    display: inline-block;
+    color: var(--accent);
+    animation: cursorBlink 0.8s step-end infinite;
+    margin-left: 1px;
+    font-size: 0.85em;
+  }
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
 
   main { display: grid; grid-template-columns: 340px 1fr; height: 100%; overflow: hidden; }
 
@@ -911,6 +942,8 @@
 </div>
 <!-- end TEMP -->
 
+<div id="pipelineProgress"><div id="pipelineProgressFill"></div></div>
+
 <main>
   <aside class="sidebar">
 
@@ -1644,8 +1677,25 @@ function showError(msg) {
 function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
 
 function scrollPanelToBottom(n) {
-  const body = document.getElementById('out' + n).parentElement;
-  body.scrollTop = body.scrollHeight;
+  // kept for compatibility — actual scrolling now handled in streamAgent
+}
+
+function scrollToPanel(n) {
+  _autoScrollEnabled = true; // reset on each new agent start
+  const area = document.getElementById('outputArea');
+  const panel = document.getElementById('panel' + n);
+  if (!panel || !area) return;
+  const target = panel.offsetTop - 12;
+  area.scrollTo({ top: target, behavior: 'smooth' });
+}
+
+function setProgress(completedAgents) {
+  const fill = document.getElementById('pipelineProgressFill');
+  if (!fill) return;
+  const pct = (completedAgents / 6) * 100;
+  fill.style.width = pct + '%';
+  if (completedAgents === 6) fill.classList.add('complete');
+  else fill.classList.remove('complete');
 }
 
 function copyArticle() {
@@ -1877,6 +1927,23 @@ function loadSavedOwnKey() {
 
 // ── Core streaming call ──────────────────────────────────────────────────────
 // authMode: { type: 'key', apiKey } | { type: 'run', runToken }
+// Auto-scroll the output area so the bottom of the active panel stays visible.
+// Respects user intent: if the user has scrolled up more than 200px above the
+// active panel's bottom, we stop chasing so they can read earlier output.
+let _autoScrollEnabled = true;
+function _checkUserScroll() {
+  const area = document.getElementById('outputArea');
+  _autoScrollEnabled = area.scrollHeight - area.scrollTop - area.clientHeight < 220;
+}
+
+function scrollActiveToBottom(outEl) {
+  if (!_autoScrollEnabled) return;
+  const area = document.getElementById('outputArea');
+  const elBottom = outEl.offsetTop + outEl.offsetHeight;
+  const target = elBottom - area.clientHeight + 32;
+  area.scrollTop = Math.max(area.scrollTop, target);
+}
+
 async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage, outEl, panelN) {
   const authPayload = authMode.type === 'key'
     ? { apiKey: authMode.apiKey }
@@ -1902,7 +1969,7 @@ async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let fullText = '';
-  outEl.className = 'agent-output-text filled';
+  outEl.className = 'agent-output-text filled streaming';
 
   while (true) {
     const { done, value } = await reader.read();
@@ -1917,12 +1984,17 @@ async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage
         if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
           fullText += parsed.delta.text;
           outEl.textContent = fullText;
-          scrollPanelToBottom(panelN);
+          // Live word count in status pill
+          const wc = fullText.trim().split(/\s+/).filter(Boolean).length;
+          const pill = document.getElementById('pill' + panelN);
+          if (pill && pill.classList.contains('running')) pill.textContent = wc + ' words…';
+          scrollActiveToBottom(outEl);
         }
       } catch(e) {}
     }
   }
 
+  outEl.classList.remove('streaming');
   return fullText;
 }
 
@@ -1987,6 +2059,7 @@ async function runPipeline() {
   document.getElementById('saveBanner').classList.remove('visible');
   document.getElementById('completionBar').classList.remove('visible');
   document.getElementById('completionBarSpacer').style.height = '0';
+  setProgress(0);
 
   // Reset all panels
   for (let i = 1; i <= 6; i++) {
@@ -1999,7 +2072,10 @@ async function runPipeline() {
   setOutput(5, 'Follows after refining.', false);
   setOutput(6, 'Follows after SEO editing.', false);
 
-  document.getElementById('outputArea').scrollTop = 0;
+  const outputArea = document.getElementById('outputArea');
+  outputArea.scrollTop = 0;
+  outputArea.addEventListener('scroll', _checkUserScroll, { passive: true });
+  setProgress(0);
 
   try {
     const audienceNote = audience ? `\nTarget audience: ${audience}` : '';
@@ -2007,57 +2083,58 @@ async function runPipeline() {
 
     // ── Agent 1: Strategist ──
     setPipeNode(1, 'active'); setPanel(1, 'active'); setPill(1, 'working…', true);
+    scrollToPanel(1);
     const out1El = document.getElementById('out1');
     const brief = await streamAgent(
       authMode, model, 1200, sys[0],
       `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\nTone preference: ${tone}${strategistNote}`,
       out1El, 1
     );
-    setPipeNode(1, 'done'); setPanel(1, null); setPill(1, 'done ✓', false);
+    setPipeNode(1, 'done'); setPanel(1, null); setPill(1, 'done ✓', false); setProgress(1);
 
     // ── Agent 2: Researcher ──
     setPipeNode(2, 'active'); setPanel(2, 'active'); setPill(2, 'working…', true);
-    setOutput(2, '', false);
+    scrollToPanel(2); setOutput(2, '', false);
     const out2El = document.getElementById('out2');
     const research = await streamAgent(
       authMode, model, 1500, sys[1],
       `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\n\nStrategic brief:\n${brief}`,
       out2El, 2
     );
-    setPipeNode(2, 'done'); setPanel(2, null); setPill(2, 'done ✓', false);
+    setPipeNode(2, 'done'); setPanel(2, null); setPill(2, 'done ✓', false); setProgress(2);
 
     // ── Agent 3: Writer ──
     setPipeNode(3, 'active'); setPanel(3, 'active'); setPill(3, 'working…', true);
-    setOutput(3, '', false);
+    scrollToPanel(3); setOutput(3, '', false);
     const out3El = document.getElementById('out3');
     const draft = await streamAgent(
       authMode, model, 4096, sys[2],
       `Topic: ${topic}${keywordNote}${audienceNote}\nArticle type: ${articleType}\nTone: ${tone}\n\nStrategic brief:\n${brief}\n\nResearch notes:\n${research}${writerProductCtx}`,
       out3El, 3
     );
-    setPipeNode(3, 'done'); setPanel(3, null); setPill(3, 'done ✓', false);
+    setPipeNode(3, 'done'); setPanel(3, null); setPill(3, 'done ✓', false); setProgress(3);
 
     // ── Agent 4: Mechanical Refiner ──
     setPipeNode(4, 'active'); setPanel(4, 'active'); setPill(4, 'working…', true);
-    setOutput(4, '', false);
+    scrollToPanel(4); setOutput(4, '', false);
     const out4El = document.getElementById('out4');
     const cleaned = await streamAgent(
       authMode, model, 4096, sys[3],
       draft,
       out4El, 4
     );
-    setPipeNode(4, 'done'); setPanel(4, null); setPill(4, 'done ✓', false);
+    setPipeNode(4, 'done'); setPanel(4, null); setPill(4, 'done ✓', false); setProgress(4);
 
     // ── Agent 5: SEO Editor ──
     setPipeNode(5, 'active'); setPanel(5, 'active'); setPill(5, 'working…', true);
-    setOutput(5, '', false);
+    scrollToPanel(5); setOutput(5, '', false);
     const out5El = document.getElementById('out5');
     const seoRaw = await streamAgent(
       authMode, model, 2048, sys[4],
       `Target keyword: ${keyword || topic}${productUrl ? '\nIf a link to "' + productUrl + '" appears in the article, check that the anchor text reads naturally — not as forced SEO text.' : ''}\n\nArticle to edit:\n\n${cleaned}`,
       out5El, 5
     );
-    setPipeNode(5, 'done'); setPanel(5, null); setPill(5, 'done ✓', false);
+    setPipeNode(5, 'done'); setPanel(5, null); setPill(5, 'done ✓', false); setProgress(5);
 
     // Extract TITLE/META + body from SEO output so the humanizer only touches prose
     const { title: seoTitle, meta: seoMeta, body: seoBody } = parseArticle(seoRaw);
@@ -2065,7 +2142,7 @@ async function runPipeline() {
 
     // ── Agent 6: Voice Humanizer ──
     setPipeNode(6, 'active'); setPanel(6, 'active'); setPill(6, 'working…', true);
-    setOutput(6, '', false);
+    scrollToPanel(6); setOutput(6, '', false);
     const out6El = document.getElementById('out6');
     await streamAgent(
       authMode, model, 4096, sys[5],
@@ -2076,7 +2153,7 @@ async function runPipeline() {
     // Reconstruct TITLE/META header from SEO agent + humanized body from Agent 6
     const humanizedBody = out6El.textContent.trim();
     out6El.textContent = `TITLE: ${seoTitle || topic}\nMETA: ${seoMeta || ''}\n\n---\n\n${humanizedBody}`;
-    setPipeNode(6, 'done'); setPanel(6, null); setPill(6, 'done ✓', false);
+    setPipeNode(6, 'done'); setPanel(6, null); setPill(6, 'done ✓', false); setProgress(6);
 
     document.getElementById('copyBtn').classList.add('visible');
     document.getElementById('previewBtn').classList.add('visible');
@@ -2084,14 +2161,12 @@ async function runPipeline() {
     document.getElementById('completionBar').classList.add('visible');
     document.getElementById('completionBarSpacer').style.height = '72px';
 
-    // Scroll to final output
-    document.getElementById('panel6').scrollIntoView({ behavior: 'smooth' });
-
   } catch(err) {
     showError('Error: ' + err.message);
     for (let i = 1; i <= 6; i++) { setPill(i, '—', false); setPanel(i, null); setPipeNode(i, null); }
   }
 
+  outputArea.removeEventListener('scroll', _checkUserScroll);
   btn.disabled = false;
   btn.textContent = '✦ Generate Article';
 }
