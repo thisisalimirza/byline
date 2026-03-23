@@ -25,6 +25,9 @@
 <meta name="twitter:description" content="Six specialized AI agents write, refine, humanize, and SEO-optimize your articles. No robotic filler. Just articles that earn their place in search.">
 <meta name="twitter:image" content="https://bylineblogs.com/og-image.png">
 
+<!-- Favicon — inline SVG data URI matching the orange B brand mark -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+
 <!-- Google Search Console verification — replace content value with your GSC verification code -->
 <!-- <meta name="google-site-verification" content="REPLACE_WITH_YOUR_GSC_CODE"> -->
 
@@ -822,7 +825,7 @@ footer {
 
 <!-- ── Nav ── -->
 <nav>
-  <a class="nav-logo" href="#">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">B</div>
     <span class="nav-logo-name">Byline</span>
   </a>
@@ -1224,15 +1227,15 @@ function toggleAnnotations() {
       </div>
       <div class="step-card step-4">
         <div class="step-num-circle">4</div>
-        <div class="step-name">Refiner</div>
-        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing AI tells like copula avoidance, synonym cycling, and em dash overuse.</p>
-        <span class="step-tag">removes AI patterns</span>
-      </div>
-      <div class="step-card step-5">
-        <div class="step-num-circle">5</div>
         <div class="step-name">SEO Editor</div>
         <p class="step-desc">Handles keyword placement, scannability, and structure — weaving the target keyword naturally, tightening subheadings, and generating a title and meta description.</p>
         <span class="step-tag">keyword + structure</span>
+      </div>
+      <div class="step-card step-5">
+        <div class="step-num-circle">5</div>
+        <div class="step-name">Refiner</div>
+        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing AI tells like copula avoidance, synonym cycling, and em dash overuse.</p>
+        <span class="step-tag">removes AI patterns</span>
       </div>
       <div class="step-card step-6">
         <div class="step-num-circle">6</div>
@@ -1429,6 +1432,7 @@ function toggleAnnotations() {
 <!-- ── Footer ── -->
 <footer>
   <span class="footer-logo">Byline</span>
+  <a href="/refund" style="font-size:12px;color:var(--text-dim);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='var(--text-muted)'" onmouseout="this.style.color='var(--text-dim)'">Refund Policy</a>
   <span class="footer-note">Built with Claude — AI Article Studio</span>
 </footer>
 
