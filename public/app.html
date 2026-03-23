@@ -848,6 +848,7 @@
     color: #555; margin-bottom: 2px;
   }
   .seo-badge-text { font-size: 10.5px; color: #999; line-height: 1.45; }
+  .seo-badge-item.full-width { grid-column: 1 / -1; }
 
   /* ════════════════════ Save Draft / Toast ════════════════════ */
   .save-draft-btn {
@@ -991,6 +992,133 @@
     background: #ede8df; padding: 2px 6px; border-radius: 3px; color: #444;
   }
 
+  /* ════════════════════ Revision Panel ═════════════════════════ */
+  .revision-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem; }
+  .revision-card {
+    background: #fff; border: 1px solid #e8e2d8; border-radius: 12px;
+    padding: 1.4rem 1.5rem; margin-bottom: 0;
+  }
+  .revision-hd {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;
+  }
+  .revision-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #999; margin-bottom: 2px;
+  }
+  .revision-title { font-size: 14px; font-weight: 600; color: #111; }
+  .revision-icon {
+    width: 30px; height: 30px; border-radius: 8px; background: #f0ebe2;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+  .revision-body { display: flex; gap: 8px; align-items: flex-start; }
+  .revision-input {
+    flex: 1; font-family: var(--sans); font-size: 13px;
+    border: 1px solid #ddd; border-radius: 8px; padding: 9px 12px;
+    background: #fafaf8; color: #222; resize: vertical; min-height: 60px;
+    line-height: 1.5; outline: none;
+  }
+  .revision-input:focus { border-color: #aaa; background: #fff; }
+  .revision-input::placeholder { color: #aaa; }
+  .revision-btn {
+    padding: 9px 16px; font-size: 12px; font-weight: 600; font-family: var(--sans);
+    background: #111; color: #fff; border: none; border-radius: 8px; cursor: pointer;
+    white-space: nowrap; letter-spacing: 0.01em; transition: opacity 0.15s;
+  }
+  .revision-btn:hover { opacity: 0.82; }
+  .revision-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .revision-cost-note { font-size: 11px; color: #aaa; margin-top: 6px; }
+  .revision-streaming-wrap {
+    margin-top: 10px; display: none; background: #fafaf8;
+    border: 1px solid #e8e2d8; border-radius: 8px; padding: 10px 12px;
+    font-size: 12px; font-family: var(--mono); color: #555; max-height: 120px;
+    overflow-y: auto; white-space: pre-wrap; line-height: 1.5;
+  }
+  .revision-streaming-wrap.visible { display: block; }
+  .revision-status {
+    font-size: 12px; color: #888; margin-top: 8px; display: none;
+  }
+  .revision-status.visible { display: block; }
+
+  /* ════════════════════ Article Remixer ════════════════════════ */
+  .remix-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem; }
+  .remix-card {
+    background: #fff; border: 1px solid #e8e2d8; border-radius: 12px; overflow: hidden;
+  }
+  .remix-hd {
+    padding: 1.1rem 1.5rem; border-bottom: 1px solid #f0ebe2;
+    display: flex; align-items: center; gap: 0.85rem;
+  }
+  .remix-hd-icon {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #a97df0 0%, #5aa3e5 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #fff; font-weight: 700;
+  }
+  .remix-hd-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #bbb; margin-bottom: 2px;
+  }
+  .remix-hd-title { font-size: 15px; font-weight: 600; color: #111; }
+  .remix-body { padding: 1.25rem 1.5rem; }
+  .remix-desc {
+    font-size: 12.5px; color: #888; margin: 0 0 1rem; line-height: 1.5;
+  }
+  .remix-formats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0;
+  }
+  .remix-chip {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.75rem 0.9rem; border-radius: 10px;
+    border: 1.5px solid #e8e2d8; background: #faf8f5;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    text-align: left; font-family: var(--sans);
+  }
+  .remix-chip:hover { border-color: #bbb; background: #f5f0e8; }
+  .remix-chip.active { border-color: #a97df0; background: #f8f4ff;
+    box-shadow: 0 0 0 2px rgba(169,125,240,0.12); }
+  .remix-chip.loading { opacity: 0.65; cursor: default; pointer-events: none; }
+  .remix-chip-icon {
+    width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  .remix-chip-icon.li  { background: #dbeafe; color: #1d4ed8; }
+  .remix-chip-icon.ugc { background: #fee2e2; color: #dc2626; }
+  .remix-chip-icon.twt { background: #f0f9ff; color: #0284c7; }
+  .remix-chip-icon.eml { background: #d1fae5; color: #065f46; }
+  .remix-chip-label { font-size: 12px; font-weight: 600; color: #222; line-height: 1.2; }
+  .remix-chip-sub   { font-size: 10px; color: #aaa; margin-top: 1px; }
+  .remix-output {
+    margin-top: 0.9rem; display: none;
+    border: 1px solid #e8e2d8; border-radius: 10px; overflow: hidden;
+  }
+  .remix-output.visible { display: block; }
+  .remix-output-label {
+    padding: 8px 14px; background: #f5f0e8;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: #999;
+    border-bottom: 1px solid #e8e2d8;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .remix-output-label-name { color: #555; }
+  .remix-output-box {
+    padding: 1rem 1.1rem; font-size: 13px; color: #333; line-height: 1.7;
+    white-space: pre-wrap; font-family: var(--sans); background: #fff;
+    max-height: 420px; overflow-y: auto;
+  }
+  .remix-output-footer {
+    padding: 0.6rem 1rem; background: #faf8f5; border-top: 1px solid #f0ebe2;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .remix-credit-note { font-size: 11px; color: #bbb; }
+  .remix-copy-btn {
+    padding: 6px 14px; font-size: 12px; font-weight: 600;
+    font-family: var(--sans); background: #111; color: #fff;
+    border: none; border-radius: 7px; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .remix-copy-btn:hover { opacity: 0.8; }
+
   /* ════════════════════ Implementation Guide ════════════════════ */
   .impl-guide-wrap { max-width: 700px; margin: 1.5rem auto 0; padding: 0 2rem 5rem; }
   .impl-guide-card {
@@ -1050,6 +1178,105 @@
     border-radius: 7px; font-size: 12.5px; color: #888; line-height: 1.55;
     font-style: italic; border: 1px solid #ece7de;
   }
+
+  /* ── Mobile tab bar (hidden on desktop) ─────────────────────────────────── */
+  .mobile-tabs { display: none; }
+
+  @media (max-width: 900px) {
+    /* Allow full-page scroll instead of viewport-locked layout */
+    body {
+      height: auto;
+      overflow-y: auto;
+      grid-template-rows: auto auto auto auto auto auto;
+    }
+
+    /* Show tab bar */
+    .mobile-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 58px;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .mobile-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-tab.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Stack sidebar and output instead of side-by-side grid */
+    main {
+      display: block;
+      overflow: visible;
+      height: auto;
+    }
+
+    /* Sidebar becomes full-width */
+    .sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+      overflow: visible;
+      height: auto;
+      padding: 1rem;
+    }
+
+    /* Output area becomes full-width */
+    .output-area {
+      overflow: visible;
+      height: auto;
+      min-height: 60vh;
+    }
+
+    /* Tab-driven visibility */
+    .sidebar.tab-hidden { display: none; }
+    .output-area.tab-hidden { display: none; }
+
+    /* Header adjustments */
+    header { padding: 0 1rem; }
+    .pipeline-vis { display: none; }
+    .header-credit-pill { margin-left: auto; }
+
+    /* Drafts grid */
+    .draft-cards { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+    /* Modal credit packs: 2-up */
+    .pack-grid { grid-template-columns: 1fr 1fr; }
+
+    /* SEO metrics: single column */
+    .preview-seo-metrics { grid-template-columns: 1fr; gap: 0.8rem; }
+
+    /* Preview overlay scrollable */
+    .preview-overlay { overflow-y: auto; }
+    .preview-body { overflow-y: visible; }
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 0 0.75rem; gap: 0.5rem; }
+    .logo-name { display: none; }
+    .sidebar { padding: 0.75rem; }
+    .pack-grid { grid-template-columns: 1fr; }
+    .promo-grid { grid-template-columns: 1fr; }
+    .preview-seo-badges { grid-template-columns: 1fr 1fr; }
+    .revision-body { flex-direction: column; }
+    .revision-btn { width: 100%; }
+    .remix-formats { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -1095,6 +1322,11 @@
     <span class="hcp-label">credits</span>
   </button>
 </header>
+
+<div class="mobile-tabs" id="mobileTabs">
+  <button class="mobile-tab active" id="tabSetup" onclick="switchTab('setup')">Setup</button>
+  <button class="mobile-tab" id="tabResults" onclick="switchTab('results')">Results</button>
+</div>
 
 <!-- Sticky completion bar — shown when pipeline finishes -->
 <div id="completionBar">
@@ -1525,8 +1757,94 @@
               <div class="seo-badge-text" id="seoBadgeMeta">—</div>
             </div>
           </div>
+          <div class="seo-badge-item full-width">
+            <div class="seo-badge-dot neutral" id="seoDotReadability"></div>
+            <div>
+              <div class="seo-badge-name">Readability</div>
+              <div class="seo-badge-text" id="seoBadgeReadability">—</div>
+            </div>
+          </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Revision panel -->
+    <div class="revision-wrap" id="revisionWrap">
+      <div class="revision-card">
+        <div class="revision-hd">
+          <div class="revision-icon">✦</div>
+          <div>
+            <div class="revision-eyebrow">refine</div>
+            <div class="revision-title">Revise this article</div>
+          </div>
+        </div>
+        <div class="revision-body">
+          <textarea class="revision-input" id="revisionInput"
+            placeholder="e.g. Make it more conversational, add a section on pricing, shorten by 200 words…"
+            rows="2"></textarea>
+          <button class="revision-btn" id="revisionBtn" onclick="reviseArticle()">Revise →</button>
+        </div>
+        <div class="revision-cost-note" id="revisionCostNote">Uses 1 credit per revision.</div>
+        <div class="revision-status" id="revisionStatus"></div>
+        <div class="revision-streaming-wrap" id="revisionStreaming"></div>
+      </div>
+    </div>
+
+    <!-- Article Remixer -->
+    <div class="remix-wrap" id="remixWrap">
+      <div class="remix-card">
+        <div class="remix-hd">
+          <div class="remix-hd-icon">↺</div>
+          <div>
+            <div class="remix-hd-eyebrow">repurpose</div>
+            <div class="remix-hd-title">Remix this article</div>
+          </div>
+        </div>
+        <div class="remix-body">
+          <p class="remix-desc">Turn your article into a different format — ready to post anywhere.</p>
+          <div class="remix-formats">
+            <button class="remix-chip" id="remixChip-linkedin" onclick="generateRemix('linkedin')">
+              <div class="remix-chip-icon li">in</div>
+              <div>
+                <div class="remix-chip-label">LinkedIn Post</div>
+                <div class="remix-chip-sub">Stop-the-scroll hook + insights</div>
+              </div>
+            </button>
+            <button class="remix-chip" id="remixChip-ugc" onclick="generateRemix('ugc')">
+              <div class="remix-chip-icon ugc">▶</div>
+              <div>
+                <div class="remix-chip-label">UGC / TikTok Script</div>
+                <div class="remix-chip-sub">Hook → payoff → CTA</div>
+              </div>
+            </button>
+            <button class="remix-chip" id="remixChip-thread" onclick="generateRemix('thread')">
+              <div class="remix-chip-icon twt">𝕏</div>
+              <div>
+                <div class="remix-chip-label">Twitter / X Thread</div>
+                <div class="remix-chip-sub">5-8 tweets, hook first</div>
+              </div>
+            </button>
+            <button class="remix-chip" id="remixChip-email" onclick="generateRemix('email')">
+              <div class="remix-chip-icon eml">✉</div>
+              <div>
+                <div class="remix-chip-label">Email Newsletter</div>
+                <div class="remix-chip-sub">Subject + preview + body</div>
+              </div>
+            </button>
+          </div>
+          <div class="remix-output" id="remixOutput">
+            <div class="remix-output-label">
+              <span class="remix-output-label-name" id="remixOutputLabel">output</span>
+              <span id="remixOutputStatus"></span>
+            </div>
+            <div class="remix-output-box" id="remixOutputBox"></div>
+            <div class="remix-output-footer">
+              <span class="remix-credit-note" id="remixCreditNote"></span>
+              <button class="remix-copy-btn" id="remixCopyBtn" onclick="copyRemix(this)" style="display:none">Copy</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1805,6 +2123,25 @@ Fix what you find. Then output the final article.
 
 Output only the final article body. No preamble, no explanation, no commentary about your changes.`
 };
+
+// ── Mobile tab switching ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  const sidebar = document.querySelector('.sidebar');
+  const output  = document.querySelector('.output-area');
+  const tabSetup   = document.getElementById('tabSetup');
+  const tabResults = document.getElementById('tabResults');
+  if (tab === 'setup') {
+    sidebar.classList.remove('tab-hidden');
+    output.classList.add('tab-hidden');
+    tabSetup.classList.add('active');
+    tabResults.classList.remove('active');
+  } else {
+    output.classList.remove('tab-hidden');
+    sidebar.classList.add('tab-hidden');
+    tabResults.classList.add('active');
+    tabSetup.classList.remove('active');
+  }
+}
 
 // ── State ───────────────────────────────────────────────────────────────────
 let articleType = 'B2B';
@@ -2259,6 +2596,9 @@ async function runPipeline() {
   }
   // ──────────────────────────────────────────────────────────────────────────
 
+  // Auto-switch to Results tab on mobile when generation starts
+  if (window.innerWidth <= 900) switchTab('results');
+
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
   btn.textContent = '⟳ Generating…';
@@ -2391,6 +2731,24 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Flesch-Kincaid readability ───────────────────────────────────────────────
+function _countSyllables(word) {
+  word = word.toLowerCase().replace(/[^a-z]/g, '');
+  if (word.length <= 3) return 1;
+  word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+  word = word.replace(/^y/, '');
+  const m = word.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
+
+function fleschReadingEase(text) {
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+  const words     = text.trim().split(/\s+/).filter(Boolean);
+  if (!sentences.length || !words.length) return null;
+  const syllables = words.reduce((n, w) => n + _countSyllables(w), 0);
+  return 206.835 - 1.015 * (words.length / sentences.length) - 84.6 * (syllables / words.length);
+}
+
 function inlineMarkdown(text) {
   let t = escHtml(text);
   t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -2513,6 +2871,27 @@ function openPreview() {
       metaHasCTA ? 'green' : 'amber',
       metaHasCTA ? 'Has action phrase ✓' : 'Consider adding a CTA phrase');
 
+    // Flesch-Kincaid Readability
+    const fkScore = fleschReadingEase(body);
+    let fkColor, fkLabel;
+    if (fkScore === null) {
+      fkColor = 'neutral'; fkLabel = '—';
+    } else if (fkScore >= 60 && fkScore < 80) {
+      fkColor = 'green';
+      fkLabel = Math.round(fkScore) + ' · ' + (fkScore >= 70 ? 'Fairly Easy' : 'Standard') + ' — ideal for web ✓';
+    } else if (fkScore >= 80) {
+      fkColor = 'amber';
+      fkLabel = Math.round(fkScore) + ' · Very Easy — may read as too simple';
+    } else if (fkScore >= 45) {
+      fkColor = 'amber';
+      fkLabel = Math.round(fkScore) + ' · Fairly Difficult — consider shorter sentences';
+    } else {
+      fkColor = 'red';
+      fkLabel = Math.round(fkScore) + ' · Difficult — simplify for broader audiences';
+    }
+    _setBadge('seoDotReadability', 'seoBadgeReadability', fkColor, fkLabel);
+    const fkGood = fkScore !== null && fkScore >= 45 && fkScore < 80;
+
     // Overall score pill
     const checks = [
       titleBarColor === 'green', metaBarColor === 'green',
@@ -2520,7 +2899,8 @@ function openPreview() {
       metaHasCTA,
       kw ? kwInTitle : true,
       kw ? (kwDensity >= 0.5 && kwDensity <= 2.5) : true,
-      kw ? kwInFirst : true
+      kw ? kwInFirst : true,
+      fkGood
     ];
     const scorePct = Math.round(checks.filter(Boolean).length / checks.length * 100);
     const pill = document.getElementById('seoScorePill');
@@ -2537,6 +2917,26 @@ function openPreview() {
   document.getElementById('saveDraftBtn').classList.add('visible');
   renderDraftsTab();
   switchImplTab('Copy');
+
+  // Update revision cost note based on auth mode
+  const _revCostNote = document.getElementById('revisionCostNote');
+  if (_revCostNote) {
+    const _hasOwnKey = (document.getElementById('apiKey').value || '').trim().length > 0;
+    _revCostNote.textContent = _hasOwnKey
+      ? 'Uses your Anthropic API key — no extra credit cost.'
+      : 'Uses 1 credit per revision.';
+  }
+  // Reset revision UI state
+  const _revStatus = document.getElementById('revisionStatus');
+  const _revStream = document.getElementById('revisionStreaming');
+  if (_revStatus) { _revStatus.style.display = 'none'; _revStatus.textContent = ''; }
+  if (_revStream) { _revStream.classList.remove('visible'); _revStream.textContent = ''; }
+
+  // Reset remix UI state
+  document.querySelectorAll('.remix-chip').forEach(c => c.classList.remove('active', 'loading'));
+  const _remixOut = document.getElementById('remixOutput');
+  if (_remixOut) _remixOut.classList.remove('visible');
+  _activeRemixFormat = null;
 
   // Open overlay
   document.getElementById('previewOverlay').classList.add('open');
@@ -2563,6 +2963,347 @@ function closePreview() {
     saveBtn.onclick = saveDraft;
     _previewingDraftId = null;
   }
+}
+
+// ── Article revision ──────────────────────────────────────────────────────────
+async function reviseArticle() {
+  const instruction = document.getElementById('revisionInput').value.trim();
+  if (!instruction) {
+    document.getElementById('revisionInput').focus();
+    return;
+  }
+
+  const raw = document.getElementById('out6').textContent;
+  if (!raw || raw.startsWith('Waiting') || raw.startsWith('Follows')) return;
+
+  const ownApiKey = document.getElementById('apiKey').value.trim();
+  const model     = document.getElementById('model').value;
+
+  const btn       = document.getElementById('revisionBtn');
+  const statusEl  = document.getElementById('revisionStatus');
+  const streamEl  = document.getElementById('revisionStreaming');
+  const costNote  = document.getElementById('revisionCostNote');
+
+  btn.disabled = true;
+  btn.textContent = 'Revising…';
+  streamEl.textContent = '';
+  streamEl.classList.add('visible');
+  statusEl.style.display = 'none';
+
+  let authMode;
+  try {
+    if (ownApiKey) {
+      authMode = { type: 'key', apiKey: ownApiKey };
+    } else if (_creditToken) {
+      statusEl.textContent = 'Deducting 1 credit…';
+      statusEl.style.display = 'block';
+      const r = await fetch('/api/start-run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creditToken: _creditToken })
+      });
+      if (!r.ok) {
+        const err = await r.json();
+        throw new Error(err.error || 'Not enough credits');
+      }
+      const d = await r.json();
+      authMode = { type: 'run', runToken: d.runToken };
+      updateCreditDisplay(d.remaining);
+    } else {
+      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+    }
+
+    statusEl.textContent = 'Revising…';
+    statusEl.style.display = 'block';
+
+    const revisionSystemPrompt = `You are an expert editor. You will receive a complete article and a specific revision instruction.
+
+Apply the instruction carefully while preserving the article's format, voice, and overall structure unless the instruction explicitly changes them.
+
+Always return the full revised article in exactly this format:
+TITLE: [title]
+META: [meta description, 140-165 characters]
+
+---
+
+[article body in markdown]
+
+Do not add commentary, preamble, or explanations — only the revised article.`;
+
+    const authPayload = authMode.type === 'key'
+      ? { apiKey: authMode.apiKey }
+      : { runToken: authMode.runToken };
+
+    const revResponse = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...authPayload,
+        model,
+        max_tokens: 4096,
+        system: revisionSystemPrompt,
+        messages: [{ role: 'user', content: `Here is the article to revise:\n\n${raw}\n\n---\n\nRevision instruction: ${instruction}` }]
+      })
+    });
+
+    if (!revResponse.ok) {
+      const err = await revResponse.json();
+      throw new Error(err.error?.message || 'API error ' + revResponse.status);
+    }
+
+    const revReader = revResponse.body.getReader();
+    const revDecoder = new TextDecoder();
+    let revised = '';
+    while (true) {
+      const { done, value } = await revReader.read();
+      if (done) break;
+      const chunk = revDecoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+            revised += parsed.delta.text;
+            streamEl.textContent = revised;
+          }
+        } catch(e) {}
+      }
+    }
+
+    if (revised && revised.includes('---')) {
+      const revisedTrimmed = revised.trim();
+      // Update out6 (source of truth) so save/copy/preview all use revised version
+      document.getElementById('out6').textContent = revisedTrimmed;
+      // If viewing a saved draft, update the draft in localStorage too
+      if (_previewingDraftId !== null) {
+        const { title, meta, body } = parseArticle(revisedTrimmed);
+        let drafts = _getDrafts();
+        const idx = drafts.findIndex(x => x.id === _previewingDraftId);
+        if (idx !== -1) {
+          drafts[idx] = { ...drafts[idx], title: title || drafts[idx].title, meta, body,
+                          savedAt: new Date().toISOString() };
+          _saveDrafts(drafts);
+        }
+      }
+      // Refresh the full preview (stats, SEO, content)
+      openPreview();
+
+      statusEl.textContent = 'Article updated ✓ — scroll up to see changes.';
+      statusEl.style.display = 'block';
+      streamEl.classList.remove('visible');
+      document.getElementById('revisionInput').value = '';
+      // Scroll preview to top so user sees the updated article
+      document.querySelector('.preview-scroll').scrollTop = 0;
+    } else {
+      throw new Error('Unexpected response format from revision agent.');
+    }
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.display = 'block';
+    streamEl.classList.remove('visible');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Revise →';
+}
+
+// ── Article Remixer ───────────────────────────────────────────────────────────
+const REMIX_PROMPTS = {
+  linkedin: {
+    label: 'LinkedIn Post',
+    system: `You are an expert LinkedIn content creator. Transform the provided article into a high-performing LinkedIn post.
+
+Rules:
+— Open with 1-3 short lines that create immediate curiosity or share a counterintuitive insight. Do NOT start with "I" as the first word. Do NOT use "Excited to share" or similar filler.
+— Follow with 4-6 of the most valuable insights from the article, each as a short, punchy line. Use strategic line breaks — one idea per line, with blank lines between sections.
+— End with ONE specific question that invites genuine conversation (not "Thoughts?" or "What do you think?").
+— Total length: 150-250 words. No hashtags. No em dashes for decoration. No bullet-point listicle formatting.
+— Voice: direct, confident, opinionated. This should sound like the author's own perspective, not a press release or content summary.
+
+Output only the LinkedIn post — no preamble or explanation.`
+  },
+  ugc: {
+    label: 'UGC / TikTok Script',
+    system: `You are a social video script writer who understands stop-the-scroll UGC content. Transform the provided article into a TikTok/Reels script.
+
+Use exactly these labeled sections:
+
+[HOOK — 3 sec]
+One sentence that creates immediate curiosity or pattern-interrupts. E.g. "Nobody tells you that..." or "This is why [common thing] doesn't actually work..."
+
+[PROBLEM — 10 sec]
+Establish the gap or frustration the article addresses. 2-3 conversational sentences. Speak directly to the viewer.
+
+[INSIGHT 1 — 10 sec]
+[INSIGHT 2 — 10 sec]
+[INSIGHT 3 — 10 sec]
+The 3 most actionable or surprising points from the article. Each spoken conversationally with a specific example or number. Short sentences only.
+
+[CTA — 5 sec]
+One natural, low-pressure close. E.g. "Save this for later" or "Link in bio for the full breakdown."
+
+Keep language simple and spoken. No jargon. Write how someone actually talks on camera.
+
+Output only the script with the labeled sections — no preamble.`
+  },
+  thread: {
+    label: 'Twitter / X Thread',
+    system: `You are a Twitter/X thread writer. Transform the provided article into a compelling thread that earns engagement.
+
+Structure:
+— Tweet 1 (Hook): The sharpest insight from the article as a standalone provocative statement. Must create immediate curiosity without being clickbait. End with "Thread ↓" on its own line.
+— Tweets 2-7: Each expands on one distinct insight from the article. Maximum 280 characters each. Each tweet should be able to stand alone as a useful thought. No filler. Vary sentence length.
+— Final tweet: One-sentence key takeaway + "Full article: [paste your URL]"
+
+Rules: No hashtags. No numbered formatting like "1/" inside tweets. No "In this thread..." opener. Each tweet ends at a natural stopping point that makes the reader want more.
+
+Separate each tweet with a blank line. Output only the thread — no preamble.`
+  },
+  email: {
+    label: 'Email Newsletter',
+    system: `You are an email newsletter writer. Transform the provided article into a compelling newsletter edition.
+
+Output in exactly this format:
+
+SUBJECT: [5-8 words, specific and curiosity-driven — not generic, no clickbait]
+PREVIEW: [50-90 chars of preview text that complements the subject without repeating it]
+
+---
+
+[2-sentence intro that hooks the reader without summarizing the entire article. Drop them into the most interesting insight immediately.]
+
+[3-4 key takeaways from the article. Each as a short section: one bolded lead-in sentence, then 2-3 sentences of expansion. Use ** for bold.]
+
+[1-2 sentence close with a specific forward-looking thought or question. Not "I hope this was helpful." Not "See you next time."]
+
+— [Your name]
+
+Rules: conversational but focused, no filler phrases, no "I hope this email finds you well", no "In conclusion", no "In today's edition".
+
+Output only the newsletter — no preamble.`
+  }
+};
+
+let _activeRemixFormat = null;
+
+async function generateRemix(format) {
+  const raw = document.getElementById('out6').textContent;
+  if (!raw || raw.startsWith('Waiting') || raw.startsWith('Follows')) return;
+
+  const ownApiKey = document.getElementById('apiKey').value.trim();
+  const model     = document.getElementById('model').value;
+
+  // Update chip states
+  document.querySelectorAll('.remix-chip').forEach(c => {
+    c.classList.remove('active', 'loading');
+  });
+  const activeChip = document.getElementById('remixChip-' + format);
+  if (activeChip) activeChip.classList.add('active', 'loading');
+  _activeRemixFormat = format;
+
+  // Prepare output area
+  const outputEl  = document.getElementById('remixOutput');
+  const outputBox = document.getElementById('remixOutputBox');
+  const labelEl   = document.getElementById('remixOutputLabel');
+  const statusEl  = document.getElementById('remixOutputStatus');
+  const copyBtn   = document.getElementById('remixCopyBtn');
+  const creditEl  = document.getElementById('remixCreditNote');
+
+  outputEl.classList.add('visible');
+  outputBox.textContent = '';
+  labelEl.textContent   = REMIX_PROMPTS[format].label;
+  statusEl.textContent  = 'Generating…';
+  copyBtn.style.display = 'none';
+
+  const hasOwnKey = ownApiKey.length > 0;
+  creditEl.textContent = hasOwnKey ? 'Uses your API key' : 'Uses 1 credit';
+
+  let authMode;
+  try {
+    if (ownApiKey) {
+      authMode = { type: 'key', apiKey: ownApiKey };
+    } else if (_creditToken) {
+      const r = await fetch('/api/start-run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creditToken: _creditToken })
+      });
+      if (!r.ok) {
+        const err = await r.json();
+        throw new Error(err.error || 'Not enough credits');
+      }
+      const d = await r.json();
+      authMode = { type: 'run', runToken: d.runToken };
+      updateCreditDisplay(d.remaining);
+    } else {
+      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+    }
+
+    const authPayload = authMode.type === 'key'
+      ? { apiKey: authMode.apiKey }
+      : { runToken: authMode.runToken };
+
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...authPayload,
+        model,
+        max_tokens: 1024,
+        system: REMIX_PROMPTS[format].system,
+        messages: [{ role: 'user', content: `Here is the article to remix:\n\n${raw}` }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || 'API error ' + resp.status);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let result = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+            result += parsed.delta.text;
+            outputBox.textContent = result;
+            outputBox.scrollTop = outputBox.scrollHeight;
+          }
+        } catch(e) {}
+      }
+    }
+
+    statusEl.textContent = 'Done ✓';
+    copyBtn.style.display = 'block';
+    copyBtn.dataset.content = result;
+
+  } catch(err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    outputBox.textContent = '';
+  }
+
+  if (activeChip) activeChip.classList.remove('loading');
+}
+
+function copyRemix(btn) {
+  const text = btn.dataset.content || document.getElementById('remixOutputBox').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
 }
 
 // ── Draft management ─────────────────────────────────────────────────────────
