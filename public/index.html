@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Byline — AI Articles That Rank and Sound Human</title>
 <meta name="description" content="Byline runs six specialized AI agents to write, refine, humanize, and SEO-optimize articles that actually rank — without sounding like AI. Pay per article, no subscription.">
 <meta name="robots" content="index, follow">
@@ -93,7 +93,10 @@
   --r-lg: 16px;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
 
 body {
   background: var(--bg);
@@ -102,7 +105,12 @@ body {
   font-weight: 400;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
+
+/* iOS: remove tap flash, improve touch responsiveness */
+* { -webkit-tap-highlight-color: transparent; }
+a, button { touch-action: manipulation; }
 
 /* ── Noise grain overlay ── */
 body::before {
@@ -116,10 +124,12 @@ body::before {
 nav {
   position: sticky; top: 0; z-index: 100;
   display: flex; align-items: center;
-  padding: 0 2rem;
+  padding: 0 max(2rem, env(safe-area-inset-left));
+  padding-right: max(2rem, env(safe-area-inset-right));
   height: 58px;
   background: rgba(13,12,9,0.85);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
 .nav-logo {
@@ -245,6 +255,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   position: relative;
   max-width: 960px; margin: 0 auto;
   padding-bottom: 4rem;
+  overflow: hidden;
 }
 .hero-mockup-glow {
   position: absolute; top: 10%; left: 50%;
@@ -650,7 +661,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 /* ── Footer ── */
 footer {
   border-top: 1px solid var(--border);
-  padding: 2rem;
+  padding: 2rem max(2rem, env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) max(2rem, env(safe-area-inset-left));
   display: flex; align-items: center; gap: 1.5rem;
   max-width: 1100px; margin: 0 auto;
   flex-wrap: wrap;
@@ -807,17 +818,77 @@ footer {
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
-  .compare-panel.active { grid-template-columns: 1fr; }
-  .compare-col.ai-col { display: none; } /* show only Byline on mobile */
+  /* Fix compare panel: .active was never applied by JS, so use .compare-panel directly */
+  .compare-panel { grid-template-columns: 1fr; }
+  .compare-col.ai-col { display: none; }
+
   .nav-links { display: none; }
-  .why-grid, .promo-feature, .seo-feature { grid-template-columns: 1fr; gap: 2.5rem; }
-  .steps-grid { grid-template-columns: 1fr 1fr; }
-  .steps-grid .step-card:last-child { grid-column: unset; }
+  /* Hide ghost nav button on mobile — keep only the primary CTA */
+  .nav-cta .btn-ghost { display: none; }
+  nav { padding: 0 1.25rem; }
+
+  /* Reduce section padding for mobile */
+  section { padding: 4rem 1.25rem; }
+  .hero-section { padding: 3rem 1.25rem 0; }
+  .pipeline-inner { padding: 4rem 1.25rem; }
+  .compare-section { padding: 4rem 1.25rem; }
+  .cta-section { padding: 4rem 1.25rem; }
+
+  /* Stack hero actions vertically with full-width buttons */
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .btn-hero, .btn-hero-secondary { text-align: center; width: 100%; }
+
+  /* Grids → single column */
+  .why-grid, .promo-feature, .seo-feature { grid-template-columns: 1fr; gap: 2rem; }
   .features-grid { grid-template-columns: 1fr; }
   .faq-grid { grid-template-columns: 1fr; }
+
+  /* Steps: 2 columns on tablet, ok on most phones */
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .steps-grid .step-card:last-child { grid-column: unset; }
+
+  /* Stats: 2 columns */
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
+
+  /* Hero mockup: hide the app body, keep the topbar as a visual */
   .mock-body { display: none; }
   .hero-mockup { min-height: 60px; }
+  .hero-mockup-wrap { padding-bottom: 2.5rem; }
+
+  /* Show promo text before visual on mobile (grid order) */
+  .promo-feature-right { order: -1; }
+
+  /* Stats font size */
+  .stat-num { font-size: 30px; }
+}
+
+/* ── Small phones (≤480px) ── */
+@media (max-width: 480px) {
+  section { padding: 3rem 1rem; }
+  .hero-section { padding: 2.5rem 1rem 0; }
+  .pipeline-inner { padding: 3rem 1rem; }
+  .compare-section { padding: 3rem 1rem; }
+  .cta-section { padding: 3rem 1rem; }
+  nav { padding: 0 1rem; }
+
+  /* Even smaller headline on very small phones */
+  .hero-headline { font-size: clamp(34px, 9vw, 44px); }
+  .section-heading { font-size: clamp(26px, 7vw, 38px); }
+
+  /* Steps: single column on small phones */
+  .steps-grid { grid-template-columns: 1fr; }
+
+  /* Stats: still 2 columns but tighter */
+  .stats-inner { gap: 0.5rem; }
+  .stat-num { font-size: 26px; }
+  .stat-label { font-size: 11px; }
+
+  /* Reduce hero sub text */
+  .hero-sub { font-size: 15px; }
+
+  /* Footer: stack */
+  footer { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+  .footer-note { margin-left: 0; }
 }
 </style>
 </head>
