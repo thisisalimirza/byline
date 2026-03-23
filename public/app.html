@@ -1901,8 +1901,8 @@ async function refreshCredits() {
 function openCreditsModal(outOfCredits = false) {
   document.getElementById('creditsModal').classList.add('open');
   document.getElementById('modalSub').textContent = outOfCredits
-    ? 'You\'re out of credits. Top up to keep generating.'
-    : 'One credit = one full 5-agent article. No API key required.';
+    ? 'You\'re out of articles. Top up to keep generating.'
+    : 'One purchase = one full article, written by 6 AI agents. No API key needed.';
 }
 
 function closeCreditsModal() {
@@ -2761,12 +2761,12 @@ document.addEventListener('DOMContentLoaded', () => {
     <button class="modal-close" onclick="closeCreditsModal()">✕</button>
 
     <div class="new-credits-banner" id="newCreditsBanner">
-      ✓ Payment successful — credits added to your account.
+      ✓ Payment successful — articles added to your account.
     </div>
 
-    <div class="modal-eyebrow">Byline Credits</div>
+    <div class="modal-eyebrow">Byline</div>
     <div class="modal-title">Generate articles instantly</div>
-    <div class="modal-sub" id="modalSub">One credit = one full 5-agent article. No API key required.</div>
+    <div class="modal-sub" id="modalSub">One purchase = one full article, written by 6 AI agents. No API key needed.</div>
 
     <div class="pack-grid">
       <div class="pack-card" id="pack-starter" onclick="selectPack('starter')">
@@ -2776,13 +2776,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="pack-per">$0.50 each</div>
       </div>
       <div class="pack-card selected" id="pack-creator" onclick="selectPack('creator')">
-        <div class="pack-badge">Best value</div>
         <div class="pack-credits">25</div>
         <div class="pack-label">articles</div>
         <div class="pack-price">$10</div>
         <div class="pack-per">$0.40 each</div>
       </div>
       <div class="pack-card" id="pack-studio" onclick="selectPack('studio')">
+        <div class="pack-badge">Best value</div>
         <div class="pack-credits">75</div>
         <div class="pack-label">articles</div>
         <div class="pack-price">$25</div>
@@ -2793,7 +2793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy with Card →</button>
 
     <p class="modal-storage-note">
-      Credits are stored locally in your browser.<br>
+      Articles are stored locally in your browser.<br>
       They won't transfer across devices or browsers.
     </p>
 
