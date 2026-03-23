@@ -204,6 +204,35 @@
     transition: opacity 0.15s;
   }
   .draft-card-open:hover { opacity: 0.7; }
+
+  /* Delete X on hover */
+  .draft-card { position: relative; }
+  .draft-card-delete {
+    position: absolute; top: 8px; right: 8px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(232,122,106,0.15); border: 1px solid rgba(232,122,106,0.3);
+    color: #e87a6a; font-size: 10px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0; transition: opacity 0.15s;
+    z-index: 2;
+  }
+  .draft-card:hover .draft-card-delete { opacity: 1; }
+  .draft-card-delete:hover { background: rgba(232,122,106,0.3); }
+  @keyframes cardWiggle {
+    0%,100% { transform: rotate(0deg); }
+    20%      { transform: rotate(-1.5deg); }
+    60%      { transform: rotate(1.5deg); }
+  }
+  .draft-card:hover { animation: cardWiggle 0.35s ease both; }
+
+  /* Delete draft button in preview topbar */
+  .delete-draft-btn {
+    background: none; border: 1px solid rgba(232,122,106,0.35); border-radius: 7px;
+    padding: 5px 14px; font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: #e87a6a; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .delete-draft-btn:hover { background: rgba(232,122,106,0.1); border-color: rgba(232,122,106,0.6); }
+
   .drafts-dash-divider {
     border: none; border-top: 1px solid var(--border); margin: 0 0 1.5rem;
   }
@@ -2402,6 +2431,14 @@ function openPreview() {
 function closePreview() {
   document.getElementById('previewOverlay').classList.remove('open');
   document.body.style.overflow = '';
+  // Reset the Save Draft button if it was swapped for a draft preview
+  if (_previewingDraftId !== null) {
+    const saveBtn = document.getElementById('saveDraftBtn');
+    saveBtn.textContent = 'Save Draft';
+    saveBtn.className = 'save-draft-btn visible';
+    saveBtn.onclick = saveDraft;
+    _previewingDraftId = null;
+  }
 }
 
 // ── Draft management ─────────────────────────────────────────────────────────
@@ -2649,12 +2686,23 @@ function renderDraftsDash() {
     openBtn.textContent = 'Open →';
     openBtn.addEventListener('click', (e) => { e.stopPropagation(); openDraftPreview(d.id); });
 
+    // Delete X button (visible on hover)
+    const deleteX = document.createElement('button');
+    deleteX.className = 'draft-card-delete';
+    deleteX.title = 'Delete draft';
+    deleteX.textContent = '✕';
+    deleteX.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteDraft(d.id);
+    });
+
     footer.appendChild(dateEl);
     footer.appendChild(openBtn);
     body.appendChild(titleEl);
     body.appendChild(excerptEl);
     body.appendChild(footer);
     card.appendChild(accentBar);
+    card.appendChild(deleteX);
     card.appendChild(body);
     card.addEventListener('click', () => openDraftPreview(d.id));
     grid.appendChild(card);
@@ -2666,14 +2714,28 @@ function renderDraftsDash() {
   dash.appendChild(hr);
 }
 
+let _previewingDraftId = null;
+
 function openDraftPreview(id) {
   const d = _getDrafts().find(x => x.id === id);
   if (!d) return;
+  _previewingDraftId = id;
   // Load draft into out6 so openPreview() can read it
   const out6 = document.getElementById('out6');
   out6.textContent = 'TITLE: ' + d.title + '\nMETA: ' + (d.meta || '') + '\n\n---\n\n' + (d.body || '');
   document.getElementById('copyBtn').classList.add('visible');
   openPreview();
+  // Replace "Save Draft" with "Delete Draft" since it's already saved
+  const saveBtn = document.getElementById('saveDraftBtn');
+  saveBtn.textContent = 'Delete Draft';
+  saveBtn.className = 'delete-draft-btn';
+  saveBtn.onclick = () => confirmDeleteDraftFromPreview(id);
+}
+
+function confirmDeleteDraftFromPreview(id) {
+  deleteDraft(id);
+  closePreview();
+  _previewingDraftId = null;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
