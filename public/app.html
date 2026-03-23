@@ -639,6 +639,19 @@
   }
   .agent-panel:last-child { border-bottom: none; flex: 1; }
 
+  /* ── Completed panels collapse + sticky-stack ── */
+  .agent-panel.done-panel { min-height: 0; }
+  .agent-panel.done-panel .agent-panel-body {
+    max-height: 0; overflow: hidden; padding: 0;
+  }
+  .agent-panel.done-panel .agent-panel-header {
+    position: sticky;
+    z-index: 5; /* stacks above active panel header (z-index:1) */
+    opacity: 0.65;
+    transition: opacity 0.2s;
+  }
+  .agent-panel.done-panel .agent-panel-header:hover { opacity: 1; }
+
   .agent-panel.active-1 { background: rgba(232,144,58,0.02); }
   .agent-panel.active-2 { background: rgba(90,163,229,0.02); }
   .agent-panel.active-3 { background: rgba(78,201,154,0.02); }
@@ -1818,6 +1831,27 @@ function setPipeNode(n, state) {
 function setPanel(n, state) {
   const panel = document.getElementById('panel' + n);
   panel.className = 'agent-panel' + (n === 5 ? ' final-panel' : '') + (state ? ' active-' + n : '');
+  const header = panel.querySelector('.agent-panel-header');
+  if (header) header.style.top = '';
+}
+
+function markPanelDone(n) {
+  const panel = document.getElementById('panel' + n);
+  if (!panel) return;
+  panel.classList.add('done-panel');
+  requestAnimationFrame(updateDonePanelTops);
+}
+
+function updateDonePanelTops() {
+  let cumTop = 0;
+  for (let i = 1; i <= 6; i++) {
+    const panel = document.getElementById('panel' + i);
+    if (!panel || !panel.classList.contains('done-panel')) continue;
+    const header = panel.querySelector('.agent-panel-header');
+    if (!header) continue;
+    header.style.top = cumTop + 'px';
+    cumTop += header.offsetHeight;
+  }
 }
 
 function setPill(n, text, running) {
@@ -2255,6 +2289,7 @@ async function runPipeline() {
       out1El, 1
     );
     setPipeNode(1, 'done'); setPanel(1, null); setPill(1, 'done ✓', false); setProgress(1);
+    markPanelDone(1);
 
     // ── Agent 2: Researcher ──
     setPipeNode(2, 'active'); setPanel(2, 'active'); setPill(2, 'working…', true);
@@ -2266,6 +2301,7 @@ async function runPipeline() {
       out2El, 2
     );
     setPipeNode(2, 'done'); setPanel(2, null); setPill(2, 'done ✓', false); setProgress(2);
+    markPanelDone(2);
 
     // ── Agent 3: Writer ──
     setPipeNode(3, 'active'); setPanel(3, 'active'); setPill(3, 'working…', true);
@@ -2277,6 +2313,7 @@ async function runPipeline() {
       out3El, 3
     );
     setPipeNode(3, 'done'); setPanel(3, null); setPill(3, 'done ✓', false); setProgress(3);
+    markPanelDone(3);
 
     // ── Agent 4: SEO Editor ──
     setPipeNode(4, 'active'); setPanel(4, 'active'); setPill(4, 'working…', true);
@@ -2288,6 +2325,7 @@ async function runPipeline() {
       out4El, 4
     );
     setPipeNode(4, 'done'); setPanel(4, null); setPill(4, 'done ✓', false); setProgress(4);
+    markPanelDone(4);
 
     // Extract TITLE/META + body from SEO output so downstream agents only touch prose
     const { title: seoTitle, meta: seoMeta, body: seoBody } = parseArticle(seoRaw);
@@ -2303,6 +2341,7 @@ async function runPipeline() {
       out5El, 5
     );
     setPipeNode(5, 'done'); setPanel(5, null); setPill(5, 'done ✓', false); setProgress(5);
+    markPanelDone(5);
 
     // ── Agent 6: Voice Humanizer ──
     setPipeNode(6, 'active'); setPanel(6, 'active'); setPill(6, 'working…', true);
