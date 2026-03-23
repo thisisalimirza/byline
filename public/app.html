@@ -509,34 +509,54 @@
   .product-fields { transition: opacity 0.25s; display: flex; flex-direction: column; gap: 0.65rem; }
   .product-fields.inactive { opacity: 0.28; pointer-events: none; }
 
-  /* ── Saved products strip ── */
-  #productStrip { display: none; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-  #productStrip.visible { display: flex; }
-  .product-strip-label {
+  /* ── Saved products dropdown ── */
+  #productDropdownWrap { margin-bottom: 10px; }
+  .product-drop-label {
     font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-dim);
+    text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px;
   }
-  .product-pills { display: flex; flex-wrap: wrap; gap: 5px; }
-  .product-pill {
-    display: flex; align-items: center; gap: 5px;
-    padding: 4px 8px 4px 10px;
+  .product-drop-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
     background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 100px; cursor: pointer;
-    font-size: 11px; color: var(--text-muted); font-weight: 500;
-    transition: all 0.15s; max-width: 160px;
+    border-radius: var(--r-sm); cursor: pointer;
+    font-size: 12px; color: var(--text-muted); font-weight: 500;
+    transition: all 0.15s; user-select: none;
   }
-  .product-pill:hover { border-color: var(--border-hover); color: var(--text); }
-  .product-pill.active {
-    background: var(--accent-soft); border-color: var(--accent);
-    color: var(--accent);
+  .product-drop-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .product-drop-btn.open {
+    border-color: var(--accent);
+    border-bottom-left-radius: 0; border-bottom-right-radius: 0;
   }
-  .product-pill-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-  .product-pill-del {
+  .product-drop-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .product-drop-chevron { flex-shrink: 0; font-size: 9px; color: var(--text-dim); transition: transform 0.15s; }
+  .product-drop-btn.open .product-drop-chevron { transform: rotate(180deg); }
+  .product-drop-menu {
+    display: none;
+    background: var(--surface2); border: 1px solid var(--accent);
+    border-top: none;
+    border-bottom-left-radius: var(--r-sm); border-bottom-right-radius: var(--r-sm);
+    overflow: hidden; max-height: 180px; overflow-y: auto;
+  }
+  .product-drop-menu.open { display: block; }
+  .product-drop-item {
+    display: flex; align-items: center; padding: 9px 10px; gap: 8px;
+    cursor: pointer; border-top: 1px solid var(--border); transition: background 0.1s;
+  }
+  .product-drop-item:first-child { border-top: none; }
+  .product-drop-item:hover { background: var(--surface3); }
+  .product-drop-item.active { background: var(--accent-soft); }
+  .product-drop-item-name {
+    flex: 1; font-size: 12px; color: var(--text); font-weight: 500;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .product-drop-item.active .product-drop-item-name { color: var(--accent); }
+  .product-drop-item-del {
     flex-shrink: 0; background: none; border: none; cursor: pointer;
-    color: var(--text-dim); font-size: 10px; padding: 0; line-height: 1;
+    color: var(--text-dim); font-size: 14px; padding: 0 2px; line-height: 1;
     transition: color 0.15s;
   }
-  .product-pill-del:hover { color: #e87a6a; }
+  .product-drop-item-del:hover { color: #e87a6a; }
   .product-save-row {
     display: flex; align-items: center; justify-content: flex-end;
     margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
@@ -1156,10 +1176,14 @@
     <div class="sidebar-card">
       <div class="sidebar-card-title">Promote Your Brand</div>
 
-      <!-- Saved products strip -->
-      <div id="productStrip">
-        <div class="product-strip-label">Saved products</div>
-        <div class="product-pills" id="productPills"></div>
+      <!-- Saved products dropdown -->
+      <div id="productDropdownWrap" style="display:none">
+        <div class="product-drop-label">Saved products</div>
+        <div class="product-drop-btn" id="productDropBtn" onclick="toggleProductDropdown()">
+          <span class="product-drop-name" id="productDropName">Load saved product…</span>
+          <span class="product-drop-chevron">▼</span>
+        </div>
+        <div class="product-drop-menu" id="productDropMenu"></div>
       </div>
 
       <div>
@@ -2676,40 +2700,67 @@ function _storeProducts(arr) {
   localStorage.setItem('byline_products', JSON.stringify(arr));
 }
 
-function renderProductStrip() {
+function renderProductDropdown() {
   const products = _getProducts();
-  const strip = document.getElementById('productStrip');
-  const pills = document.getElementById('productPills');
-  if (!strip || !pills) return;
+  const wrap = document.getElementById('productDropdownWrap');
+  const nameEl = document.getElementById('productDropName');
+  const menu = document.getElementById('productDropMenu');
+  if (!wrap || !nameEl || !menu) return;
 
-  if (products.length === 0) { strip.classList.remove('visible'); pills.textContent = ''; return; }
+  if (products.length === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
 
-  strip.classList.add('visible');
-  pills.textContent = '';
+  // Update button label
+  const active = _activeProductId !== null ? products.find(p => p.id === _activeProductId) : null;
+  if (active) {
+    nameEl.textContent = active.name || 'Unnamed';
+    nameEl.style.color = 'var(--accent)';
+  } else {
+    nameEl.textContent = 'Load saved product…';
+    nameEl.style.color = '';
+  }
 
+  // Render menu items
+  menu.textContent = '';
   products.forEach(p => {
-    const pill = document.createElement('div');
-    pill.className = 'product-pill' + (p.id === _activeProductId ? ' active' : '');
+    const item = document.createElement('div');
+    item.className = 'product-drop-item' + (p.id === _activeProductId ? ' active' : '');
 
     const name = document.createElement('span');
-    name.className = 'product-pill-name';
+    name.className = 'product-drop-item-name';
     name.textContent = p.name || 'Unnamed';
-    name.title = p.name || '';
 
     const del = document.createElement('button');
-    del.className = 'product-pill-del';
+    del.className = 'product-drop-item-del';
     del.textContent = '×';
-    del.title = 'Remove saved product';
-    del.addEventListener('click', e => { e.stopPropagation(); deleteProduct(p.id); });
+    del.title = 'Delete saved product';
+    del.addEventListener('click', e => { e.stopPropagation(); deleteProduct(p.id); closeProductDropdown(); });
 
-    pill.appendChild(name);
-    pill.appendChild(del);
-    pill.addEventListener('click', () => loadProduct(p.id));
-    pills.appendChild(pill);
+    item.appendChild(name);
+    item.appendChild(del);
+    item.addEventListener('click', () => { loadProduct(p.id); closeProductDropdown(); });
+    menu.appendChild(item);
   });
 
-  // Update save button label
   updateProductSaveBtn();
+}
+
+function toggleProductDropdown() {
+  const btn = document.getElementById('productDropBtn');
+  const menu = document.getElementById('productDropMenu');
+  if (!btn || !menu) return;
+  const isOpen = btn.classList.toggle('open');
+  menu.classList.toggle('open', isOpen);
+}
+
+function closeProductDropdown() {
+  const btn = document.getElementById('productDropBtn');
+  const menu = document.getElementById('productDropMenu');
+  if (btn) btn.classList.remove('open');
+  if (menu) menu.classList.remove('open');
 }
 
 function updateProductSaveBtn() {
@@ -2738,18 +2789,18 @@ function saveProduct() {
     // Update existing
     const idx = products.findIndex(p => p.id === _activeProductId);
     if (idx !== -1) {
-      products[idx] = { ...products[idx], name, desc, url, promoStyle, savedAt: new Date().toISOString() };
+      products[idx] = { ...products[idx], name, desc, url, savedAt: new Date().toISOString() };
     }
   } else {
     // Create new
     const id = Date.now();
     _activeProductId = id;
-    products.unshift({ id, name, desc, url, promoStyle, savedAt: new Date().toISOString() });
+    products.unshift({ id, name, desc, url, savedAt: new Date().toISOString() });
     if (products.length > 20) products.length = 20;
   }
 
   _storeProducts(products);
-  renderProductStrip();
+  renderProductDropdown();
 
   // Flash feedback
   const btn = document.getElementById('productSaveBtn');
@@ -2768,10 +2819,8 @@ function loadProduct(id) {
   document.getElementById('productUrl').value  = p.url  || '';
   // Trigger name input event so product fields become active
   document.getElementById('productName').dispatchEvent(new Event('input'));
-  // Set promo style
-  if (p.promoStyle) setPromo(p.promoStyle);
 
-  renderProductStrip();
+  renderProductDropdown();
 }
 
 function deleteProduct(id) {
@@ -2780,7 +2829,7 @@ function deleteProduct(id) {
     _activeProductId = null;
     updateProductSaveBtn();
   }
-  renderProductStrip();
+  renderProductDropdown();
 }
 
 // Clear active product tracking when user manually edits the name field
@@ -2793,11 +2842,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const active = _getProducts().find(p => p.id === _activeProductId);
         if (active && nameInput.value.trim() !== active.name) {
           _activeProductId = null;
-          renderProductStrip();
+          renderProductDropdown();
         }
       }
     });
   }
+
+  // Close product dropdown when clicking outside
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('productDropdownWrap');
+    if (wrap && !wrap.contains(e.target)) closeProductDropdown();
+  });
 });
 
 // ── Drafts dashboard (shown on load when local drafts exist) ─────────────────
@@ -2926,11 +2981,11 @@ document.addEventListener('DOMContentLoaded', () => {
   for (let n = 1; n <= 6; n++) {
     document.getElementById('sys' + n).value = PROMPTS[n];
   }
-  handleUrlParams();     // handle ?token= from Stripe redirect
-  loadSavedOwnKey();     // restore saved own API key if any
-  refreshCredits();      // verify credit token with server and update display
-  renderDraftsDash();    // show saved drafts if any
-  renderProductStrip();  // show saved products if any
+  handleUrlParams();       // handle ?token= from Stripe redirect
+  loadSavedOwnKey();       // restore saved own API key if any
+  refreshCredits();        // verify credit token with server and update display
+  renderDraftsDash();      // show saved drafts if any
+  renderProductDropdown(); // show saved products if any
 });
 </script>
 
