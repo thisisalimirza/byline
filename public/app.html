@@ -509,6 +509,46 @@
   .product-fields { transition: opacity 0.25s; display: flex; flex-direction: column; gap: 0.65rem; }
   .product-fields.inactive { opacity: 0.28; pointer-events: none; }
 
+  /* ── Saved products strip ── */
+  #productStrip { display: none; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+  #productStrip.visible { display: flex; }
+  .product-strip-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .product-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+  .product-pill {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 8px 4px 10px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 100px; cursor: pointer;
+    font-size: 11px; color: var(--text-muted); font-weight: 500;
+    transition: all 0.15s; max-width: 160px;
+  }
+  .product-pill:hover { border-color: var(--border-hover); color: var(--text); }
+  .product-pill.active {
+    background: var(--accent-soft); border-color: var(--accent);
+    color: var(--accent);
+  }
+  .product-pill-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .product-pill-del {
+    flex-shrink: 0; background: none; border: none; cursor: pointer;
+    color: var(--text-dim); font-size: 10px; padding: 0; line-height: 1;
+    transition: color 0.15s;
+  }
+  .product-pill-del:hover { color: #e87a6a; }
+  .product-save-row {
+    display: flex; align-items: center; justify-content: flex-end;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
+  }
+  .product-save-btn {
+    background: none; border: none; cursor: pointer; padding: 0;
+    font-size: 11px; color: var(--text-dim); font-family: var(--sans);
+    transition: color 0.15s;
+  }
+  .product-save-btn:hover { color: var(--accent); }
+  .product-save-btn.updated { color: var(--a3); }
+
   /* Advanced settings */
   .advanced-toggle {
     display: flex; align-items: center; gap: 8px;
@@ -1116,10 +1156,15 @@
     <div class="sidebar-card">
       <div class="sidebar-card-title">Promote Your Brand</div>
 
+      <!-- Saved products strip -->
+      <div id="productStrip">
+        <div class="product-strip-label">Saved products</div>
+        <div class="product-pills" id="productPills"></div>
+      </div>
+
       <div>
         <div class="field-label">Product or Service Name</div>
         <input type="text" id="productName" placeholder="e.g. Acme CRM, FlowHero, Notion" />
-      </div>
 
       <div class="product-fields inactive" id="productFields">
         <div>
@@ -1152,6 +1197,11 @@
             <span class="promo-desc">drive action</span>
           </button>
         </div>
+      </div>
+
+      <!-- Save product row -->
+      <div class="product-save-row">
+        <button class="product-save-btn" id="productSaveBtn" onclick="saveProduct()">+ Save product</button>
       </div>
     </div>
 
@@ -2616,6 +2666,140 @@ function downloadArticle() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePreview(); });
 
 // ── Init: populate system prompts from constants ─────────────────────────────
+// ── Saved products ───────────────────────────────────────────────────────────
+let _activeProductId = null; // tracks which saved product is currently loaded
+
+function _getProducts() {
+  try { return JSON.parse(localStorage.getItem('byline_products') || '[]'); } catch(e) { return []; }
+}
+function _storeProducts(arr) {
+  localStorage.setItem('byline_products', JSON.stringify(arr));
+}
+
+function renderProductStrip() {
+  const products = _getProducts();
+  const strip = document.getElementById('productStrip');
+  const pills = document.getElementById('productPills');
+  if (!strip || !pills) return;
+
+  if (products.length === 0) { strip.classList.remove('visible'); pills.textContent = ''; return; }
+
+  strip.classList.add('visible');
+  pills.textContent = '';
+
+  products.forEach(p => {
+    const pill = document.createElement('div');
+    pill.className = 'product-pill' + (p.id === _activeProductId ? ' active' : '');
+
+    const name = document.createElement('span');
+    name.className = 'product-pill-name';
+    name.textContent = p.name || 'Unnamed';
+    name.title = p.name || '';
+
+    const del = document.createElement('button');
+    del.className = 'product-pill-del';
+    del.textContent = '×';
+    del.title = 'Remove saved product';
+    del.addEventListener('click', e => { e.stopPropagation(); deleteProduct(p.id); });
+
+    pill.appendChild(name);
+    pill.appendChild(del);
+    pill.addEventListener('click', () => loadProduct(p.id));
+    pills.appendChild(pill);
+  });
+
+  // Update save button label
+  updateProductSaveBtn();
+}
+
+function updateProductSaveBtn() {
+  const btn = document.getElementById('productSaveBtn');
+  if (!btn) return;
+  if (_activeProductId !== null) {
+    btn.textContent = 'Update product';
+  } else {
+    btn.textContent = '+ Save product';
+  }
+  btn.classList.remove('updated');
+}
+
+function saveProduct() {
+  const name = document.getElementById('productName').value.trim();
+  if (!name) {
+    document.getElementById('productName').focus();
+    return;
+  }
+  const desc = document.getElementById('productDesc').value.trim();
+  const url  = document.getElementById('productUrl').value.trim();
+
+  let products = _getProducts();
+
+  if (_activeProductId !== null) {
+    // Update existing
+    const idx = products.findIndex(p => p.id === _activeProductId);
+    if (idx !== -1) {
+      products[idx] = { ...products[idx], name, desc, url, promoStyle, savedAt: new Date().toISOString() };
+    }
+  } else {
+    // Create new
+    const id = Date.now();
+    _activeProductId = id;
+    products.unshift({ id, name, desc, url, promoStyle, savedAt: new Date().toISOString() });
+    if (products.length > 20) products.length = 20;
+  }
+
+  _storeProducts(products);
+  renderProductStrip();
+
+  // Flash feedback
+  const btn = document.getElementById('productSaveBtn');
+  btn.textContent = 'Saved ✓';
+  btn.classList.add('updated');
+  setTimeout(() => updateProductSaveBtn(), 1800);
+}
+
+function loadProduct(id) {
+  const p = _getProducts().find(x => x.id === id);
+  if (!p) return;
+  _activeProductId = id;
+
+  document.getElementById('productName').value = p.name || '';
+  document.getElementById('productDesc').value = p.desc || '';
+  document.getElementById('productUrl').value  = p.url  || '';
+  // Trigger name input event so product fields become active
+  document.getElementById('productName').dispatchEvent(new Event('input'));
+  // Set promo style
+  if (p.promoStyle) setPromo(p.promoStyle);
+
+  renderProductStrip();
+}
+
+function deleteProduct(id) {
+  _storeProducts(_getProducts().filter(p => p.id !== id));
+  if (_activeProductId === id) {
+    _activeProductId = null;
+    updateProductSaveBtn();
+  }
+  renderProductStrip();
+}
+
+// Clear active product tracking when user manually edits the name field
+// (so saving creates a new product rather than overwriting the loaded one)
+document.addEventListener('DOMContentLoaded', () => {
+  const nameInput = document.getElementById('productName');
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      if (_activeProductId !== null) {
+        const active = _getProducts().find(p => p.id === _activeProductId);
+        if (active && nameInput.value.trim() !== active.name) {
+          _activeProductId = null;
+          renderProductStrip();
+        }
+      }
+    });
+  }
+});
+
 // ── Drafts dashboard (shown on load when local drafts exist) ─────────────────
 const DRAFT_ACCENTS = [
   'linear-gradient(90deg,#e8903a,#e8c44a)',
@@ -2742,10 +2926,11 @@ document.addEventListener('DOMContentLoaded', () => {
   for (let n = 1; n <= 6; n++) {
     document.getElementById('sys' + n).value = PROMPTS[n];
   }
-  handleUrlParams();   // handle ?token= from Stripe redirect
-  loadSavedOwnKey();   // restore saved own API key if any
-  refreshCredits();    // verify credit token with server and update display
-  renderDraftsDash();  // show saved drafts if any
+  handleUrlParams();     // handle ?token= from Stripe redirect
+  loadSavedOwnKey();     // restore saved own API key if any
+  refreshCredits();      // verify credit token with server and update display
+  renderDraftsDash();    // show saved drafts if any
+  renderProductStrip();  // show saved products if any
 });
 </script>
 
