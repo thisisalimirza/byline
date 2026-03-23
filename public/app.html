@@ -1050,6 +1050,102 @@
     border-radius: 7px; font-size: 12.5px; color: #888; line-height: 1.55;
     font-style: italic; border: 1px solid #ece7de;
   }
+
+  /* ── Mobile tab bar (hidden on desktop) ─────────────────────────────────── */
+  .mobile-tabs { display: none; }
+
+  @media (max-width: 900px) {
+    /* Allow full-page scroll instead of viewport-locked layout */
+    body {
+      height: auto;
+      overflow-y: auto;
+      grid-template-rows: auto auto auto auto auto auto;
+    }
+
+    /* Show tab bar */
+    .mobile-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 58px;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .mobile-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-tab.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Stack sidebar and output instead of side-by-side grid */
+    main {
+      display: block;
+      overflow: visible;
+      height: auto;
+    }
+
+    /* Sidebar becomes full-width */
+    .sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+      overflow: visible;
+      height: auto;
+      padding: 1rem;
+    }
+
+    /* Output area becomes full-width */
+    .output-area {
+      overflow: visible;
+      height: auto;
+      min-height: 60vh;
+    }
+
+    /* Tab-driven visibility */
+    .sidebar.tab-hidden { display: none; }
+    .output-area.tab-hidden { display: none; }
+
+    /* Header adjustments */
+    header { padding: 0 1rem; }
+    .pipeline-vis { display: none; }
+    .header-credit-pill { margin-left: auto; }
+
+    /* Drafts grid */
+    .draft-cards { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+    /* Modal credit packs: 2-up */
+    .pack-grid { grid-template-columns: 1fr 1fr; }
+
+    /* SEO metrics: single column */
+    .preview-seo-metrics { grid-template-columns: 1fr; gap: 0.8rem; }
+
+    /* Preview overlay scrollable */
+    .preview-overlay { overflow-y: auto; }
+    .preview-body { overflow-y: visible; }
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 0 0.75rem; gap: 0.5rem; }
+    .logo-name { display: none; }
+    .sidebar { padding: 0.75rem; }
+    .pack-grid { grid-template-columns: 1fr; }
+    .promo-grid { grid-template-columns: 1fr; }
+    .preview-seo-badges { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -1095,6 +1191,11 @@
     <span class="hcp-label">credits</span>
   </button>
 </header>
+
+<div class="mobile-tabs" id="mobileTabs">
+  <button class="mobile-tab active" id="tabSetup" onclick="switchTab('setup')">Setup</button>
+  <button class="mobile-tab" id="tabResults" onclick="switchTab('results')">Results</button>
+</div>
 
 <!-- Sticky completion bar — shown when pipeline finishes -->
 <div id="completionBar">
@@ -1806,6 +1907,25 @@ Fix what you find. Then output the final article.
 Output only the final article body. No preamble, no explanation, no commentary about your changes.`
 };
 
+// ── Mobile tab switching ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  const sidebar = document.querySelector('.sidebar');
+  const output  = document.querySelector('.output-area');
+  const tabSetup   = document.getElementById('tabSetup');
+  const tabResults = document.getElementById('tabResults');
+  if (tab === 'setup') {
+    sidebar.classList.remove('tab-hidden');
+    output.classList.add('tab-hidden');
+    tabSetup.classList.add('active');
+    tabResults.classList.remove('active');
+  } else {
+    output.classList.remove('tab-hidden');
+    sidebar.classList.add('tab-hidden');
+    tabResults.classList.add('active');
+    tabSetup.classList.remove('active');
+  }
+}
+
 // ── State ───────────────────────────────────────────────────────────────────
 let articleType = 'B2B';
 
@@ -2258,6 +2378,9 @@ async function runPipeline() {
     return;
   }
   // ──────────────────────────────────────────────────────────────────────────
+
+  // Auto-switch to Results tab on mobile when generation starts
+  if (window.innerWidth <= 900) switchTab('results');
 
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
