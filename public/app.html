@@ -287,11 +287,26 @@
   /* ── Sidebar ── */
   .sidebar {
     border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
-    overflow-y: auto;
+    /* smooth momentum scroll on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+  .sidebar-footer {
+    flex-shrink: 0;
+    padding: 0.65rem 1rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
   }
 
   /* Card containers */
@@ -299,16 +314,43 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
+    overflow: hidden;
   }
+  .sidebar-card-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    gap: 0.5rem;
+  }
+  .sidebar-card-header:hover .sidebar-card-title { color: var(--text-muted); }
   .sidebar-card-title {
     font-size: 10px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.09em;
     color: var(--text-dim);
+    transition: color 0.15s;
+    flex: 1;
   }
+  .sidebar-card-chevron {
+    font-size: 8px; color: var(--text-dim);
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+  .sidebar-card-chevron.open { transform: rotate(180deg); }
+  .sidebar-card-summary {
+    font-size: 10px; color: var(--text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 140px;
+  }
+  .sidebar-card-body {
+    padding: 0 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .sidebar-card-body.collapsed { display: none; }
+  /* Non-collapsible card (Credits) keeps old padding */
+  .sidebar-card.no-collapse { padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem; }
 
   .field-label {
     font-size: 12px; font-weight: 500;
@@ -628,7 +670,6 @@
     font-family: var(--sans); font-size: 14px; font-weight: 700;
     letter-spacing: 0.01em; cursor: pointer;
     transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
-    margin-top: auto; flex-shrink: 0;
     box-shadow: 0 2px 14px var(--accent-glow);
   }
   .run-btn:hover { opacity: 0.9; box-shadow: 0 4px 22px var(--accent-glow); }
@@ -1240,7 +1281,16 @@
       width: 100%;
       overflow: visible;
       height: auto;
-      padding: 1rem;
+    }
+    .sidebar-scroll {
+      overflow: visible;
+      flex: none;
+      height: auto;
+      min-height: unset;
+    }
+    .sidebar-footer {
+      border-top: none;
+      padding-top: 0;
     }
 
     /* Output area becomes full-width */
@@ -1412,9 +1462,10 @@
 
 <main>
   <aside class="sidebar">
+  <div class="sidebar-scroll">
 
     <!-- Credits -->
-    <div class="sidebar-card">
+    <div class="sidebar-card no-collapse">
       <div class="sidebar-card-title">Credits</div>
       <div class="credit-display">
         <div class="credit-balance">
@@ -1446,55 +1497,65 @@
 
     <!-- Your Article -->
     <div class="sidebar-card">
-      <div class="sidebar-card-title">Your Article</div>
-
-      <div>
-        <div class="field-label">What do you want to write about?</div>
-        <textarea id="topic" rows="2" placeholder="e.g. how local businesses can get found on Google"></textarea>
+      <div class="sidebar-card-header" onclick="toggleSidebarCard('article')">
+        <div class="sidebar-card-title">Your Article</div>
+        <span class="sidebar-card-summary" id="articleSummary"></span>
+        <span class="sidebar-card-chevron open" id="articleChevron">▼</span>
       </div>
-
-      <div>
-        <div class="field-label">Target Keyword</div>
-        <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
-      </div>
-
-      <div>
-        <div class="field-label">Who is this for?</div>
-        <input type="text" id="audience" placeholder="e.g. small business owners with no marketing budget" />
-      </div>
-
-      <div>
-        <div class="field-label">Audience Type</div>
-        <div class="type-toggle">
-          <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
-          <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
-          <button class="type-btn" id="btnBoth" onclick="setType('General')">General</button>
+      <div class="sidebar-card-body" id="articleBody">
+        <div>
+          <div class="field-label">What do you want to write about?</div>
+          <textarea id="topic" rows="2" placeholder="e.g. how local businesses can get found on Google"></textarea>
         </div>
-      </div>
 
-      <div>
-        <div class="field-label">Writing Style</div>
-        <select id="tone">
-          <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
-          <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
-          <option value="investigative and mildly skeptical — questions assumptions, surfaces what others miss">Investigative</option>
-          <option value="practical and actionable — every claim connects to something the reader can do">Practical</option>
-        </select>
-      </div>
+        <div>
+          <div class="field-label">Target Keyword</div>
+          <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
+        </div>
 
-      <div>
-        <div class="field-label">AI Model</div>
-        <select id="model">
-          <option value="claude-opus-4-6">Opus — Best Quality</option>
-          <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
-          <option value="claude-sonnet-4-20250514">Sonnet 4.5</option>
-        </select>
+        <div>
+          <div class="field-label">Who is this for?</div>
+          <input type="text" id="audience" placeholder="e.g. small business owners with no marketing budget" />
+        </div>
+
+        <div>
+          <div class="field-label">Audience Type</div>
+          <div class="type-toggle">
+            <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
+            <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
+            <button class="type-btn" id="btnBoth" onclick="setType('General')">General</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">Writing Style</div>
+          <select id="tone">
+            <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
+            <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
+            <option value="investigative and mildly skeptical — questions assumptions, surfaces what others miss">Investigative</option>
+            <option value="practical and actionable — every claim connects to something the reader can do">Practical</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="field-label">AI Model</div>
+          <select id="model">
+            <option value="claude-opus-4-6">Opus — Best Quality</option>
+            <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
+            <option value="claude-sonnet-4-20250514">Sonnet 4.5</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <!-- Promote Your Brand -->
     <div class="sidebar-card">
-      <div class="sidebar-card-title">Promote Your Brand</div>
+      <div class="sidebar-card-header" onclick="toggleSidebarCard('brand')">
+        <div class="sidebar-card-title">Promote Your Brand</div>
+        <span class="sidebar-card-summary" id="brandSummary">Optional</span>
+        <span class="sidebar-card-chevron" id="brandChevron">▼</span>
+      </div>
+      <div class="sidebar-card-body collapsed" id="brandBody">
 
       <!-- Saved products dropdown -->
       <div id="productDropdownWrap" style="display:none">
@@ -1547,6 +1608,7 @@
       <div class="product-save-row">
         <button class="product-save-btn" id="productSaveBtn" onclick="saveProduct()">+ Save product</button>
       </div>
+      </div><!-- /sidebar-card-body#brandBody -->
     </div>
 
     <!-- Advanced Settings -->
@@ -1617,7 +1679,11 @@
       </div>
     </div>
 
+  </div><!-- /sidebar-scroll -->
+
+  <div class="sidebar-footer">
     <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate Article</button>
+  </div>
 
   </aside>
 
@@ -2269,6 +2335,31 @@ function toggleAdvanced() {
   const sec  = document.getElementById('advancedSection');
   const open = sec.classList.toggle('open');
   btn.classList.toggle('open', open);
+}
+
+function toggleSidebarCard(id) {
+  const body = document.getElementById(id + 'Body');
+  const chev = document.getElementById(id + 'Chevron');
+  const isOpen = body.classList.toggle('collapsed');
+  chev.classList.toggle('open', !isOpen);
+  // Update summary text when collapsing "article" section
+  if (id === 'article' && isOpen) {
+    const kw = (document.getElementById('keyword').value || '').trim();
+    const summary = document.getElementById('articleSummary');
+    if (summary) summary.textContent = kw || '';
+  } else if (id === 'article') {
+    const summary = document.getElementById('articleSummary');
+    if (summary) summary.textContent = '';
+  }
+  // Update brand summary
+  if (id === 'brand' && isOpen) {
+    const name = (document.getElementById('productName').value || '').trim();
+    const summary = document.getElementById('brandSummary');
+    if (summary) summary.textContent = name || 'Optional';
+  } else if (id === 'brand') {
+    const summary = document.getElementById('brandSummary');
+    if (summary) summary.textContent = '';
+  }
 }
 
 function setPipeNode(n, state) {
