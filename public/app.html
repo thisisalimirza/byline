@@ -819,7 +819,42 @@
   .preview-stat.seo-warn span { color: #d97706; }
   .preview-stat.seo-bad  span { color: #dc2626; }
 
-  .preview-scroll { overflow-y: auto; flex: 1; }
+  /* Two-column preview layout */
+  .preview-body {
+    display: flex; flex: 1; overflow: hidden;
+  }
+  .preview-article-scroll {
+    flex: 1; overflow-y: auto; min-width: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .preview-tools-sidebar {
+    width: 340px; flex-shrink: 0;
+    overflow-y: auto; overflow-x: hidden;
+    border-left: 1px solid #e8e2d8;
+    background: #fff;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Sidebar overrides — remove centered max-width, fit the column */
+  .preview-tools-sidebar .preview-seo-wrap {
+    max-width: none; margin: 0; padding: 1.1rem 1.1rem 1.25rem;
+    border-bottom: 1px solid #f0ebe2;
+  }
+  .preview-tools-sidebar .revision-wrap {
+    max-width: none; margin: 0; padding: 1.1rem;
+    border-bottom: 1px solid #f0ebe2;
+  }
+  .preview-tools-sidebar .remix-wrap {
+    max-width: none; margin: 0; padding: 1.1rem;
+    border-bottom: 1px solid #f0ebe2;
+  }
+  .preview-tools-sidebar .impl-guide-wrap {
+    max-width: none; margin: 0; padding: 1.1rem 1.1rem 2rem;
+  }
+  /* Remix chips: 1-col in narrow sidebar */
+  .preview-tools-sidebar .remix-formats { grid-template-columns: 1fr; }
+  /* SEO badges: 1-col in narrow sidebar */
+  .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr; }
 
   /* ════════════════════ SEO Analysis Panel ════════════════════ */
   .preview-seo-wrap { max-width: 700px; margin: 0 auto; padding: 0 2rem 2rem; }
@@ -1318,9 +1353,13 @@
     /* SEO metrics: single column */
     .preview-seo-metrics { grid-template-columns: 1fr; gap: 0.8rem; }
 
-    /* Preview overlay scrollable */
+    /* Preview overlay: stack columns on mobile */
     .preview-overlay { overflow-y: auto; }
-    .preview-body { overflow-y: visible; }
+    .preview-body { flex-direction: column; overflow: visible; flex: none; }
+    .preview-article-scroll { overflow: visible; height: auto; }
+    .preview-tools-sidebar { width: 100%; border-left: none; border-top: 1px solid #e8e2d8; overflow: visible; }
+    .preview-tools-sidebar .remix-formats { grid-template-columns: 1fr 1fr; }
+    .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr 1fr; }
   }
 
   @media (max-width: 480px) {
@@ -1797,9 +1836,10 @@
     </div>
   </div>
 
-  <div class="preview-scroll">
+  <div class="preview-body">
 
-    <!-- Article -->
+  <!-- ── Left: Article ── -->
+  <div class="preview-article-scroll">
     <div class="preview-article-wrap">
       <div class="preview-kicker">blog post preview</div>
       <h1 class="preview-h1" id="previewTitle"></h1>
@@ -1810,6 +1850,10 @@
       <div class="preview-rule"></div>
       <div class="preview-content" id="previewContent"></div>
     </div>
+  </div>
+
+  <!-- ── Right: Tools sidebar ── -->
+  <div class="preview-tools-sidebar">
 
     <!-- SEO Analysis -->
     <div class="preview-seo-wrap">
@@ -2127,7 +2171,8 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- /preview-tools-sidebar -->
+  </div><!-- /preview-body -->
 </div>
 <!-- ══════════════════════════════════════════════════════════ -->
 
@@ -3158,7 +3203,7 @@ function openPreview() {
   // Open overlay
   document.getElementById('previewOverlay').classList.add('open');
   document.getElementById('completionBar').classList.remove('visible');
-  document.querySelector('.preview-scroll').scrollTop = 0;
+  document.querySelector('.preview-article-scroll').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 
   // Animate SEO bars AFTER the overlay is visible (double-rAF ensures layout commit)
@@ -3312,7 +3357,7 @@ Do not add commentary, preamble, or explanations — only the revised article.`;
       streamEl.classList.remove('visible');
       document.getElementById('revisionInput').value = '';
       // Scroll preview to top so user sees the updated article
-      document.querySelector('.preview-scroll').scrollTop = 0;
+      document.querySelector('.preview-article-scroll').scrollTop = 0;
     } else {
       throw new Error('Unexpected response format from revision agent.');
     }
