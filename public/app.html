@@ -2262,15 +2262,20 @@ Output only the revised article. No preamble, no explanation.`,
 KEYWORD GUARD RAIL — CRITICAL:
 The target keyword has already been woven into specific sentences. Do not remove, rephrase, or rewrite those sentences purely to change keyword placement. If a sentence contains the target keyword and you have a genuine voice reason to rephrase it, do so — but keep the keyword in the rewritten sentence.
 
+BANNED CONSTRUCTIONS — fix every instance you find:
+- Em dashes (—): never use them. Replace with a period, a comma, or restructure the sentence. "It works — if you're careful" → "It works, if you're careful." or split into two sentences.
+- "Here's what [anything]:" — this entire construction is banned. Never intro an idea by announcing it. Just say the thing. "Here's what the data shows: churn doubled." → "Churn doubled." "Here's the thing:" → cut entirely and start the real sentence.
+- Any sentence where "here" is followed eventually by a colon: banned. Same rule.
+
 PASS 1 — INJECT SOUL:
 Read the article and ask honestly: does this sound like a person with a perspective, or like assembled text?
 
 Work through these fixes:
-— Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
-— Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
-— Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
-— Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
-— The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
+- Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
+- Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
+- Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
+- Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
+- The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
 
 PASS 2 — SELF-AUDIT:
 After your edits, read the article from the top and ask: "What still makes this obviously AI-generated?"
@@ -2281,6 +2286,7 @@ Look for:
 - Opinions that are hedged into meaninglessness
 - A rhythm that's still too clean, too even
 - An ending that summarizes rather than concludes
+- Any surviving em dashes or "Here's what/the/why/how:" constructions
 
 Fix what you find. Then output the final article.
 
