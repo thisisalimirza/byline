@@ -1284,6 +1284,60 @@
     .revision-btn { width: 100%; }
     .remix-formats { grid-template-columns: 1fr; }
   }
+
+  /* ════════════════════ PDF Panel ════════════════════════════ */
+  .pdf-panel {
+    margin-top: 1.25rem; background: #f9f7f4;
+    border: 1px solid #e8e2d8; border-radius: 10px; overflow: hidden;
+    display: none;
+  }
+  .pdf-panel.open { display: block; }
+  .pdf-panel-hd {
+    padding: 0.9rem 1.1rem 0.75rem; border-bottom: 1px solid #f0ebe2;
+  }
+  .pdf-panel-title {
+    font-size: 12px; font-weight: 700; color: #222;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px;
+  }
+  .pdf-panel-sub { font-size: 11px; color: #999; }
+  .pdf-panel-body { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 1rem; }
+  .pdf-field-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.09em; color: #888; margin-bottom: 5px;
+  }
+  .pdf-field-input {
+    width: 100%; box-sizing: border-box;
+    font-family: var(--sans); font-size: 12px; color: #222;
+    background: #fff; border: 1px solid #ddd; border-radius: 7px;
+    padding: 7px 10px; outline: none; transition: border-color 0.15s;
+  }
+  .pdf-field-input:focus { border-color: #aaa; }
+  .pdf-field-input::placeholder { color: #bbb; }
+  .pdf-color-row { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+  .pdf-color-swatch {
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s;
+    flex-shrink: 0;
+  }
+  .pdf-color-swatch:hover { transform: scale(1.15); }
+  .pdf-color-swatch.active { border-color: #222; transform: scale(1.12); }
+  .pdf-font-row { display: flex; gap: 6px; }
+  .pdf-font-btn {
+    flex: 1; padding: 6px 8px; border-radius: 7px; cursor: pointer;
+    border: 1px solid #ddd; background: #fff; text-align: center;
+    font-family: var(--sans); font-size: 11px; font-weight: 500; color: #555;
+    transition: all 0.12s; line-height: 1.3;
+  }
+  .pdf-font-btn span { display: block; font-size: 14px; margin-bottom: 2px; }
+  .pdf-font-btn:hover { border-color: #aaa; color: #222; }
+  .pdf-font-btn.active { border-color: #222; background: #222; color: #fff; }
+  .pdf-generate-btn {
+    width: 100%; padding: 9px; font-family: var(--sans); font-size: 13px;
+    font-weight: 700; background: #1a1814; color: #fff;
+    border: none; border-radius: 8px; cursor: pointer;
+    transition: opacity 0.15s; letter-spacing: 0.01em;
+  }
+  .pdf-generate-btn:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -1887,8 +1941,44 @@
             <button class="impl-btn primary" onclick="copyPreviewText('markdown', this)">Copy Markdown</button>
             <button class="impl-btn"         onclick="copyPreviewText('html', this)">Copy HTML</button>
             <button class="impl-btn"         onclick="downloadArticle()">Download .txt</button>
+            <button class="impl-btn"         onclick="togglePdfPanel(this)" id="pdfToggleBtn">Download PDF</button>
           </div>
           <p class="impl-note">Markdown includes the title as an H1 and the meta description as a blockquote. HTML wraps everything in a semantic &lt;article&gt; tag with the meta as a comment at the top.</p>
+
+          <!-- PDF Customization Panel -->
+          <div class="pdf-panel" id="pdfPanel">
+            <div class="pdf-panel-hd">
+              <div class="pdf-panel-title">PDF Style</div>
+              <div class="pdf-panel-sub">Customize before downloading — your choices are remembered.</div>
+            </div>
+            <div class="pdf-panel-body">
+              <div>
+                <div class="pdf-field-label">Company / Author name</div>
+                <input class="pdf-field-input" id="pdfCompanyName" type="text" placeholder="e.g. Acme Corp or Jane Smith" maxlength="80" />
+              </div>
+              <div>
+                <div class="pdf-field-label">Accent color</div>
+                <div class="pdf-color-row">
+                  <div class="pdf-color-swatch active" data-color="#d4854a" style="background:#d4854a" title="Amber" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#4f46e5" style="background:#4f46e5" title="Indigo" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#0d9488" style="background:#0d9488" title="Teal" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#e11d48" style="background:#e11d48" title="Rose" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#7c3aed" style="background:#7c3aed" title="Violet" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#475569" style="background:#475569" title="Slate" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#111827" style="background:#111827" title="Ink" onclick="selectPdfColor(this)"></div>
+                </div>
+              </div>
+              <div>
+                <div class="pdf-field-label">Typography style</div>
+                <div class="pdf-font-row">
+                  <button class="pdf-font-btn active" data-font="editorial" onclick="selectPdfFont(this)"><span>Aa</span>Editorial</button>
+                  <button class="pdf-font-btn" data-font="modern" onclick="selectPdfFont(this)"><span style="font-family:sans-serif">Aa</span>Modern</button>
+                  <button class="pdf-font-btn" data-font="minimal" onclick="selectPdfFont(this)"><span style="font-weight:300">Aa</span>Minimal</button>
+                </div>
+              </div>
+              <button class="pdf-generate-btn" onclick="downloadAsPdf()">Generate &amp; Download PDF</button>
+            </div>
+          </div>
         </div>
 
         <!-- WordPress -->
@@ -3482,6 +3572,289 @@ function downloadArticle() {
   a.href = url; a.download = slug + '.txt';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── PDF Download ─────────────────────────────────────────────────────────────
+let _pdfColor = localStorage.getItem('byline_pdf_color') || '#d4854a';
+let _pdfFont  = localStorage.getItem('byline_pdf_font')  || 'editorial';
+
+(function initPdfPanel() {
+  // Restore saved color swatch selection
+  document.querySelectorAll('.pdf-color-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.color === _pdfColor);
+  });
+  // Restore saved font selection
+  document.querySelectorAll('.pdf-font-btn').forEach(el => {
+    el.classList.toggle('active', el.dataset.font === _pdfFont);
+  });
+  // Restore company name
+  const saved = localStorage.getItem('byline_pdf_company');
+  if (saved) {
+    const inp = document.getElementById('pdfCompanyName');
+    if (inp) inp.value = saved;
+  }
+})();
+
+function togglePdfPanel(btn) {
+  const panel = document.getElementById('pdfPanel');
+  const isOpen = panel.classList.toggle('open');
+  btn.textContent = isOpen ? 'Hide PDF options' : 'Download PDF';
+}
+
+function selectPdfColor(el) {
+  document.querySelectorAll('.pdf-color-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  _pdfColor = el.dataset.color;
+  localStorage.setItem('byline_pdf_color', _pdfColor);
+}
+
+function selectPdfFont(el) {
+  document.querySelectorAll('.pdf-font-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  _pdfFont = el.dataset.font;
+  localStorage.setItem('byline_pdf_font', _pdfFont);
+}
+
+function downloadAsPdf() {
+  const raw = document.getElementById('out6').textContent;
+  if (!raw || raw.startsWith('Waiting')) return;
+
+  const { title, meta, body } = parseArticle(raw);
+  const companyEl = document.getElementById('pdfCompanyName');
+  const company   = (companyEl ? companyEl.value.trim() : '') || '';
+  if (company) localStorage.setItem('byline_pdf_company', company);
+
+  const color = _pdfColor;
+  const font  = _pdfFont;
+
+  // ─ Typography config per style ──────────────────────────────
+  const fontConfigs = {
+    editorial: {
+      headLink: '<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
+      titleFont: "'Fraunces', Georgia, serif",
+      bodyFont:  "Georgia, 'Times New Roman', serif",
+      uiFont:    "'Plus Jakarta Sans', -apple-system, sans-serif",
+      titleWeight: '700',
+      bodySize: '17.5px',
+      lineHeight: '1.85',
+    },
+    modern: {
+      headLink: '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">',
+      titleFont: "'DM Sans', -apple-system, sans-serif",
+      bodyFont:  "'DM Sans', -apple-system, sans-serif",
+      uiFont:    "'DM Sans', -apple-system, sans-serif",
+      titleWeight: '700',
+      bodySize: '16px',
+      lineHeight: '1.78',
+    },
+    minimal: {
+      headLink: '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">',
+      titleFont: "'Inter', -apple-system, sans-serif",
+      bodyFont:  "'Inter', -apple-system, sans-serif",
+      uiFont:    "'Inter', -apple-system, sans-serif",
+      titleWeight: '300',
+      bodySize: '16px',
+      lineHeight: '1.8',
+    },
+  };
+  const fc = fontConfigs[font] || fontConfigs.editorial;
+
+  // ─ Hex → rgba helper ────────────────────────────────────────
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  const colorSoft = hexToRgba(color, 0.10);
+  const colorMid  = hexToRgba(color, 0.30);
+
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const slug = (title || 'article').replace(/[^a-z0-9\s]/gi,'').replace(/\s+/g,'-').toLowerCase().slice(0,60);
+
+  const bodyHtml = markdownToHtml(body);
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(title)}</title>
+${fc.headLink}
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page {
+    size: A4;
+    margin: 18mm 18mm 20mm;
+  }
+
+  body {
+    font-family: ${fc.uiFont};
+    background: #fff;
+    color: #1a1a18;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  .doc-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 12px;
+    border-bottom: 2px solid ${color};
+    margin-bottom: 38px;
+  }
+  .doc-brand {
+    font-family: ${fc.uiFont}; font-size: 13px; font-weight: 700;
+    color: ${color}; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .doc-date {
+    font-family: ${fc.uiFont}; font-size: 10px; color: #999; letter-spacing: 0.04em;
+  }
+
+  /* ── Title block ─────────────────────────────────────────── */
+  .doc-title {
+    font-family: ${fc.titleFont}; font-size: 34px;
+    font-weight: ${fc.titleWeight}; line-height: 1.15;
+    color: #111; letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  /* ── Meta description ────────────────────────────────────── */
+  .doc-meta {
+    background: ${colorSoft};
+    border-left: 3px solid ${color};
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px; margin-bottom: 36px;
+  }
+  .doc-meta-label {
+    font-family: ${fc.uiFont}; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; color: ${color};
+    margin-bottom: 5px;
+  }
+  .doc-meta-text {
+    font-family: ${fc.uiFont}; font-size: 12px; color: #444; line-height: 1.6;
+  }
+
+  /* ── Rule ────────────────────────────────────────────────── */
+  .doc-rule { height: 1px; background: #e8e2d8; margin-bottom: 36px; }
+
+  /* ── Body content ────────────────────────────────────────── */
+  .doc-body {
+    font-family: ${fc.bodyFont};
+    font-size: ${fc.bodySize};
+    line-height: ${fc.lineHeight};
+    color: #1c1c1a;
+  }
+  .doc-body h1 {
+    font-family: ${fc.titleFont}; font-size: 26px; font-weight: 700;
+    color: #111; margin: 2.4rem 0 0.8rem; letter-spacing: -0.015em; line-height: 1.25;
+    page-break-after: avoid;
+  }
+  .doc-body h2 {
+    font-family: ${fc.uiFont}; font-size: 18px; font-weight: 700;
+    color: #111; margin: 2.4rem 0 0.75rem; letter-spacing: -0.01em; line-height: 1.3;
+    page-break-after: avoid;
+    padding-bottom: 6px; border-bottom: 1px solid ${colorMid};
+  }
+  .doc-body h3 {
+    font-family: ${fc.uiFont}; font-size: 14px; font-weight: 600;
+    color: #333; margin: 2rem 0 0.55rem; line-height: 1.4;
+    page-break-after: avoid;
+  }
+  .doc-body p { margin-bottom: 1.4rem; }
+  .doc-body strong { font-weight: 700; color: #111; }
+  .doc-body em { font-style: italic; }
+  .doc-body code {
+    font-family: 'Courier New', monospace; font-size: 0.82em;
+    background: #f0ebe2; padding: 2px 5px; border-radius: 3px; color: #555;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────── */
+  .doc-footer {
+    margin-top: 52px; padding-top: 12px;
+    border-top: 1px solid #e8e2d8;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .doc-footer-brand {
+    font-family: ${fc.uiFont}; font-size: 9px; color: #bbb;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .doc-footer-brand strong { color: ${color}; }
+  .doc-footer-page {
+    font-family: ${fc.uiFont}; font-size: 9px; color: #ccc; letter-spacing: 0.04em;
+  }
+
+  /* ── Print rules ─────────────────────────────────────────── */
+  @media print {
+    .no-print { display: none !important; }
+    .doc-body h2, .doc-body h3 { page-break-after: avoid; }
+    .doc-body p  { orphans: 3; widows: 3; }
+  }
+
+  /* ── Screen preview bar ──────────────────────────────────── */
+  .screen-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #1a1814; color: #f0ece4; padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: ${fc.uiFont}; font-size: 13px;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.3);
+  }
+  .screen-bar-btn {
+    padding: 8px 20px; border-radius: 7px; border: none; cursor: pointer;
+    font-family: ${fc.uiFont}; font-size: 13px; font-weight: 700; transition: opacity 0.15s;
+  }
+  .screen-bar-btn.primary { background: ${color}; color: #fff; }
+  .screen-bar-btn.secondary { background: transparent; border: 1px solid #555; color: #ccc; }
+  .screen-bar-btn:hover { opacity: 0.85; }
+  @media print { .screen-bar { display: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="screen-bar no-print">
+  <span style="flex:1;color:#aaa;font-size:12px;">Use your browser's Print dialog → <strong style="color:#fff">Save as PDF</strong></span>
+  <button class="screen-bar-btn primary" onclick="window.print()">Save as PDF</button>
+  <button class="screen-bar-btn secondary" onclick="window.close()">Close</button>
+</div>
+
+<div style="max-width:680px; margin:0 auto; padding:48px 0 80px;">
+
+  <div class="doc-header">
+    <div class="doc-brand">${escHtml(company || 'Article')}</div>
+    <div class="doc-date">${escHtml(date)}</div>
+  </div>
+
+  <h1 class="doc-title">${escHtml(title)}</h1>
+
+  ${meta ? `<div class="doc-meta">
+    <div class="doc-meta-label">Summary</div>
+    <div class="doc-meta-text">${escHtml(meta)}</div>
+  </div>` : ''}
+
+  <div class="doc-rule"></div>
+
+  <div class="doc-body">
+    ${bodyHtml}
+  </div>
+
+  <div class="doc-footer">
+    <div class="doc-footer-brand">Generated with <strong>Byline</strong></div>
+    ${company ? `<div class="doc-footer-brand" style="color:#999">${escHtml(company)}</div>` : ''}
+    <div class="doc-footer-page">${escHtml(date)}</div>
+  </div>
+
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) { alert('Please allow popups for this site to download the PDF.'); return; }
+  win.document.write(html);
+  win.document.close();
+  // Give fonts a moment to load before prompting print
+  setTimeout(() => { try { win.focus(); win.print(); } catch(e) {} }, 800);
 }
 
 // ESC key closes preview
