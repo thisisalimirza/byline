@@ -913,13 +913,16 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
   }
   .seo-badge-item {
-    display: flex; align-items: flex-start; gap: 0.6rem;
-    padding: 0.7rem 0.85rem; background: #faf6f0;
-    border-radius: 8px; border: 1px solid #ece7de;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.42rem 0.7rem; background: #faf6f0;
+    border-radius: 6px; border: 1px solid #ece7de;
+    cursor: default; white-space: nowrap; overflow: hidden;
+    position: relative;
   }
+  .seo-badge-item:hover { background: #f3ede4; border-color: #ddd6c8; }
   .seo-badge-dot {
     width: 7px; height: 7px; border-radius: 50%;
-    flex-shrink: 0; margin-top: 4px;
+    flex-shrink: 0;
     transition: background 0.3s;
   }
   .seo-badge-dot.green { background: #22c55e; }
@@ -928,9 +931,21 @@
   .seo-badge-dot.neutral { background: #d8d2c8; }
   .seo-badge-name {
     font-family: var(--sans); font-size: 11px; font-weight: 600;
-    color: #555; margin-bottom: 2px;
+    color: #555; overflow: hidden; text-overflow: ellipsis;
   }
-  .seo-badge-text { font-size: 10.5px; color: #999; line-height: 1.45; }
+  .seo-badge-text { display: none; }
+  .seo-badge-note {
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: #2a2520; color: #fff; font-size: 11px; line-height: 1.4;
+    padding: 0.45rem 0.65rem; border-radius: 6px; white-space: normal;
+    width: 220px; text-align: left; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s; z-index: 100;
+  }
+  .seo-badge-note::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #2a2520;
+  }
+  .seo-badge-item:hover .seo-badge-note { opacity: 1; }
   .seo-badge-item.full-width { grid-column: 1 / -1; }
 
   /* ── SEO skeleton / shimmer ── */
@@ -947,13 +962,7 @@
     animation: seo-shimmer 1.5s infinite;
   }
   .seo-badge-item.skel .seo-badge-dot   { background: #e8e2d8; box-shadow: none; }
-  .seo-badge-item.skel .seo-badge-name,
-  .seo-badge-item.skel .seo-badge-text  { display: none; }
-  .seo-badge-item.skel .seo-skel-name   { height: 10px; width: 70%; margin-bottom: 5px; }
-  .seo-badge-item.skel .seo-skel-text   { height: 9px;  width: 100%; }
-  .seo-skel-name, .seo-skel-text        { display: none; }
-  .seo-badge-item.skel .seo-skel-name,
-  .seo-badge-item.skel .seo-skel-text   { display: block; }
+  .seo-badge-item.skel .seo-badge-name { display: none; }
   .seo-score-pill.skel {
     background: #e8e2d8 !important; color: transparent !important;
     animation: seo-shimmer-pill 1.4s ease-in-out infinite;
@@ -3107,13 +3116,10 @@ function openPreview() {
     // Skeleton badges while AI scores
     const _badgesContainer = document.getElementById('seoBadgesContainer');
     if (_badgesContainer) {
-      _badgesContainer.innerHTML = Array.from({length: 6}, () =>
+      _badgesContainer.innerHTML = Array.from({length: 8}, () =>
         `<div class="seo-badge-item skel">
           <div class="seo-badge-dot neutral"></div>
-          <div style="flex:1">
-            <div class="seo-skeleton seo-skel-name"></div>
-            <div class="seo-skeleton seo-skel-text"></div>
-          </div>
+          <div class="seo-skeleton seo-skel-name" style="flex:1;height:9px;border-radius:3px;"></div>
         </div>`
       ).join('');
     }
@@ -3211,12 +3217,11 @@ async function runAiSeoAnalysis(title, meta, body, keyword) {
     if (container && Array.isArray(data.badges)) {
       container.innerHTML = data.badges.map(b => {
         const colorClass = b.color || 'neutral';
+        const note = (b.note || '').replace(/"/g, '&quot;');
         return `<div class="seo-badge-item">
           <div class="seo-badge-dot ${colorClass}"></div>
-          <div>
-            <div class="seo-badge-name">${b.label || ''}</div>
-            <div class="seo-badge-text">${b.note || ''}</div>
-          </div>
+          <div class="seo-badge-name">${b.label || ''}</div>
+          ${b.note ? `<div class="seo-badge-note">${b.note}</div>` : ''}
         </div>`;
       }).join('');
     }
