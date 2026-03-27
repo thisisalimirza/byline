@@ -853,8 +853,8 @@
   }
   /* Remix chips: 2-col in wide sidebar */
   .preview-tools-sidebar .remix-formats { grid-template-columns: 1fr 1fr; }
-  /* SEO badges: 1-col in sidebar for readability */
-  .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr; }
+  /* SEO badges: 2-col in sidebar */
+  .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr 1fr; }
 
   /* ════════════════════ SEO Analysis Panel ════════════════════ */
   .preview-seo-wrap { max-width: 700px; margin: 0 auto; padding: 0 2rem 2rem; }
@@ -913,17 +913,17 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
   }
   .seo-badge-item {
-    display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.42rem 0.7rem; background: #faf6f0;
-    border-radius: 6px; border: 1px solid #ece7de;
-    cursor: default; white-space: nowrap; overflow: hidden;
-    position: relative;
+    background: #faf6f0; border-radius: 6px; border: 1px solid #ece7de;
+    overflow: hidden; cursor: pointer;
   }
   .seo-badge-item:hover { background: #f3ede4; border-color: #ddd6c8; }
+  .seo-badge-main {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.42rem 0.6rem;
+  }
   .seo-badge-dot {
     width: 7px; height: 7px; border-radius: 50%;
-    flex-shrink: 0;
-    transition: background 0.3s;
+    flex-shrink: 0; transition: background 0.3s;
   }
   .seo-badge-dot.green { background: #22c55e; }
   .seo-badge-dot.amber { background: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.18); }
@@ -931,21 +931,19 @@
   .seo-badge-dot.neutral { background: #d8d2c8; }
   .seo-badge-name {
     font-family: var(--sans); font-size: 11px; font-weight: 600;
-    color: #555; overflow: hidden; text-overflow: ellipsis;
+    color: #555; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .seo-badge-chevron {
+    font-size: 9px; color: #bbb; flex-shrink: 0;
+    transition: transform 0.15s; line-height: 1;
+  }
+  .seo-badge-item.expanded .seo-badge-chevron { transform: rotate(180deg); }
   .seo-badge-text { display: none; }
   .seo-badge-note {
-    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-    background: #2a2520; color: #fff; font-size: 11px; line-height: 1.4;
-    padding: 0.45rem 0.65rem; border-radius: 6px; white-space: normal;
-    width: 220px; text-align: left; pointer-events: none;
-    opacity: 0; transition: opacity 0.15s; z-index: 100;
+    display: none; padding: 0 0.65rem 0.55rem 1.65rem;
+    font-size: 11px; color: #777; line-height: 1.45;
   }
-  .seo-badge-note::after {
-    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-    border: 5px solid transparent; border-top-color: #2a2520;
-  }
-  .seo-badge-item:hover .seo-badge-note { opacity: 1; }
+  .seo-badge-item.expanded .seo-badge-note { display: block; }
   .seo-badge-item.full-width { grid-column: 1 / -1; }
 
   /* ── SEO skeleton / shimmer ── */
@@ -3102,24 +3100,27 @@ function openPreview() {
     const kwDensity = (kw && wordCount > 0) ? (kwCount / wordCount * 100) : null;
     const metaHasCTA = /\b(learn|discover|find out|see how|explore|get|start|read|download|uncover)\b/i.test(meta);
 
-    // Bars (values set now; widths animate after overlay opens)
+    // Bars: values shown immediately, colors start neutral — applied after AI responds
     const titleBarColor = titleLen >= 40 && titleLen <= 65 ? 'green' : titleLen < 40 ? 'amber' : 'red';
     const metaBarColor  = metaLen  >= 140 && metaLen  <= 165 ? 'green' : metaLen  < 140 ? 'amber' : 'red';
     const wordsBarColor = wordCount >= 1000 && wordCount <= 2500 ? 'green' : 'amber';
     const h2BarColor    = h2Count  >= 3    && h2Count  <= 8    ? 'green' : 'amber';
+    _barColors = { titleBarColor, metaBarColor, wordsBarColor, h2BarColor };
 
-    _setBar('seoBarTitle', 'seoTitleVal', titleLen,  100,  'chars', titleBarColor);
-    _setBar('seoBarMeta',  'seoMetaVal',  metaLen,   200,  'chars', metaBarColor);
-    _setBar('seoBarWords', 'seoWordsVal', wordCount, 3000, 'words', wordsBarColor);
-    _setBar('seoBarH2',    'seoH2Val',    h2Count,   10,   null,    h2BarColor);
+    _setBar('seoBarTitle', 'seoTitleVal', titleLen,  100,  'chars', 'neutral');
+    _setBar('seoBarMeta',  'seoMetaVal',  metaLen,   200,  'chars', 'neutral');
+    _setBar('seoBarWords', 'seoWordsVal', wordCount, 3000, 'words', 'neutral');
+    _setBar('seoBarH2',    'seoH2Val',    h2Count,   10,   null,    'neutral');
 
     // Skeleton badges while AI scores
     const _badgesContainer = document.getElementById('seoBadgesContainer');
     if (_badgesContainer) {
       _badgesContainer.innerHTML = Array.from({length: 8}, () =>
         `<div class="seo-badge-item skel">
-          <div class="seo-badge-dot neutral"></div>
-          <div class="seo-skeleton seo-skel-name" style="flex:1;height:9px;border-radius:3px;"></div>
+          <div class="seo-badge-main">
+            <div class="seo-badge-dot neutral"></div>
+            <div class="seo-skeleton seo-skel-name" style="flex:1;height:9px;border-radius:3px;"></div>
+          </div>
         </div>`
       ).join('');
     }
@@ -3204,6 +3205,14 @@ async function runAiSeoAnalysis(title, meta, body, keyword) {
     if (!resp.ok) throw new Error('SEO API ' + resp.status);
     const data = await resp.json();
 
+    // Apply bar colors now that AI has responded
+    const bc = _barColors;
+    ['seoBarTitle','seoBarMeta','seoBarWords','seoBarH2'].forEach((id, i) => {
+      const color = [bc.titleBarColor, bc.metaBarColor, bc.wordsBarColor, bc.h2BarColor][i];
+      const el = document.getElementById(id);
+      if (el && color) el.className = 'seo-metric-fill ' + color;
+    });
+
     // Render score pill
     const pill = document.getElementById('seoScorePill');
     if (pill && typeof data.overall === 'number') {
@@ -3212,27 +3221,32 @@ async function runAiSeoAnalysis(title, meta, body, keyword) {
       pill.className   = 'seo-score-pill ' + (score >= 75 ? 'green' : score >= 45 ? 'amber' : 'red');
     }
 
-    // Render badge items
+    // Render expandable badge items (note hidden by default, click to expand)
     const container = document.getElementById('seoBadgesContainer');
     if (container && Array.isArray(data.badges)) {
       container.innerHTML = data.badges.map(b => {
         const colorClass = b.color || 'neutral';
-        const note = (b.note || '').replace(/"/g, '&quot;');
-        return `<div class="seo-badge-item">
-          <div class="seo-badge-dot ${colorClass}"></div>
-          <div class="seo-badge-name">${b.label || ''}</div>
+        return `<div class="seo-badge-item" onclick="this.classList.toggle('expanded')">
+          <div class="seo-badge-main">
+            <div class="seo-badge-dot ${colorClass}"></div>
+            <div class="seo-badge-name">${b.label || ''}</div>
+            ${b.note ? `<div class="seo-badge-chevron">▾</div>` : ''}
+          </div>
           ${b.note ? `<div class="seo-badge-note">${b.note}</div>` : ''}
         </div>`;
       }).join('');
     }
   } catch (err) {
     console.warn('AI SEO analysis failed:', err);
-    // Show a simple fallback state
+    // Apply bar colors even on failure (data is client-side)
+    const bc = _barColors;
+    ['seoBarTitle','seoBarMeta','seoBarWords','seoBarH2'].forEach((id, i) => {
+      const color = [bc.titleBarColor, bc.metaBarColor, bc.wordsBarColor, bc.h2BarColor][i];
+      const el = document.getElementById(id);
+      if (el && color) el.className = 'seo-metric-fill ' + color;
+    });
     const pill = document.getElementById('seoScorePill');
-    if (pill && pill.classList.contains('skel')) {
-      pill.textContent = '—';
-      pill.className = 'seo-score-pill neutral';
-    }
+    if (pill) { pill.textContent = '—'; pill.className = 'seo-score-pill neutral'; }
     const container = document.getElementById('seoBadgesContainer');
     if (container) {
       container.innerHTML = '<div style="font-size:12px;color:#999;padding:8px 0;">SEO analysis unavailable</div>';
@@ -3462,6 +3476,7 @@ Output only the newsletter — no preamble.`
 };
 
 let _activeRemixFormat = null;
+let _barColors = {};
 
 async function generateRemix(format) {
   const raw = document.getElementById('out6').textContent;
