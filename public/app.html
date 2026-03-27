@@ -287,11 +287,26 @@
   /* ── Sidebar ── */
   .sidebar {
     border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sidebar-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
-    overflow-y: auto;
+    /* smooth momentum scroll on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+  .sidebar-footer {
+    flex-shrink: 0;
+    padding: 0.65rem 1rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
   }
 
   /* Card containers */
@@ -299,16 +314,43 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
+    overflow: hidden;
   }
+  .sidebar-card-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    gap: 0.5rem;
+  }
+  .sidebar-card-header:hover .sidebar-card-title { color: var(--text-muted); }
   .sidebar-card-title {
     font-size: 10px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.09em;
     color: var(--text-dim);
+    transition: color 0.15s;
+    flex: 1;
   }
+  .sidebar-card-chevron {
+    font-size: 8px; color: var(--text-dim);
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+  .sidebar-card-chevron.open { transform: rotate(180deg); }
+  .sidebar-card-summary {
+    font-size: 10px; color: var(--text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 140px;
+  }
+  .sidebar-card-body {
+    padding: 0 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .sidebar-card-body.collapsed { display: none; }
+  /* Non-collapsible card (Credits) keeps old padding */
+  .sidebar-card.no-collapse { padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem; }
 
   .field-label {
     font-size: 12px; font-weight: 500;
@@ -628,7 +670,6 @@
     font-family: var(--sans); font-size: 14px; font-weight: 700;
     letter-spacing: 0.01em; cursor: pointer;
     transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
-    margin-top: auto; flex-shrink: 0;
     box-shadow: 0 2px 14px var(--accent-glow);
   }
   .run-btn:hover { opacity: 0.9; box-shadow: 0 4px 22px var(--accent-glow); }
@@ -778,7 +819,42 @@
   .preview-stat.seo-warn span { color: #d97706; }
   .preview-stat.seo-bad  span { color: #dc2626; }
 
-  .preview-scroll { overflow-y: auto; flex: 1; }
+  /* Two-column preview layout */
+  .preview-body {
+    display: flex; flex: 1; overflow: hidden;
+  }
+  .preview-article-scroll {
+    flex: 3; overflow-y: auto; min-width: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .preview-tools-sidebar {
+    flex: 2; flex-shrink: 0; min-width: 320px;
+    overflow-y: auto; overflow-x: hidden;
+    border-left: 1px solid #e8e2d8;
+    background: #fff;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Sidebar overrides — remove centered max-width, fit the column */
+  .preview-tools-sidebar .preview-seo-wrap {
+    max-width: none; margin: 0; padding: 1.1rem 1.1rem 1.25rem;
+    border-bottom: 1px solid #f0ebe2;
+  }
+  .preview-tools-sidebar .revision-wrap {
+    max-width: none; margin: 0; padding: 1.1rem;
+    border-bottom: 1px solid #f0ebe2;
+  }
+  .preview-tools-sidebar .remix-wrap {
+    max-width: none; margin: 0; padding: 1.1rem;
+    border-bottom: 1px solid #f0ebe2;
+  }
+  .preview-tools-sidebar .impl-guide-wrap {
+    max-width: none; margin: 0; padding: 1.1rem 1.1rem 2rem;
+  }
+  /* Remix chips: 2-col in wide sidebar */
+  .preview-tools-sidebar .remix-formats { grid-template-columns: 1fr 1fr; }
+  /* SEO badges: 2-col in sidebar */
+  .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr 1fr; }
 
   /* ════════════════════ SEO Analysis Panel ════════════════════ */
   .preview-seo-wrap { max-width: 700px; margin: 0 auto; padding: 0 2rem 2rem; }
@@ -837,14 +913,17 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
   }
   .seo-badge-item {
-    display: flex; align-items: flex-start; gap: 0.6rem;
-    padding: 0.7rem 0.85rem; background: #faf6f0;
-    border-radius: 8px; border: 1px solid #ece7de;
+    background: #faf6f0; border-radius: 6px; border: 1px solid #ece7de;
+    overflow: hidden; cursor: pointer;
+  }
+  .seo-badge-item:hover { background: #f3ede4; border-color: #ddd6c8; }
+  .seo-badge-main {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.42rem 0.6rem;
   }
   .seo-badge-dot {
     width: 7px; height: 7px; border-radius: 50%;
-    flex-shrink: 0; margin-top: 4px;
-    transition: background 0.3s;
+    flex-shrink: 0; transition: background 0.3s;
   }
   .seo-badge-dot.green { background: #22c55e; }
   .seo-badge-dot.amber { background: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.18); }
@@ -852,10 +931,41 @@
   .seo-badge-dot.neutral { background: #d8d2c8; }
   .seo-badge-name {
     font-family: var(--sans); font-size: 11px; font-weight: 600;
-    color: #555; margin-bottom: 2px;
+    color: #555; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .seo-badge-text { font-size: 10.5px; color: #999; line-height: 1.45; }
+  .seo-badge-chevron {
+    font-size: 9px; color: #bbb; flex-shrink: 0;
+    transition: transform 0.15s; line-height: 1;
+  }
+  .seo-badge-item.expanded .seo-badge-chevron { transform: rotate(180deg); }
+  .seo-badge-text { display: none; }
+  .seo-badge-note {
+    display: none; padding: 0 0.65rem 0.55rem 1.65rem;
+    font-size: 11px; color: #777; line-height: 1.45;
+  }
+  .seo-badge-item.expanded .seo-badge-note { display: block; }
   .seo-badge-item.full-width { grid-column: 1 / -1; }
+
+  /* ── SEO skeleton / shimmer ── */
+  @keyframes seo-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  .seo-skeleton {
+    background: #f0ebe2; border-radius: 4px; position: relative; overflow: hidden;
+  }
+  .seo-skeleton::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 50%, transparent 100%);
+    animation: seo-shimmer 1.5s infinite;
+  }
+  .seo-badge-item.skel .seo-badge-dot   { background: #e8e2d8; box-shadow: none; }
+  .seo-badge-item.skel .seo-badge-name { display: none; }
+  .seo-score-pill.skel {
+    background: #e8e2d8 !important; color: transparent !important;
+    animation: seo-shimmer-pill 1.4s ease-in-out infinite;
+  }
+  @keyframes seo-shimmer-pill { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
 
   /* ════════════════════ Save Draft / Toast ════════════════════ */
   .save-draft-btn {
@@ -1240,7 +1350,16 @@
       width: 100%;
       overflow: visible;
       height: auto;
-      padding: 1rem;
+    }
+    .sidebar-scroll {
+      overflow: visible;
+      flex: none;
+      height: auto;
+      min-height: unset;
+    }
+    .sidebar-footer {
+      border-top: none;
+      padding-top: 0;
     }
 
     /* Output area becomes full-width */
@@ -1268,9 +1387,13 @@
     /* SEO metrics: single column */
     .preview-seo-metrics { grid-template-columns: 1fr; gap: 0.8rem; }
 
-    /* Preview overlay scrollable */
+    /* Preview overlay: stack columns on mobile */
     .preview-overlay { overflow-y: auto; }
-    .preview-body { overflow-y: visible; }
+    .preview-body { flex-direction: column; overflow: visible; flex: none; }
+    .preview-article-scroll { overflow: visible; height: auto; }
+    .preview-tools-sidebar { width: 100%; border-left: none; border-top: 1px solid #e8e2d8; overflow: visible; }
+    .preview-tools-sidebar .remix-formats { grid-template-columns: 1fr 1fr; }
+    .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr 1fr; }
   }
 
   @media (max-width: 480px) {
@@ -1284,6 +1407,76 @@
     .revision-btn { width: 100%; }
     .remix-formats { grid-template-columns: 1fr; }
   }
+
+  /* ════════════════════ PDF Panel ════════════════════════════ */
+  .pdf-panel {
+    margin-top: 1.25rem; background: #f9f7f4;
+    border: 1px solid #e8e2d8; border-radius: 10px; overflow: hidden;
+    display: none;
+  }
+  .pdf-panel.open { display: block; }
+  .pdf-panel-hd {
+    padding: 0.9rem 1.1rem 0.75rem; border-bottom: 1px solid #f0ebe2;
+  }
+  .pdf-panel-title {
+    font-size: 12px; font-weight: 700; color: #222;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px;
+  }
+  .pdf-panel-sub { font-size: 11px; color: #999; }
+  .pdf-panel-body { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 1rem; }
+  .pdf-field-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.09em; color: #888; margin-bottom: 5px;
+  }
+  .pdf-field-input {
+    width: 100%; box-sizing: border-box;
+    font-family: var(--sans); font-size: 12px; color: #222;
+    background: #fff; border: 1px solid #ddd; border-radius: 7px;
+    padding: 7px 10px; outline: none; transition: border-color 0.15s;
+  }
+  .pdf-field-input:focus { border-color: #aaa; }
+  .pdf-field-input::placeholder { color: #bbb; }
+  .pdf-color-row { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+  .pdf-color-swatch {
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s;
+    flex-shrink: 0;
+  }
+  .pdf-color-swatch:hover { transform: scale(1.15); }
+  .pdf-color-swatch.active { border-color: #222; transform: scale(1.12); }
+  .pdf-color-custom {
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    border: 2px solid var(--border); flex-shrink: 0; background: none;
+    transition: transform 0.12s, border-color 0.12s;
+    position: relative; overflow: hidden;
+  }
+  .pdf-color-custom:hover { transform: scale(1.15); }
+  .pdf-color-custom.active { border-color: #555; transform: scale(1.12); }
+  .pdf-color-custom input[type="color"] {
+    position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px);
+    border: none; padding: 0; cursor: pointer; opacity: 0;
+  }
+  .pdf-color-custom-fill {
+    position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+    background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+  }
+  .pdf-font-row { display: flex; gap: 6px; }
+  .pdf-font-btn {
+    flex: 1; padding: 6px 8px; border-radius: 7px; cursor: pointer;
+    border: 1px solid #ddd; background: #fff; text-align: center;
+    font-family: var(--sans); font-size: 11px; font-weight: 500; color: #555;
+    transition: all 0.12s; line-height: 1.3;
+  }
+  .pdf-font-btn span { display: block; font-size: 14px; margin-bottom: 2px; }
+  .pdf-font-btn:hover { border-color: #aaa; color: #222; }
+  .pdf-font-btn.active { border-color: #222; background: #222; color: #fff; }
+  .pdf-generate-btn {
+    width: 100%; padding: 9px; font-family: var(--sans); font-size: 13px;
+    font-weight: 700; background: #1a1814; color: #fff;
+    border: none; border-radius: 8px; cursor: pointer;
+    transition: opacity 0.15s; letter-spacing: 0.01em;
+  }
+  .pdf-generate-btn:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -1358,9 +1551,10 @@
 
 <main>
   <aside class="sidebar">
+  <div class="sidebar-scroll">
 
     <!-- Credits -->
-    <div class="sidebar-card">
+    <div class="sidebar-card no-collapse">
       <div class="sidebar-card-title">Credits</div>
       <div class="credit-display">
         <div class="credit-balance">
@@ -1392,55 +1586,65 @@
 
     <!-- Your Article -->
     <div class="sidebar-card">
-      <div class="sidebar-card-title">Your Article</div>
-
-      <div>
-        <div class="field-label">What do you want to write about?</div>
-        <textarea id="topic" rows="2" placeholder="e.g. how local businesses can get found on Google"></textarea>
+      <div class="sidebar-card-header" onclick="toggleSidebarCard('article')">
+        <div class="sidebar-card-title">Your Article</div>
+        <span class="sidebar-card-summary" id="articleSummary"></span>
+        <span class="sidebar-card-chevron open" id="articleChevron">▼</span>
       </div>
-
-      <div>
-        <div class="field-label">Target Keyword</div>
-        <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
-      </div>
-
-      <div>
-        <div class="field-label">Who is this for?</div>
-        <input type="text" id="audience" placeholder="e.g. small business owners with no marketing budget" />
-      </div>
-
-      <div>
-        <div class="field-label">Audience Type</div>
-        <div class="type-toggle">
-          <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
-          <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
-          <button class="type-btn" id="btnBoth" onclick="setType('General')">General</button>
+      <div class="sidebar-card-body" id="articleBody">
+        <div>
+          <div class="field-label">What do you want to write about?</div>
+          <textarea id="topic" rows="2" placeholder="e.g. how local businesses can get found on Google"></textarea>
         </div>
-      </div>
 
-      <div>
-        <div class="field-label">Writing Style</div>
-        <select id="tone">
-          <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
-          <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
-          <option value="investigative and mildly skeptical — questions assumptions, surfaces what others miss">Investigative</option>
-          <option value="practical and actionable — every claim connects to something the reader can do">Practical</option>
-        </select>
-      </div>
+        <div>
+          <div class="field-label">Target Keyword</div>
+          <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
+        </div>
 
-      <div>
-        <div class="field-label">AI Model</div>
-        <select id="model">
-          <option value="claude-opus-4-6">Opus — Best Quality</option>
-          <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
-          <option value="claude-sonnet-4-20250514">Sonnet 4.5</option>
-        </select>
+        <div>
+          <div class="field-label">Who is this for?</div>
+          <input type="text" id="audience" placeholder="e.g. small business owners with no marketing budget" />
+        </div>
+
+        <div>
+          <div class="field-label">Audience Type</div>
+          <div class="type-toggle">
+            <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
+            <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
+            <button class="type-btn" id="btnBoth" onclick="setType('General')">General</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">Writing Style</div>
+          <select id="tone">
+            <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
+            <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
+            <option value="investigative and mildly skeptical — questions assumptions, surfaces what others miss">Investigative</option>
+            <option value="practical and actionable — every claim connects to something the reader can do">Practical</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="field-label">AI Model</div>
+          <select id="model">
+            <option value="claude-opus-4-6">Opus — Best Quality</option>
+            <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
+            <option value="claude-sonnet-4-20250514">Sonnet 4.5</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <!-- Promote Your Brand -->
     <div class="sidebar-card">
-      <div class="sidebar-card-title">Promote Your Brand</div>
+      <div class="sidebar-card-header" onclick="toggleSidebarCard('brand')">
+        <div class="sidebar-card-title">Promote Your Brand</div>
+        <span class="sidebar-card-summary" id="brandSummary">Optional</span>
+        <span class="sidebar-card-chevron" id="brandChevron">▼</span>
+      </div>
+      <div class="sidebar-card-body collapsed" id="brandBody">
 
       <!-- Saved products dropdown -->
       <div id="productDropdownWrap" style="display:none">
@@ -1493,6 +1697,7 @@
       <div class="product-save-row">
         <button class="product-save-btn" id="productSaveBtn" onclick="saveProduct()">+ Save product</button>
       </div>
+      </div><!-- /sidebar-card-body#brandBody -->
     </div>
 
     <!-- Advanced Settings -->
@@ -1563,7 +1768,11 @@
       </div>
     </div>
 
+  </div><!-- /sidebar-scroll -->
+
+  <div class="sidebar-footer">
     <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate Article</button>
+  </div>
 
   </aside>
 
@@ -1661,9 +1870,10 @@
     </div>
   </div>
 
-  <div class="preview-scroll">
+  <div class="preview-body">
 
-    <!-- Article -->
+  <!-- ── Left: Article ── -->
+  <div class="preview-article-scroll">
     <div class="preview-article-wrap">
       <div class="preview-kicker">blog post preview</div>
       <h1 class="preview-h1" id="previewTitle"></h1>
@@ -1674,6 +1884,10 @@
       <div class="preview-rule"></div>
       <div class="preview-content" id="previewContent"></div>
     </div>
+  </div>
+
+  <!-- ── Right: Tools sidebar ── -->
+  <div class="preview-tools-sidebar">
 
     <!-- SEO Analysis -->
     <div class="preview-seo-wrap">
@@ -1735,43 +1949,7 @@
 
         <div class="preview-seo-divider"></div>
 
-        <div class="preview-seo-badges">
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotKwTitle"></div>
-            <div>
-              <div class="seo-badge-name">Keyword in Title</div>
-              <div class="seo-badge-text" id="seoBadgeKwTitle">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotKwBody"></div>
-            <div>
-              <div class="seo-badge-name">Keyword Density</div>
-              <div class="seo-badge-text" id="seoBadgeKwBody">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotKwFirst"></div>
-            <div>
-              <div class="seo-badge-name">Keyword in Intro</div>
-              <div class="seo-badge-text" id="seoBadgeKwFirst">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotMeta"></div>
-            <div>
-              <div class="seo-badge-name">Meta CTA</div>
-              <div class="seo-badge-text" id="seoBadgeMeta">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item full-width">
-            <div class="seo-badge-dot neutral" id="seoDotReadability"></div>
-            <div>
-              <div class="seo-badge-name">Readability</div>
-              <div class="seo-badge-text" id="seoBadgeReadability">—</div>
-            </div>
-          </div>
-        </div>
+        <div class="preview-seo-badges" id="seoBadgesContainer"></div>
 
       </div>
     </div>
@@ -1887,8 +2065,48 @@
             <button class="impl-btn primary" onclick="copyPreviewText('markdown', this)">Copy Markdown</button>
             <button class="impl-btn"         onclick="copyPreviewText('html', this)">Copy HTML</button>
             <button class="impl-btn"         onclick="downloadArticle()">Download .txt</button>
+            <button class="impl-btn"         onclick="togglePdfPanel(this)" id="pdfToggleBtn">Download PDF</button>
           </div>
           <p class="impl-note">Markdown includes the title as an H1 and the meta description as a blockquote. HTML wraps everything in a semantic &lt;article&gt; tag with the meta as a comment at the top.</p>
+
+          <!-- PDF Customization Panel -->
+          <div class="pdf-panel" id="pdfPanel">
+            <div class="pdf-panel-hd">
+              <div class="pdf-panel-title">PDF Style</div>
+              <div class="pdf-panel-sub">Customize before downloading — your choices are remembered.</div>
+            </div>
+            <div class="pdf-panel-body">
+              <div>
+                <div class="pdf-field-label">Company / Author name</div>
+                <input class="pdf-field-input" id="pdfCompanyName" type="text" placeholder="e.g. Acme Corp or Jane Smith" maxlength="80" />
+              </div>
+              <div>
+                <div class="pdf-field-label">Accent color</div>
+                <div class="pdf-color-row">
+                  <div class="pdf-color-swatch active" data-color="#d4854a" style="background:#d4854a" title="Amber" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#4f46e5" style="background:#4f46e5" title="Indigo" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#0d9488" style="background:#0d9488" title="Teal" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#e11d48" style="background:#e11d48" title="Rose" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#7c3aed" style="background:#7c3aed" title="Violet" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#475569" style="background:#475569" title="Slate" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-swatch" data-color="#111827" style="background:#111827" title="Ink" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-custom" id="pdfColorCustom" title="Custom color">
+                    <div class="pdf-color-custom-fill" id="pdfColorCustomFill"></div>
+                    <input type="color" id="pdfColorCustomInput" value="#d4854a" oninput="selectPdfCustomColor(this.value)" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="pdf-field-label">Typography style</div>
+                <div class="pdf-font-row">
+                  <button class="pdf-font-btn active" data-font="editorial" onclick="selectPdfFont(this)"><span>Aa</span>Editorial</button>
+                  <button class="pdf-font-btn" data-font="modern" onclick="selectPdfFont(this)"><span style="font-family:sans-serif">Aa</span>Modern</button>
+                  <button class="pdf-font-btn" data-font="minimal" onclick="selectPdfFont(this)"><span style="font-weight:300">Aa</span>Minimal</button>
+                </div>
+              </div>
+              <button class="pdf-generate-btn" onclick="downloadAsPdf()">Generate &amp; Download PDF</button>
+            </div>
+          </div>
         </div>
 
         <!-- WordPress -->
@@ -1951,7 +2169,8 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- /preview-tools-sidebar -->
+  </div><!-- /preview-body -->
 </div>
 <!-- ══════════════════════════════════════════════════════════ -->
 
@@ -2106,15 +2325,22 @@ Output only the revised article. No preamble, no explanation.`,
 KEYWORD GUARD RAIL — CRITICAL:
 The target keyword has already been woven into specific sentences. Do not remove, rephrase, or rewrite those sentences purely to change keyword placement. If a sentence contains the target keyword and you have a genuine voice reason to rephrase it, do so — but keep the keyword in the rewritten sentence.
 
+BANNED CONSTRUCTIONS — fix every instance you find:
+- Em dashes (—): never use them. Replace with a period, a comma, or restructure the sentence. "It works — if you're careful" → "It works, if you're careful." or split into two sentences.
+- "Here's what [anything]:" — this entire construction is banned. Never intro an idea by announcing it. Just say the thing. "Here's what the data shows: churn doubled." → "Churn doubled." "Here's the thing:" → cut entirely and start the real sentence.
+- Any sentence where "here" is followed eventually by a colon: banned. Same rule.
+- "It's not X. It's Y." constructions: banned. This fake-profound parallelism is one of the most recognizable AI writing patterns. It sounds like a TED talk written by a committee. Just make the claim directly. "It's not about tactics. It's about trust." → "Trust matters more than tactics." Find the real point and say it.
+- "Not X. Y." (the short form of the same pattern): banned. "Not a tool. A system." "Not optimization. Transformation." These read as slogans pretending to be insights. Rewrite as a plain declarative sentence.
+
 PASS 1 — INJECT SOUL:
 Read the article and ask honestly: does this sound like a person with a perspective, or like assembled text?
 
 Work through these fixes:
-— Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
-— Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
-— Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
-— Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
-— The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
+- Sentence rhythm: vary it aggressively. Short sentences land hard. Then occasionally a longer one that takes its time getting to the point, building an argument that needs room to develop. The monotone rhythm of equal-length sentences is the clearest remaining AI tell.
+- Opinion: find one claim in the article that is stated neutrally and could be stated as a defensible position. Make the article take a side, even gently. "This approach is better" beats "this approach has advantages."
+- Specificity: find any remaining abstract or vague passage and replace it with a named company, a concrete number, or a specific scene. One real detail is worth three abstract sentences.
+- Complexity: add one moment where the article acknowledges a counterargument, a trade-off, or a genuine limitation. Real thinking has edges. AI text is always clean and confident.
+- The ending: if it ends on a summary or a motivational nudge, replace it with a specific, memorable thought that closes the argument — not a conclusion, a landing.
 
 PASS 2 — SELF-AUDIT:
 After your edits, read the article from the top and ask: "What still makes this obviously AI-generated?"
@@ -2125,6 +2351,8 @@ Look for:
 - Opinions that are hedged into meaninglessness
 - A rhythm that's still too clean, too even
 - An ending that summarizes rather than concludes
+- Any surviving em dashes or "Here's what/the/why/how:" constructions
+- Any "It's not X. It's Y." or "Not X. Y." parallelisms
 
 Fix what you find. Then output the final article.
 
@@ -2179,6 +2407,31 @@ function toggleAdvanced() {
   const sec  = document.getElementById('advancedSection');
   const open = sec.classList.toggle('open');
   btn.classList.toggle('open', open);
+}
+
+function toggleSidebarCard(id) {
+  const body = document.getElementById(id + 'Body');
+  const chev = document.getElementById(id + 'Chevron');
+  const isOpen = body.classList.toggle('collapsed');
+  chev.classList.toggle('open', !isOpen);
+  // Update summary text when collapsing "article" section
+  if (id === 'article' && isOpen) {
+    const kw = (document.getElementById('keyword').value || '').trim();
+    const summary = document.getElementById('articleSummary');
+    if (summary) summary.textContent = kw || '';
+  } else if (id === 'article') {
+    const summary = document.getElementById('articleSummary');
+    if (summary) summary.textContent = '';
+  }
+  // Update brand summary
+  if (id === 'brand' && isOpen) {
+    const name = (document.getElementById('productName').value || '').trim();
+    const summary = document.getElementById('brandSummary');
+    if (summary) summary.textContent = name || 'Optional';
+  } else if (id === 'brand') {
+    const summary = document.getElementById('brandSummary');
+    if (summary) summary.textContent = '';
+  }
 }
 
 function setPipeNode(n, state) {
@@ -2847,73 +3100,36 @@ function openPreview() {
     const kwDensity = (kw && wordCount > 0) ? (kwCount / wordCount * 100) : null;
     const metaHasCTA = /\b(learn|discover|find out|see how|explore|get|start|read|download|uncover)\b/i.test(meta);
 
-    // Bars (values set now; widths animate after overlay opens)
+    // Bars: values shown immediately, colors start neutral — applied after AI responds
     const titleBarColor = titleLen >= 40 && titleLen <= 65 ? 'green' : titleLen < 40 ? 'amber' : 'red';
     const metaBarColor  = metaLen  >= 140 && metaLen  <= 165 ? 'green' : metaLen  < 140 ? 'amber' : 'red';
     const wordsBarColor = wordCount >= 1000 && wordCount <= 2500 ? 'green' : 'amber';
     const h2BarColor    = h2Count  >= 3    && h2Count  <= 8    ? 'green' : 'amber';
+    _barColors = { titleBarColor, metaBarColor, wordsBarColor, h2BarColor };
 
-    _setBar('seoBarTitle', 'seoTitleVal', titleLen,  100,  'chars', titleBarColor);
-    _setBar('seoBarMeta',  'seoMetaVal',  metaLen,   200,  'chars', metaBarColor);
-    _setBar('seoBarWords', 'seoWordsVal', wordCount, 3000, 'words', wordsBarColor);
-    _setBar('seoBarH2',    'seoH2Val',    h2Count,   10,   null,    h2BarColor);
+    _setBar('seoBarTitle', 'seoTitleVal', titleLen,  100,  'chars', 'neutral');
+    _setBar('seoBarMeta',  'seoMetaVal',  metaLen,   200,  'chars', 'neutral');
+    _setBar('seoBarWords', 'seoWordsVal', wordCount, 3000, 'words', 'neutral');
+    _setBar('seoBarH2',    'seoH2Val',    h2Count,   10,   null,    'neutral');
 
-    // Keyword badges
-    if (kw) {
-      _setBadge('seoDotKwTitle', 'seoBadgeKwTitle',
-        kwInTitle ? 'green' : 'red',
-        kwInTitle ? 'Found in title ✓' : 'Missing — try adding it early');
-      const densityColor = kwDensity >= 0.5 && kwDensity <= 2.5 ? 'green' : kwDensity < 0.5 ? 'amber' : 'red';
-      _setBadge('seoDotKwBody', 'seoBadgeKwBody',
-        densityColor,
-        kwCount + '× used · ' + (kwDensity !== null ? kwDensity.toFixed(1) + '% density' : '—'));
-      _setBadge('seoDotKwFirst', 'seoBadgeKwFirst',
-        kwInFirst ? 'green' : 'amber',
-        kwInFirst ? 'In first paragraph ✓' : 'Try adding to intro paragraph');
-    } else {
-      ['seoDotKwTitle','seoDotKwBody','seoDotKwFirst'].forEach(id =>
-        _setBadge(id, id.replace('seoDot','seoBadge'), 'amber', 'Set a target keyword in the sidebar'));
+    // Skeleton badges while AI scores
+    const _badgesContainer = document.getElementById('seoBadgesContainer');
+    if (_badgesContainer) {
+      _badgesContainer.innerHTML = Array.from({length: 8}, () =>
+        `<div class="seo-badge-item skel">
+          <div class="seo-badge-main">
+            <div class="seo-badge-dot neutral"></div>
+            <div class="seo-skeleton seo-skel-name" style="flex:1;height:9px;border-radius:3px;"></div>
+          </div>
+        </div>`
+      ).join('');
     }
-    _setBadge('seoDotMeta', 'seoBadgeMeta',
-      metaHasCTA ? 'green' : 'amber',
-      metaHasCTA ? 'Has action phrase ✓' : 'Consider adding a CTA phrase');
 
-    // Flesch-Kincaid Readability
-    const fkScore = fleschReadingEase(body);
-    let fkColor, fkLabel;
-    if (fkScore === null) {
-      fkColor = 'neutral'; fkLabel = '—';
-    } else if (fkScore >= 60 && fkScore < 80) {
-      fkColor = 'green';
-      fkLabel = Math.round(fkScore) + ' · ' + (fkScore >= 70 ? 'Fairly Easy' : 'Standard') + ' — ideal for web ✓';
-    } else if (fkScore >= 80) {
-      fkColor = 'amber';
-      fkLabel = Math.round(fkScore) + ' · Very Easy — may read as too simple';
-    } else if (fkScore >= 45) {
-      fkColor = 'amber';
-      fkLabel = Math.round(fkScore) + ' · Fairly Difficult — consider shorter sentences';
-    } else {
-      fkColor = 'red';
-      fkLabel = Math.round(fkScore) + ' · Difficult — simplify for broader audiences';
-    }
-    _setBadge('seoDotReadability', 'seoBadgeReadability', fkColor, fkLabel);
-    const fkGood = fkScore !== null && fkScore >= 45 && fkScore < 80;
-
-    // Overall score pill
-    const checks = [
-      titleBarColor === 'green', metaBarColor === 'green',
-      wordsBarColor === 'green', h2BarColor === 'green',
-      metaHasCTA,
-      kw ? kwInTitle : true,
-      kw ? (kwDensity >= 0.5 && kwDensity <= 2.5) : true,
-      kw ? kwInFirst : true,
-      fkGood
-    ];
-    const scorePct = Math.round(checks.filter(Boolean).length / checks.length * 100);
+    // Skeleton score pill
     const pill = document.getElementById('seoScorePill');
     if (pill) {
-      pill.textContent = scorePct + '% score';
-      pill.className   = 'seo-score-pill ' + (scorePct >= 75 ? 'green' : scorePct >= 45 ? 'amber' : 'red');
+      pill.textContent = '—';
+      pill.className   = 'seo-score-pill skel';
     }
   } catch(seoErr) {
     console.warn('SEO panel error:', seoErr);
@@ -2948,7 +3164,7 @@ function openPreview() {
   // Open overlay
   document.getElementById('previewOverlay').classList.add('open');
   document.getElementById('completionBar').classList.remove('visible');
-  document.querySelector('.preview-scroll').scrollTop = 0;
+  document.querySelector('.preview-article-scroll').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 
   // Animate SEO bars AFTER the overlay is visible (double-rAF ensures layout commit)
@@ -2957,6 +3173,10 @@ function openPreview() {
       el.style.width = el.dataset.targetPct + '%';
     });
   }));
+
+  // Kick off AI SEO analysis asynchronously (no await — UI stays responsive)
+  const _kw = (document.getElementById('keyword').value || '').trim();
+  runAiSeoAnalysis(title, meta, body, _kw);
 }
 
 function closePreview() {
@@ -2969,6 +3189,68 @@ function closePreview() {
     saveBtn.className = 'save-draft-btn visible';
     saveBtn.onclick = saveDraft;
     _previewingDraftId = null;
+  }
+}
+
+// ── AI SEO Analysis ───────────────────────────────────────────────────────────
+async function runAiSeoAnalysis(title, meta, body, keyword) {
+  try {
+    const apiKey = (document.getElementById('apiKey').value || '').trim();
+    const resp = await fetch('/api/seo-score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ articleText: body, keyword, apiKey,
+        title, metaDescription: meta })
+    });
+    if (!resp.ok) throw new Error('SEO API ' + resp.status);
+    const data = await resp.json();
+
+    // Apply bar colors now that AI has responded
+    const bc = _barColors;
+    ['seoBarTitle','seoBarMeta','seoBarWords','seoBarH2'].forEach((id, i) => {
+      const color = [bc.titleBarColor, bc.metaBarColor, bc.wordsBarColor, bc.h2BarColor][i];
+      const el = document.getElementById(id);
+      if (el && color) el.className = 'seo-metric-fill ' + color;
+    });
+
+    // Render score pill
+    const pill = document.getElementById('seoScorePill');
+    if (pill && typeof data.overall === 'number') {
+      const score = data.overall;
+      pill.textContent = score + '% score';
+      pill.className   = 'seo-score-pill ' + (score >= 75 ? 'green' : score >= 45 ? 'amber' : 'red');
+    }
+
+    // Render expandable badge items (note hidden by default, click to expand)
+    const container = document.getElementById('seoBadgesContainer');
+    if (container && Array.isArray(data.badges)) {
+      container.innerHTML = data.badges.map(b => {
+        const colorClass = b.color || 'neutral';
+        return `<div class="seo-badge-item" onclick="this.classList.toggle('expanded')">
+          <div class="seo-badge-main">
+            <div class="seo-badge-dot ${colorClass}"></div>
+            <div class="seo-badge-name">${b.label || ''}</div>
+            ${b.note ? `<div class="seo-badge-chevron">▾</div>` : ''}
+          </div>
+          ${b.note ? `<div class="seo-badge-note">${b.note}</div>` : ''}
+        </div>`;
+      }).join('');
+    }
+  } catch (err) {
+    console.warn('AI SEO analysis failed:', err);
+    // Apply bar colors even on failure (data is client-side)
+    const bc = _barColors;
+    ['seoBarTitle','seoBarMeta','seoBarWords','seoBarH2'].forEach((id, i) => {
+      const color = [bc.titleBarColor, bc.metaBarColor, bc.wordsBarColor, bc.h2BarColor][i];
+      const el = document.getElementById(id);
+      if (el && color) el.className = 'seo-metric-fill ' + color;
+    });
+    const pill = document.getElementById('seoScorePill');
+    if (pill) { pill.textContent = '—'; pill.className = 'seo-score-pill neutral'; }
+    const container = document.getElementById('seoBadgesContainer');
+    if (container) {
+      container.innerHTML = '<div style="font-size:12px;color:#999;padding:8px 0;">SEO analysis unavailable</div>';
+    }
   }
 }
 
@@ -3102,7 +3384,7 @@ Do not add commentary, preamble, or explanations — only the revised article.`;
       streamEl.classList.remove('visible');
       document.getElementById('revisionInput').value = '';
       // Scroll preview to top so user sees the updated article
-      document.querySelector('.preview-scroll').scrollTop = 0;
+      document.querySelector('.preview-article-scroll').scrollTop = 0;
     } else {
       throw new Error('Unexpected response format from revision agent.');
     }
@@ -3194,6 +3476,7 @@ Output only the newsletter — no preamble.`
 };
 
 let _activeRemixFormat = null;
+let _barColors = {};
 
 async function generateRemix(format) {
   const raw = document.getElementById('out6').textContent;
@@ -3482,6 +3765,309 @@ function downloadArticle() {
   a.href = url; a.download = slug + '.txt';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── PDF Download ─────────────────────────────────────────────────────────────
+let _pdfColor = localStorage.getItem('byline_pdf_color') || '#d4854a';
+let _pdfFont  = localStorage.getItem('byline_pdf_font')  || 'editorial';
+
+(function initPdfPanel() {
+  // Restore saved color — check presets first, fall back to custom picker
+  const presets = Array.from(document.querySelectorAll('.pdf-color-swatch'));
+  const matchedPreset = presets.find(el => el.dataset.color === _pdfColor);
+  if (matchedPreset) {
+    matchedPreset.classList.add('active');
+  } else {
+    // It's a custom color — mark the custom swatch active and sync the input
+    const customWrap = document.getElementById('pdfColorCustom');
+    const customFill = document.getElementById('pdfColorCustomFill');
+    const customInput = document.getElementById('pdfColorCustomInput');
+    if (customWrap) customWrap.classList.add('active');
+    if (customFill) customFill.style.background = _pdfColor;
+    if (customInput) customInput.value = _pdfColor;
+  }
+  // Restore saved font selection
+  document.querySelectorAll('.pdf-font-btn').forEach(el => {
+    el.classList.toggle('active', el.dataset.font === _pdfFont);
+  });
+  // Restore company name
+  const saved = localStorage.getItem('byline_pdf_company');
+  if (saved) {
+    const inp = document.getElementById('pdfCompanyName');
+    if (inp) inp.value = saved;
+  }
+})();
+
+function togglePdfPanel(btn) {
+  const panel = document.getElementById('pdfPanel');
+  const isOpen = panel.classList.toggle('open');
+  btn.textContent = isOpen ? 'Hide PDF options' : 'Download PDF';
+}
+
+function selectPdfColor(el) {
+  document.querySelectorAll('.pdf-color-swatch').forEach(s => s.classList.remove('active'));
+  document.getElementById('pdfColorCustom').classList.remove('active');
+  el.classList.add('active');
+  _pdfColor = el.dataset.color;
+  localStorage.setItem('byline_pdf_color', _pdfColor);
+}
+
+function selectPdfCustomColor(hex) {
+  document.querySelectorAll('.pdf-color-swatch').forEach(s => s.classList.remove('active'));
+  const wrap = document.getElementById('pdfColorCustom');
+  wrap.classList.add('active');
+  document.getElementById('pdfColorCustomFill').style.background = hex;
+  _pdfColor = hex;
+  localStorage.setItem('byline_pdf_color', hex);
+}
+
+function selectPdfFont(el) {
+  document.querySelectorAll('.pdf-font-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  _pdfFont = el.dataset.font;
+  localStorage.setItem('byline_pdf_font', _pdfFont);
+}
+
+function downloadAsPdf() {
+  const raw = document.getElementById('out6').textContent;
+  if (!raw || raw.startsWith('Waiting')) return;
+
+  const { title, meta, body } = parseArticle(raw);
+  const companyEl = document.getElementById('pdfCompanyName');
+  const company   = (companyEl ? companyEl.value.trim() : '') || '';
+  if (company) localStorage.setItem('byline_pdf_company', company);
+
+  const color = _pdfColor;
+  const font  = _pdfFont;
+
+  // ─ Typography config per style ──────────────────────────────
+  const fontConfigs = {
+    editorial: {
+      headLink: '<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">',
+      titleFont: "'Fraunces', Georgia, serif",
+      bodyFont:  "Georgia, 'Times New Roman', serif",
+      uiFont:    "'Plus Jakarta Sans', -apple-system, sans-serif",
+      titleWeight: '700',
+      bodySize: '17.5px',
+      lineHeight: '1.85',
+    },
+    modern: {
+      headLink: '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">',
+      titleFont: "'DM Sans', -apple-system, sans-serif",
+      bodyFont:  "'DM Sans', -apple-system, sans-serif",
+      uiFont:    "'DM Sans', -apple-system, sans-serif",
+      titleWeight: '700',
+      bodySize: '16px',
+      lineHeight: '1.78',
+    },
+    minimal: {
+      headLink: '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">',
+      titleFont: "'Inter', -apple-system, sans-serif",
+      bodyFont:  "'Inter', -apple-system, sans-serif",
+      uiFont:    "'Inter', -apple-system, sans-serif",
+      titleWeight: '300',
+      bodySize: '16px',
+      lineHeight: '1.8',
+    },
+  };
+  const fc = fontConfigs[font] || fontConfigs.editorial;
+
+  // ─ Hex → rgba helper ────────────────────────────────────────
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  const colorSoft = hexToRgba(color, 0.10);
+  const colorMid  = hexToRgba(color, 0.30);
+
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const slug = (title || 'article').replace(/[^a-z0-9\s]/gi,'').replace(/\s+/g,'-').toLowerCase().slice(0,60);
+
+  const bodyHtml = markdownToHtml(body);
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(title)}</title>
+${fc.headLink}
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page {
+    size: A4;
+    margin: 18mm 18mm 20mm;
+  }
+
+  body {
+    font-family: ${fc.uiFont};
+    background: #fff;
+    color: #1a1a18;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  .doc-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 12px;
+    border-bottom: 2px solid ${color};
+    margin-bottom: 38px;
+  }
+  .doc-brand {
+    font-family: ${fc.uiFont}; font-size: 13px; font-weight: 700;
+    color: ${color}; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .doc-date {
+    font-family: ${fc.uiFont}; font-size: 10px; color: #999; letter-spacing: 0.04em;
+  }
+
+  /* ── Title block ─────────────────────────────────────────── */
+  .doc-title {
+    font-family: ${fc.titleFont}; font-size: 34px;
+    font-weight: ${fc.titleWeight}; line-height: 1.15;
+    color: #111; letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  /* ── Meta description ────────────────────────────────────── */
+  .doc-meta {
+    background: ${colorSoft};
+    border-left: 3px solid ${color};
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px; margin-bottom: 36px;
+  }
+  .doc-meta-label {
+    font-family: ${fc.uiFont}; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; color: ${color};
+    margin-bottom: 5px;
+  }
+  .doc-meta-text {
+    font-family: ${fc.uiFont}; font-size: 12px; color: #444; line-height: 1.6;
+  }
+
+  /* ── Rule ────────────────────────────────────────────────── */
+  .doc-rule { height: 1px; background: #e8e2d8; margin-bottom: 36px; }
+
+  /* ── Body content ────────────────────────────────────────── */
+  .doc-body {
+    font-family: ${fc.bodyFont};
+    font-size: ${fc.bodySize};
+    line-height: ${fc.lineHeight};
+    color: #1c1c1a;
+  }
+  .doc-body h1 {
+    font-family: ${fc.titleFont}; font-size: 26px; font-weight: 700;
+    color: #111; margin: 2.4rem 0 0.8rem; letter-spacing: -0.015em; line-height: 1.25;
+    page-break-after: avoid;
+  }
+  .doc-body h2 {
+    font-family: ${fc.uiFont}; font-size: 18px; font-weight: 700;
+    color: #111; margin: 2.4rem 0 0.75rem; letter-spacing: -0.01em; line-height: 1.3;
+    page-break-after: avoid;
+    padding-bottom: 6px; border-bottom: 1px solid ${colorMid};
+  }
+  .doc-body h3 {
+    font-family: ${fc.uiFont}; font-size: 14px; font-weight: 600;
+    color: #333; margin: 2rem 0 0.55rem; line-height: 1.4;
+    page-break-after: avoid;
+  }
+  .doc-body p { margin-bottom: 1.4rem; }
+  .doc-body strong { font-weight: 700; color: #111; }
+  .doc-body em { font-style: italic; }
+  .doc-body code {
+    font-family: 'Courier New', monospace; font-size: 0.82em;
+    background: #f0ebe2; padding: 2px 5px; border-radius: 3px; color: #555;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────── */
+  .doc-footer {
+    margin-top: 52px; padding-top: 12px;
+    border-top: 1px solid #e8e2d8;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .doc-footer-brand {
+    font-family: ${fc.uiFont}; font-size: 9px; color: #bbb;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .doc-footer-brand strong { color: ${color}; }
+  .doc-footer-page {
+    font-family: ${fc.uiFont}; font-size: 9px; color: #ccc; letter-spacing: 0.04em;
+  }
+
+  /* ── Print rules ─────────────────────────────────────────── */
+  @media print {
+    .no-print { display: none !important; }
+    .doc-body h2, .doc-body h3 { page-break-after: avoid; }
+    .doc-body p  { orphans: 3; widows: 3; }
+  }
+
+  /* ── Screen preview bar ──────────────────────────────────── */
+  .screen-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #1a1814; color: #f0ece4; padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: ${fc.uiFont}; font-size: 13px;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.3);
+  }
+  .screen-bar-btn {
+    padding: 8px 20px; border-radius: 7px; border: none; cursor: pointer;
+    font-family: ${fc.uiFont}; font-size: 13px; font-weight: 700; transition: opacity 0.15s;
+  }
+  .screen-bar-btn.primary { background: ${color}; color: #fff; }
+  .screen-bar-btn.secondary { background: transparent; border: 1px solid #555; color: #ccc; }
+  .screen-bar-btn:hover { opacity: 0.85; }
+  @media print { .screen-bar { display: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="screen-bar no-print">
+  <span style="flex:1;color:#aaa;font-size:12px;">Use your browser's Print dialog → <strong style="color:#fff">Save as PDF</strong></span>
+  <button class="screen-bar-btn primary" onclick="window.print()">Save as PDF</button>
+  <button class="screen-bar-btn secondary" onclick="window.close()">Close</button>
+</div>
+
+<div style="max-width:680px; margin:0 auto; padding:48px 0 80px;">
+
+  <div class="doc-header">
+    <div class="doc-brand">${escHtml(company || 'Article')}</div>
+    <div class="doc-date">${escHtml(date)}</div>
+  </div>
+
+  <h1 class="doc-title">${escHtml(title)}</h1>
+
+  ${meta ? `<div class="doc-meta">
+    <div class="doc-meta-label">Summary</div>
+    <div class="doc-meta-text">${escHtml(meta)}</div>
+  </div>` : ''}
+
+  <div class="doc-rule"></div>
+
+  <div class="doc-body">
+    ${bodyHtml}
+  </div>
+
+  <div class="doc-footer">
+    <div class="doc-footer-brand">Generated with <strong>Byline</strong></div>
+    ${company ? `<div class="doc-footer-brand" style="color:#999">${escHtml(company)}</div>` : ''}
+    <div class="doc-footer-page">${escHtml(date)}</div>
+  </div>
+
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) { alert('Please allow popups for this site to download the PDF.'); return; }
+  win.document.write(html);
+  win.document.close();
+  // Give fonts a moment to load before prompting print
+  setTimeout(() => { try { win.focus(); win.print(); } catch(e) {} }, 800);
 }
 
 // ESC key closes preview
