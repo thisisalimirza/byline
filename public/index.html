@@ -895,6 +895,72 @@ footer {
   /* Footer: stack */
   footer { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
   .footer-note { margin-left: 0; }
+
+  /* Proof strip: stack */
+  .proof-cards { flex-direction: column; align-items: stretch; }
+  .proof-vs { text-align: center; }
+  .proof-card { max-width: 100%; }
+}
+
+/* ── See for yourself ───────────────────────────────────────────── */
+.proof-strip {
+  padding: 5rem 1.5rem;
+  text-align: center;
+}
+.proof-inner { max-width: 860px; margin: 0 auto; }
+.proof-cards {
+  display: flex; gap: 1.5rem; align-items: center;
+  justify-content: center; margin-top: 2.75rem;
+}
+.proof-card {
+  flex: 1; max-width: 380px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.75rem; text-align: left;
+}
+.proof-byline {
+  border-color: rgba(212,133,74,0.35);
+  background: rgba(212,133,74,0.05);
+}
+.proof-card-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--text-muted); margin-bottom: 1rem;
+}
+.proof-logo-gpt {
+  width: 22px; height: 22px; background: #fff; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.proof-logo-b {
+  width: 22px; height: 22px; background: var(--accent); border-radius: 6px;
+  font-family: var(--display); font-size: 13px; font-weight: 600;
+  color: #0d0c09; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.proof-card-topic {
+  font-family: var(--display); font-size: 17px; font-weight: 500;
+  color: var(--text); line-height: 1.35; margin-bottom: 0.55rem;
+}
+.proof-card-note {
+  font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.35rem;
+}
+.proof-card-actions { display: flex; flex-direction: column; gap: 8px; }
+.proof-btn {
+  display: block; text-align: center; padding: 9px 16px; border-radius: 8px;
+  font-family: var(--sans); font-size: 13px; font-weight: 600; text-decoration: none;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  transition: opacity 0.15s;
+}
+.proof-btn:hover { opacity: 0.78; }
+.proof-btn-accent { background: var(--accent); color: #0d0c09; border-color: transparent; }
+.proof-btn-ghost {
+  display: block; text-align: center; padding: 8px 16px; border-radius: 8px;
+  font-family: var(--sans); font-size: 12px; font-weight: 500; text-decoration: none;
+  color: var(--text-muted); border: 1px solid var(--border); background: transparent;
+  transition: color 0.15s;
+}
+.proof-btn-ghost:hover { color: var(--text); }
+.proof-vs {
+  font-family: var(--display); font-size: 22px; font-weight: 500;
+  color: var(--text-dim); flex-shrink: 0;
 }
 </style>
 </head>
@@ -1274,6 +1340,50 @@ function toggleAnnotations() {
   btn.textContent = hiding ? 'Show commentary' : 'Hide commentary';
 }
 </script>
+
+<!-- ── See for yourself ── -->
+<div class="proof-strip">
+  <div class="proof-inner">
+    <div class="eyebrow" style="text-align:center;margin-bottom:10px;">Read the full articles</div>
+    <h2 class="section-heading">Download both.<br><em>Judge for yourself.</em></h2>
+    <p class="section-sub" style="max-width:520px;">Same topic. Same goal. One came straight from ChatGPT. The other went through Byline's six-stage pipeline. Read them side by side and decide which one you'd actually publish.</p>
+
+    <div class="proof-cards">
+
+      <!-- ChatGPT card -->
+      <div class="proof-card">
+        <div class="proof-card-label">
+          <div class="proof-logo-gpt">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22.28 9.84a5.84 5.84 0 0 0-.5-4.8 5.9 5.9 0 0 0-6.36-2.83A5.87 5.87 0 0 0 11 .65a5.9 5.9 0 0 0-5.63 4.1 5.87 5.87 0 0 0-3.92 2.84 5.9 5.9 0 0 0 .73 6.92 5.84 5.84 0 0 0 .5 4.79 5.9 5.9 0 0 0 6.36 2.84 5.87 5.87 0 0 0 4.42 1.97 5.9 5.9 0 0 0 5.63-4.1 5.87 5.87 0 0 0 3.92-2.84 5.9 5.9 0 0 0-.73-6.33zm-8.78 12.3a4.37 4.37 0 0 1-2.8-1.02l.14-.08 4.65-2.68a.77.77 0 0 0 .38-.66v-6.55l1.97 1.13a.07.07 0 0 1 .04.06v5.42a4.4 4.4 0 0 1-4.38 4.38zM3.63 18.4a4.37 4.37 0 0 1-.52-2.94l.14.08 4.65 2.69a.77.77 0 0 0 .77 0l5.68-3.28v2.27a.07.07 0 0 1-.03.06L9.6 19.97a4.4 4.4 0 0 1-5.97-1.57zm-1.14-9.6a4.37 4.37 0 0 1 2.28-1.92v5.5a.77.77 0 0 0 .39.67l5.67 3.27-1.96 1.13a.07.07 0 0 1-.07 0L4.1 14.9a4.4 4.4 0 0 1-1.61-6.1zm16.16 3.77-5.68-3.28 1.96-1.13a.07.07 0 0 1 .07 0l4.7 2.72a4.4 4.4 0 0 1-.68 7.93v-5.5a.77.77 0 0 0-.37-.74zm1.95-2.96-.14-.08-4.64-2.7a.77.77 0 0 0-.77 0L9.37 10.1V7.83a.07.07 0 0 1 .03-.06l4.7-2.71a4.4 4.4 0 0 1 6.5 4.55zm-12.3 4.04-1.96-1.13a.07.07 0 0 1-.04-.06V6.97a4.4 4.4 0 0 1 7.22-3.38l-.14.08-4.65 2.68a.77.77 0 0 0-.38.66l-.05 6.54zm1.07-2.3 2.53-1.46 2.53 1.45v2.91l-2.53 1.46-2.53-1.46V11.35z" fill="#000"/></svg>
+          </div>
+          ChatGPT
+        </div>
+        <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
+        <div class="proof-card-note">Unedited output. Straight from the model to the page.</div>
+        <div class="proof-card-actions">
+          <a href="/ChatGPT%20-%20Shared%20Content.pdf" download="chatgpt-article.pdf" class="proof-btn">↓ Download PDF</a>
+          <a href="https://chatgpt.com/s/t_69c6a6ae04d48191ac2b317a3860d041" target="_blank" rel="noopener" class="proof-btn-ghost">View on ChatGPT ↗</a>
+        </div>
+      </div>
+
+      <div class="proof-vs">vs</div>
+
+      <!-- Byline card -->
+      <div class="proof-card proof-byline">
+        <div class="proof-card-label">
+          <div class="proof-logo-b">B</div>
+          Byline
+        </div>
+        <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
+        <div class="proof-card-note">Strategy, research, writing, SEO, voice refinement, humanization — six agents in sequence.</div>
+        <div class="proof-card-actions">
+          <a href="/Why%20Most%20Small%20Businesses%20Set%20Up%20Local%20Business%20Google%20SEO%20Wrong%20%E2%80%94%20Then%20Wonder%20W.pdf" download="byline-article.pdf" class="proof-btn proof-btn-accent">↓ Download PDF</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- ── Pipeline steps ── -->
 <div class="pipeline-section" id="how-it-works">
