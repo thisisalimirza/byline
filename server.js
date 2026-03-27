@@ -248,6 +248,84 @@ app.post('/api/refund', async (req, res) => {
   }
 });
 
+// ── POST /api/seo-score ───────────────────────────────────────────────────────
+// AI-powered SEO analysis — no credit deduction, uses server key (or user key).
+app.post('/api/seo-score', async (req, res) => {
+  const { articleText, keyword, apiKey, title, metaDescription } = req.body;
+  if (!articleText) return res.status(400).json({ error: 'Missing articleText' });
+
+  const keyToUse = apiKey || process.env.ANTHROPIC_API_KEY;
+  if (!keyToUse) return res.status(503).json({ error: 'API key not configured' });
+
+  const prompt = `You are an expert SEO content analyst. Analyze this article and return an honest, calibrated JSON score.
+
+Target keyword: "${keyword || '(none provided)'}"
+${title ? `\nTitle: ${title}` : ''}
+${metaDescription ? `\nMeta description: ${metaDescription}` : ''}
+
+Article body:
+${articleText.slice(0, 7000)}
+
+Return ONLY valid JSON — no markdown fences, no explanation, no prose:
+{
+  "overall": <integer 0-100>,
+  "badges": [
+    {"id": "keyword_opt",     "label": "Keyword Optimization",  "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "search_intent",  "label": "Search Intent Match",   "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "content_depth",  "label": "Content Depth",         "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "hook_strength",  "label": "Opening Hook",          "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "subheading_qual","label": "Subheading Quality",    "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "originality",    "label": "Angle & Originality",   "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "meta_quality",   "label": "Meta Description",      "color": "<green|amber|red>", "note": "<one crisp sentence>"},
+    {"id": "readability",    "label": "Readability & Flow",    "color": "<green|amber|red>", "note": "<one crisp sentence>"}
+  ]
+}
+
+Scoring calibration — be honest:
+- 85-95: genuinely excellent across nearly all dimensions
+- 65-80: solid well-written article with a few fixable gaps
+- 45-65: decent but clearly missing things
+- below 45: real structural or quality problems
+- keyword_opt: natural placement in title/intro/H2s, 0.5-1.5% density, not stuffed
+- search_intent: content type and depth match what someone actually searching this query wants
+- content_depth: specific examples, stats, named sources vs generic advice and vague claims
+- hook_strength: first 2-3 sentences create real pull — position taken, not warm-up text
+- subheading_qual: H2s are specific claims a reader would click, not vague category labels
+- originality: distinct angle or reads like every other article on the topic
+- meta_quality: 140-165 chars, action verb, keyword present, creates curiosity
+- readability: sentence variety, short paragraphs, easy to scan`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method:  'POST',
+      headers: {
+        'Content-Type':      'application/json',
+        'x-api-key':         keyToUse,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model:      'claude-haiku-4-5-20251001',
+        max_tokens: 900,
+        stream:     false,
+        messages:   [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      return res.status(response.status).json(err);
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return res.status(500).json({ error: 'Unexpected response format' });
+    res.json(JSON.parse(match[0]));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── POST /api/chat ────────────────────────────────────────────────────────────
 // Accepts either:
 //   { apiKey, ...anthropicBody }      — user's own key, bypasses credits

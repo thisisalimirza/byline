@@ -933,6 +933,33 @@
   .seo-badge-text { font-size: 10.5px; color: #999; line-height: 1.45; }
   .seo-badge-item.full-width { grid-column: 1 / -1; }
 
+  /* ── SEO skeleton / shimmer ── */
+  @keyframes seo-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  .seo-skeleton {
+    background: #f0ebe2; border-radius: 4px; position: relative; overflow: hidden;
+  }
+  .seo-skeleton::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 50%, transparent 100%);
+    animation: seo-shimmer 1.5s infinite;
+  }
+  .seo-badge-item.skel .seo-badge-dot   { background: #e8e2d8; box-shadow: none; }
+  .seo-badge-item.skel .seo-badge-name,
+  .seo-badge-item.skel .seo-badge-text  { display: none; }
+  .seo-badge-item.skel .seo-skel-name   { height: 10px; width: 70%; margin-bottom: 5px; }
+  .seo-badge-item.skel .seo-skel-text   { height: 9px;  width: 100%; }
+  .seo-skel-name, .seo-skel-text        { display: none; }
+  .seo-badge-item.skel .seo-skel-name,
+  .seo-badge-item.skel .seo-skel-text   { display: block; }
+  .seo-score-pill.skel {
+    background: #e8e2d8 !important; color: transparent !important;
+    animation: seo-shimmer-pill 1.4s ease-in-out infinite;
+  }
+  @keyframes seo-shimmer-pill { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
+
   /* ════════════════════ Save Draft / Toast ════════════════════ */
   .save-draft-btn {
     padding: 5px 14px; background: none; border: 1px solid #d8d2c8; border-radius: 7px;
@@ -1915,43 +1942,7 @@
 
         <div class="preview-seo-divider"></div>
 
-        <div class="preview-seo-badges">
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotKwTitle"></div>
-            <div>
-              <div class="seo-badge-name">Keyword in Title</div>
-              <div class="seo-badge-text" id="seoBadgeKwTitle">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotKwBody"></div>
-            <div>
-              <div class="seo-badge-name">Keyword Density</div>
-              <div class="seo-badge-text" id="seoBadgeKwBody">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotKwFirst"></div>
-            <div>
-              <div class="seo-badge-name">Keyword in Intro</div>
-              <div class="seo-badge-text" id="seoBadgeKwFirst">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item">
-            <div class="seo-badge-dot neutral" id="seoDotMeta"></div>
-            <div>
-              <div class="seo-badge-name">Meta CTA</div>
-              <div class="seo-badge-text" id="seoBadgeMeta">—</div>
-            </div>
-          </div>
-          <div class="seo-badge-item full-width">
-            <div class="seo-badge-dot neutral" id="seoDotReadability"></div>
-            <div>
-              <div class="seo-badge-name">Readability</div>
-              <div class="seo-badge-text" id="seoBadgeReadability">—</div>
-            </div>
-          </div>
-        </div>
+        <div class="preview-seo-badges" id="seoBadgesContainer"></div>
 
       </div>
     </div>
@@ -3113,62 +3104,25 @@ function openPreview() {
     _setBar('seoBarWords', 'seoWordsVal', wordCount, 3000, 'words', wordsBarColor);
     _setBar('seoBarH2',    'seoH2Val',    h2Count,   10,   null,    h2BarColor);
 
-    // Keyword badges
-    if (kw) {
-      _setBadge('seoDotKwTitle', 'seoBadgeKwTitle',
-        kwInTitle ? 'green' : 'red',
-        kwInTitle ? 'Found in title ✓' : 'Missing — try adding it early');
-      const densityColor = kwDensity >= 0.5 && kwDensity <= 2.5 ? 'green' : kwDensity < 0.5 ? 'amber' : 'red';
-      _setBadge('seoDotKwBody', 'seoBadgeKwBody',
-        densityColor,
-        kwCount + '× used · ' + (kwDensity !== null ? kwDensity.toFixed(1) + '% density' : '—'));
-      _setBadge('seoDotKwFirst', 'seoBadgeKwFirst',
-        kwInFirst ? 'green' : 'amber',
-        kwInFirst ? 'In first paragraph ✓' : 'Try adding to intro paragraph');
-    } else {
-      ['seoDotKwTitle','seoDotKwBody','seoDotKwFirst'].forEach(id =>
-        _setBadge(id, id.replace('seoDot','seoBadge'), 'amber', 'Set a target keyword in the sidebar'));
+    // Skeleton badges while AI scores
+    const _badgesContainer = document.getElementById('seoBadgesContainer');
+    if (_badgesContainer) {
+      _badgesContainer.innerHTML = Array.from({length: 6}, () =>
+        `<div class="seo-badge-item skel">
+          <div class="seo-badge-dot neutral"></div>
+          <div style="flex:1">
+            <div class="seo-skeleton seo-skel-name"></div>
+            <div class="seo-skeleton seo-skel-text"></div>
+          </div>
+        </div>`
+      ).join('');
     }
-    _setBadge('seoDotMeta', 'seoBadgeMeta',
-      metaHasCTA ? 'green' : 'amber',
-      metaHasCTA ? 'Has action phrase ✓' : 'Consider adding a CTA phrase');
 
-    // Flesch-Kincaid Readability
-    const fkScore = fleschReadingEase(body);
-    let fkColor, fkLabel;
-    if (fkScore === null) {
-      fkColor = 'neutral'; fkLabel = '—';
-    } else if (fkScore >= 60 && fkScore < 80) {
-      fkColor = 'green';
-      fkLabel = Math.round(fkScore) + ' · ' + (fkScore >= 70 ? 'Fairly Easy' : 'Standard') + ' — ideal for web ✓';
-    } else if (fkScore >= 80) {
-      fkColor = 'amber';
-      fkLabel = Math.round(fkScore) + ' · Very Easy — may read as too simple';
-    } else if (fkScore >= 45) {
-      fkColor = 'amber';
-      fkLabel = Math.round(fkScore) + ' · Fairly Difficult — consider shorter sentences';
-    } else {
-      fkColor = 'red';
-      fkLabel = Math.round(fkScore) + ' · Difficult — simplify for broader audiences';
-    }
-    _setBadge('seoDotReadability', 'seoBadgeReadability', fkColor, fkLabel);
-    const fkGood = fkScore !== null && fkScore >= 45 && fkScore < 80;
-
-    // Overall score pill
-    const checks = [
-      titleBarColor === 'green', metaBarColor === 'green',
-      wordsBarColor === 'green', h2BarColor === 'green',
-      metaHasCTA,
-      kw ? kwInTitle : true,
-      kw ? (kwDensity >= 0.5 && kwDensity <= 2.5) : true,
-      kw ? kwInFirst : true,
-      fkGood
-    ];
-    const scorePct = Math.round(checks.filter(Boolean).length / checks.length * 100);
+    // Skeleton score pill
     const pill = document.getElementById('seoScorePill');
     if (pill) {
-      pill.textContent = scorePct + '% score';
-      pill.className   = 'seo-score-pill ' + (scorePct >= 75 ? 'green' : scorePct >= 45 ? 'amber' : 'red');
+      pill.textContent = '—';
+      pill.className   = 'seo-score-pill skel';
     }
   } catch(seoErr) {
     console.warn('SEO panel error:', seoErr);
@@ -3212,6 +3166,10 @@ function openPreview() {
       el.style.width = el.dataset.targetPct + '%';
     });
   }));
+
+  // Kick off AI SEO analysis asynchronously (no await — UI stays responsive)
+  const _kw = (document.getElementById('keyword').value || '').trim();
+  runAiSeoAnalysis(title, meta, body, _kw);
 }
 
 function closePreview() {
@@ -3224,6 +3182,56 @@ function closePreview() {
     saveBtn.className = 'save-draft-btn visible';
     saveBtn.onclick = saveDraft;
     _previewingDraftId = null;
+  }
+}
+
+// ── AI SEO Analysis ───────────────────────────────────────────────────────────
+async function runAiSeoAnalysis(title, meta, body, keyword) {
+  try {
+    const apiKey = (document.getElementById('apiKey').value || '').trim();
+    const resp = await fetch('/api/seo-score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ articleText: body, keyword, apiKey,
+        title, metaDescription: meta })
+    });
+    if (!resp.ok) throw new Error('SEO API ' + resp.status);
+    const data = await resp.json();
+
+    // Render score pill
+    const pill = document.getElementById('seoScorePill');
+    if (pill && typeof data.overall === 'number') {
+      const score = data.overall;
+      pill.textContent = score + '% score';
+      pill.className   = 'seo-score-pill ' + (score >= 75 ? 'green' : score >= 45 ? 'amber' : 'red');
+    }
+
+    // Render badge items
+    const container = document.getElementById('seoBadgesContainer');
+    if (container && Array.isArray(data.badges)) {
+      container.innerHTML = data.badges.map(b => {
+        const colorClass = b.color || 'neutral';
+        return `<div class="seo-badge-item">
+          <div class="seo-badge-dot ${colorClass}"></div>
+          <div>
+            <div class="seo-badge-name">${b.label || ''}</div>
+            <div class="seo-badge-text">${b.note || ''}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  } catch (err) {
+    console.warn('AI SEO analysis failed:', err);
+    // Show a simple fallback state
+    const pill = document.getElementById('seoScorePill');
+    if (pill && pill.classList.contains('skel')) {
+      pill.textContent = '—';
+      pill.className = 'seo-score-pill neutral';
+    }
+    const container = document.getElementById('seoBadgesContainer');
+    if (container) {
+      container.innerHTML = '<div style="font-size:12px;color:#999;padding:8px 0;">SEO analysis unavailable</div>';
+    }
   }
 }
 
