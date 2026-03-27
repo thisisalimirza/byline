@@ -434,7 +434,8 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   width: 32px; height: 32px; border-radius: 8px;
   background: var(--surface2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; flex-shrink: 0;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  color: var(--accent); flex-shrink: 0; letter-spacing: -0.01em;
 }
 .why-card-text strong {
   font-size: 13px; font-weight: 600; color: var(--text);
@@ -517,7 +518,8 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   width: 38px; height: 38px; border-radius: 9px;
   background: var(--surface2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; margin-bottom: 1rem;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--accent); margin-bottom: 1rem; letter-spacing: -0.01em;
 }
 .feat-name {
   font-size: 15px; font-weight: 700; color: var(--text);
@@ -908,6 +910,7 @@ footer {
   text-align: center;
 }
 .proof-inner { max-width: 860px; margin: 0 auto; }
+.proof-strip .section-sub { margin: 0 auto; text-align: center; }
 .proof-cards {
   display: flex; gap: 1.5rem; align-items: center;
   justify-content: center; margin-top: 2.75rem;
@@ -1124,28 +1127,28 @@ footer {
     </div>
     <div class="why-cards">
       <div class="why-card">
-        <div class="why-card-icon">🤖</div>
+        <div class="why-card-icon">01</div>
         <div class="why-card-text">
           <strong>Standard AI tools produce AI-sounding copy</strong>
           <p>Byline runs a dedicated Refiner to strip AI patterns, then a Humanizer as the final step — injecting voice, rhythm, and opinion after the SEO work is already locked in.</p>
         </div>
       </div>
       <div class="why-card">
-        <div class="why-card-icon">📊</div>
+        <div class="why-card-icon">02</div>
         <div class="why-card-text">
           <strong>Generic content doesn't rank</strong>
           <p>Every article is shaped by a Strategist and then SEO-edited by a sixth agent that checks keyword placement, scannability, and subheading quality before the final output.</p>
         </div>
       </div>
       <div class="why-card">
-        <div class="why-card-icon">📄</div>
+        <div class="why-card-icon">03</div>
         <div class="why-card-text">
           <strong>Walls of text don't get read</strong>
           <p>Byline enforces the rules that actually get articles read online: max 2–3 sentences per paragraph, a subheading every 150–200 words, and an opening that pulls you in within the first two sentences.</p>
         </div>
       </div>
       <div class="why-card">
-        <div class="why-card-icon">🎯</div>
+        <div class="why-card-icon">04</div>
         <div class="why-card-text">
           <strong>Promotion without ruining the article</strong>
           <p>Four promotion styles — from a single soft mention to a full conversion article — let you weave your product into the content without it reading like an ad.</p>
@@ -1361,8 +1364,8 @@ function toggleAnnotations() {
         <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
         <div class="proof-card-note">Unedited output. Straight from the model to the page.</div>
         <div class="proof-card-actions">
-          <a href="/ChatGPT%20-%20Shared%20Content.pdf" download="chatgpt-article.pdf" class="proof-btn">↓ Download PDF</a>
-          <a href="https://chatgpt.com/s/t_69c6a6ae04d48191ac2b317a3860d041" target="_blank" rel="noopener" class="proof-btn-ghost">View on ChatGPT ↗</a>
+          <a href="/ChatGPT%20-%20Shared%20Content.pdf" download="chatgpt-article.pdf" class="proof-btn">Download PDF</a>
+          <a href="https://chatgpt.com/s/t_69c6a6ae04d48191ac2b317a3860d041" target="_blank" rel="noopener" class="proof-btn-ghost">View on ChatGPT</a>
         </div>
       </div>
 
@@ -1377,7 +1380,7 @@ function toggleAnnotations() {
         <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
         <div class="proof-card-note">Strategy, research, writing, SEO, voice refinement, humanization — six agents in sequence.</div>
         <div class="proof-card-actions">
-          <a href="/Why%20Most%20Small%20Businesses%20Set%20Up%20Local%20Business%20Google%20SEO%20Wrong%20%E2%80%94%20Then%20Wonder%20W.pdf" download="byline-article.pdf" class="proof-btn proof-btn-accent">↓ Download PDF</a>
+          <a href="/Why%20Most%20Small%20Businesses%20Set%20Up%20Local%20Business%20Google%20SEO%20Wrong%20%E2%80%94%20Then%20Wonder%20W.pdf" download="byline-article.pdf" class="proof-btn proof-btn-accent">Download PDF</a>
         </div>
       </div>
 
@@ -1440,32 +1443,32 @@ function toggleAnnotations() {
   <h2 class="section-heading">Everything you need<br>to <em>publish with confidence.</em></h2>
   <div class="features-grid">
     <div class="feat-card">
-      <div class="feat-icon">✍️</div>
+      <div class="feat-icon">01</div>
       <div class="feat-name">Online-format writing rules</div>
       <p class="feat-desc">Short paragraphs, mandatory subheadings, hooks that land in 2 sentences. These rules are enforced at every stage — not suggestions, hard constraints the pipeline can't skip.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🔍</div>
+      <div class="feat-icon">02</div>
       <div class="feat-name">Built-in SEO optimization</div>
       <p class="feat-desc">Keyword placement in the first 100 words, in subheadings, and throughout the body. The final agent scores your title and meta description and flags anything off-target.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🎭</div>
+      <div class="feat-icon">03</div>
       <div class="feat-name">Four writing tones</div>
       <p class="feat-desc">Conversational, authoritative, investigative, or practical. The tone preference flows through every agent — from how the strategist frames the angle to how the humanizer shapes the rhythm.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">⚡</div>
+      <div class="feat-icon">04</div>
       <div class="feat-name">No account needed</div>
       <p class="feat-desc">Pick a credit pack and start writing in under a minute. No sign-up, no subscription, no technical setup. Your articles are generated and delivered — nothing stored on our end.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">📤</div>
+      <div class="feat-icon">05</div>
       <div class="feat-name">Publish-ready exports</div>
       <p class="feat-desc">Copy as Markdown, HTML, or plain text. Specific publishing guides for WordPress, Webflow, Ghost, Substack, and any CMS built into the preview screen.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">⚙️</div>
+      <div class="feat-icon">06</div>
       <div class="feat-name">Fully customizable</div>
       <p class="feat-desc">Want to change how any step works — the angle it takes, the tone it uses, how it formats the output? Every stage is adjustable in Settings. Or just leave the defaults and generate.</p>
     </div>

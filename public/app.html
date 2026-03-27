@@ -1371,6 +1371,22 @@
   }
   .pdf-color-swatch:hover { transform: scale(1.15); }
   .pdf-color-swatch.active { border-color: #222; transform: scale(1.12); }
+  .pdf-color-custom {
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    border: 2px solid var(--border); flex-shrink: 0; background: none;
+    transition: transform 0.12s, border-color 0.12s;
+    position: relative; overflow: hidden;
+  }
+  .pdf-color-custom:hover { transform: scale(1.15); }
+  .pdf-color-custom.active { border-color: #555; transform: scale(1.12); }
+  .pdf-color-custom input[type="color"] {
+    position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px);
+    border: none; padding: 0; cursor: pointer; opacity: 0;
+  }
+  .pdf-color-custom-fill {
+    position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+    background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+  }
   .pdf-font-row { display: flex; gap: 6px; }
   .pdf-font-btn {
     flex: 1; padding: 6px 8px; border-radius: 7px; cursor: pointer;
@@ -2032,6 +2048,10 @@
                   <div class="pdf-color-swatch" data-color="#7c3aed" style="background:#7c3aed" title="Violet" onclick="selectPdfColor(this)"></div>
                   <div class="pdf-color-swatch" data-color="#475569" style="background:#475569" title="Slate" onclick="selectPdfColor(this)"></div>
                   <div class="pdf-color-swatch" data-color="#111827" style="background:#111827" title="Ink" onclick="selectPdfColor(this)"></div>
+                  <div class="pdf-color-custom" id="pdfColorCustom" title="Custom color">
+                    <div class="pdf-color-custom-fill" id="pdfColorCustomFill"></div>
+                    <input type="color" id="pdfColorCustomInput" value="#d4854a" oninput="selectPdfCustomColor(this.value)" />
+                  </div>
                 </div>
               </div>
               <div>
@@ -3676,10 +3696,20 @@ let _pdfColor = localStorage.getItem('byline_pdf_color') || '#d4854a';
 let _pdfFont  = localStorage.getItem('byline_pdf_font')  || 'editorial';
 
 (function initPdfPanel() {
-  // Restore saved color swatch selection
-  document.querySelectorAll('.pdf-color-swatch').forEach(el => {
-    el.classList.toggle('active', el.dataset.color === _pdfColor);
-  });
+  // Restore saved color — check presets first, fall back to custom picker
+  const presets = Array.from(document.querySelectorAll('.pdf-color-swatch'));
+  const matchedPreset = presets.find(el => el.dataset.color === _pdfColor);
+  if (matchedPreset) {
+    matchedPreset.classList.add('active');
+  } else {
+    // It's a custom color — mark the custom swatch active and sync the input
+    const customWrap = document.getElementById('pdfColorCustom');
+    const customFill = document.getElementById('pdfColorCustomFill');
+    const customInput = document.getElementById('pdfColorCustomInput');
+    if (customWrap) customWrap.classList.add('active');
+    if (customFill) customFill.style.background = _pdfColor;
+    if (customInput) customInput.value = _pdfColor;
+  }
   // Restore saved font selection
   document.querySelectorAll('.pdf-font-btn').forEach(el => {
     el.classList.toggle('active', el.dataset.font === _pdfFont);
@@ -3700,9 +3730,19 @@ function togglePdfPanel(btn) {
 
 function selectPdfColor(el) {
   document.querySelectorAll('.pdf-color-swatch').forEach(s => s.classList.remove('active'));
+  document.getElementById('pdfColorCustom').classList.remove('active');
   el.classList.add('active');
   _pdfColor = el.dataset.color;
   localStorage.setItem('byline_pdf_color', _pdfColor);
+}
+
+function selectPdfCustomColor(hex) {
+  document.querySelectorAll('.pdf-color-swatch').forEach(s => s.classList.remove('active'));
+  const wrap = document.getElementById('pdfColorCustom');
+  wrap.classList.add('active');
+  document.getElementById('pdfColorCustomFill').style.background = hex;
+  _pdfColor = hex;
+  localStorage.setItem('byline_pdf_color', hex);
 }
 
 function selectPdfFont(el) {
