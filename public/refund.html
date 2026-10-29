@@ -14,12 +14,15 @@
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #0d0c0a; --surface: #191714; --border: rgba(255,255,255,0.07);
-    --text: #f0ece4; --text-muted: #8c887f; --text-dim: #504d47;
+    --text: #f0ece4; --text-muted: #a39d90; --text-dim: #8f897d;
     --accent: #d4854a; --accent-soft: rgba(212,133,74,0.1);
     --green: #4ec99a; --green-soft: rgba(78,201,154,0.1);
     --red: #e87a6a; --red-soft: rgba(232,122,106,0.08);
@@ -33,10 +36,9 @@
     padding: 60px 20px;
   }
   a.back {
-    display: flex; align-items: center; gap: 6px;
+    display: inline-flex; align-items: center; gap: 6px;
     font-size: 13px; color: var(--text-muted); text-decoration: none;
-    margin-bottom: 48px; align-self: flex-start; max-width: 520px; width: 100%;
-    transition: color 0.15s;
+    transition: color 0.15s; min-height: 44px;
   }
   a.back:hover { color: var(--text); }
   .card {
@@ -74,9 +76,10 @@
   .purchase-status.no { color: var(--text-dim); }
   .refund-btn {
     flex-shrink: 0; background: var(--green); color: #0d0c0a; border: none;
-    border-radius: 7px; padding: 8px 14px; font-family: var(--sans);
+    border-radius: 7px; padding: 10px 14px; font-family: var(--sans);
     font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.15s;
-    white-space: nowrap;
+    white-space: nowrap; min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
   }
   .refund-btn:hover { opacity: 0.85; }
   .refund-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -108,6 +111,7 @@
     width: 100%; background: var(--accent); color: #fff; border: none;
     border-radius: var(--r); padding: 13px; font-family: var(--sans);
     font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+    min-height: 44px; display: flex; align-items: center; justify-content: center;
   }
   button.manual-btn:hover { opacity: 0.88; }
   button.manual-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -137,17 +141,16 @@
 </head>
 <body>
 
-<a class="back" href="/app">← Back to Byline</a>
-
 <div class="card">
-  <div class="eyebrow">Byline</div>
+  <a class="back" href="/app">← Back to Byline</a>
+  <div class="eyebrow" style="margin-top:16px;">Refunds</div>
   <h1>Request a refund</h1>
-  <p class="sub">No questions asked. We'll process eligible refunds instantly and automatically.</p>
+  <p class="sub">Full refund if you've used less than half your pack. Processed instantly.</p>
 
   <div class="policy-box">
     <strong>Refund policy:</strong> Full refund available as long as at least 50% of your credits remain unused.
     If you've used more than half your pack, the remaining credits are non-refundable —
-    the API costs have already been incurred.
+    those articles have already been written.
   </div>
 
   <!-- Purchase history from this device -->

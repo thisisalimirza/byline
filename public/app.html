@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Byline — AI Article Studio</title>
+<title>Byline — Article Studio</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://bylineblogs.com/app">
 
@@ -14,6 +14,9 @@
 <script defer src="/_vercel/insights/script.js"></script>
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
@@ -27,8 +30,8 @@
     --border: rgba(255,255,255,0.065);
     --border-hover: rgba(255,255,255,0.13);
     --text: #f0ece4;
-    --text-muted: #8c887f;
-    --text-dim: #504d47;
+    --text-muted: #a39d90;
+    --text-dim: #8f897d;
 
     --accent: #d4854a;
     --accent-soft: rgba(212,133,74,0.12);
@@ -307,6 +310,8 @@
     padding: 0.65rem 1rem 1rem;
     border-top: 1px solid var(--border);
     background: var(--bg);
+    position: sticky;
+    bottom: 0;
   }
 
   /* Card containers */
@@ -314,7 +319,9 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    overflow: hidden;
+    overflow: visible;
+    flex-shrink: 0;
+    height: auto;
   }
   .sidebar-card-header {
     display: flex;
@@ -370,7 +377,7 @@
     color: var(--text);
     font-family: var(--sans);
     font-size: 13px; font-weight: 400;
-    padding: 9px 12px;
+    padding: 10px 12px; min-height: 44px;
     outline: none;
     transition: border-color 0.2s, background 0.2s;
     resize: none;
@@ -404,9 +411,10 @@
   .credit-unit { font-size: 13px; color: var(--text-muted); }
   .credit-topup {
     background: var(--accent-soft); border: 1px solid rgba(212,133,74,0.3);
-    border-radius: 20px; padding: 5px 14px;
+    border-radius: 20px; padding: 10px 16px; min-height: 44px;
     font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--accent);
     cursor: pointer; transition: background 0.15s;
+    display: inline-flex; align-items: center; justify-content: center;
   }
   .credit-topup:hover { background: var(--accent-glow); }
   .credit-low-warn {
@@ -429,14 +437,139 @@
 
   /* ── Credit pill in header ────────────────────────────────────────────────── */
   .header-credit-pill {
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
     background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 5px 12px; cursor: pointer;
+    border-radius: 20px; padding: 10px 14px; min-height: 44px; cursor: pointer;
     font-size: 12px; transition: border-color 0.15s;
   }
   .header-credit-pill:hover { border-color: var(--border-hover); }
   .hcp-count { font-weight: 700; color: var(--accent); }
   .hcp-label { color: var(--text-muted); }
+
+  /* ── Auth UI ─────────────────────────────────────────────────────────────── */
+  .header-auth {
+    display: flex; align-items: center; gap: 8px;
+    margin-left: 12px;
+  }
+  .auth-signin-btn {
+    padding: 10px 14px; min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: none; border: 1px solid var(--border);
+    border-radius: 7px;
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .auth-signin-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .user-menu { position: relative; }
+  .user-menu-trigger {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px 6px 6px; min-height: 44px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .user-menu-trigger:hover { border-color: var(--border-hover); }
+  .user-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-size: 12px; font-weight: 600;
+    color: var(--accent);
+    overflow: hidden;
+  }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-menu-name {
+    font-size: 12px; font-weight: 500; color: var(--text);
+    max-width: 100px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .user-menu-dropdown {
+    display: none; position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); min-width: 180px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 200;
+  }
+  .user-menu.open .user-menu-dropdown { display: block; }
+  .user-menu-item {
+    display: block; width: 100%;
+    padding: 10px 14px;
+    background: none; border: none;
+    font-family: var(--sans); font-size: 13px;
+    color: var(--text-muted); cursor: pointer;
+    text-align: left; text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  .user-menu-item:hover { background: var(--surface2); color: var(--text); }
+  .user-menu-item.danger { color: #e87a6a; }
+  .user-menu-item.danger:hover { background: rgba(232,122,106,0.1); }
+  .user-menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  /* ── Sign-in modal ────────────────────────────────────────────────────────── */
+  .signin-modal { z-index: 350; }
+  .signin-modal .modal-box { max-width: 400px; text-align: center; }
+  .signin-title { font-family: var(--display); font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .signin-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+  .signin-methods { display: flex; flex-direction: column; gap: 12px; }
+  .signin-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 12px 16px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r);
+    font-family: var(--sans); font-size: 14px; font-weight: 500;
+    color: var(--text); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .signin-btn:hover { background: var(--surface3); border-color: var(--border-hover); }
+  .signin-btn svg { width: 18px; height: 18px; }
+  .signin-btn.google { background: #fff; color: #333; border-color: #ddd; }
+  .signin-btn.google:hover { background: #f5f5f5; }
+  .signin-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0; color: var(--text-dim); font-size: 12px;
+  }
+  .signin-divider::before, .signin-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .signin-email-form { display: flex; flex-direction: column; gap: 12px; }
+  .signin-email-form input {
+    padding: 12px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r-sm); color: var(--text);
+    font-family: var(--sans); font-size: 14px;
+    outline: none; transition: border-color 0.15s;
+  }
+  .signin-email-form input:focus { border-color: var(--border-hover); }
+  .signin-email-form input::placeholder { color: var(--text-dim); }
+  .signin-submit {
+    padding: 12px 16px;
+    background: var(--accent); border: none; border-radius: var(--r-sm);
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    color: #0d0c0a; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .signin-submit:hover { opacity: 0.9; }
+  .signin-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .signin-message { margin-top: 16px; padding: 12px; border-radius: var(--r-sm); font-size: 13px; display: none; }
+  .signin-message.success { display: block; background: rgba(78,201,154,0.1); border: 1px solid rgba(78,201,154,0.3); color: #4ec99a; }
+  .signin-message.error { display: block; background: rgba(232,122,106,0.1); border: 1px solid rgba(232,122,106,0.3); color: #e87a6a; }
+  .signin-footer { margin-top: 20px; font-size: 11px; color: var(--text-dim); }
+  .signin-footer a { color: var(--text-muted); }
+
+  /* ── Sync banner ─────────────────────────────────────────────────────────── */
+  .sync-banner {
+    display: none; padding: 12px 16px;
+    background: var(--accent-soft); border-bottom: 1px solid rgba(212,133,74,0.2);
+    font-size: 13px; color: var(--text);
+    text-align: center;
+  }
+  .sync-banner.visible { display: block; }
+  .sync-banner button {
+    margin-left: 12px; padding: 4px 12px;
+    background: var(--accent); border: none; border-radius: 5px;
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    color: #0d0c0a; cursor: pointer;
+  }
 
   /* ── Buy-credits modal ────────────────────────────────────────────────────── */
   .modal-overlay {
@@ -532,12 +665,13 @@
   /* Audience type toggle */
   .type-toggle { display: flex; gap: 5px; }
   .type-btn {
-    flex: 1; padding: 7px 4px;
+    flex: 1; padding: 10px 6px; min-height: 44px;
     background: var(--surface2); border: 1px solid var(--border);
     border-radius: var(--r-sm);
     color: var(--text-muted);
     font-family: var(--sans); font-size: 12px; font-weight: 600;
     cursor: pointer; text-align: center; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
   }
   .type-btn:hover { border-color: var(--border-hover); color: var(--text); }
   .type-btn.active { background: var(--surface3); border-color: var(--border-hover); color: var(--text); }
@@ -1521,7 +1655,31 @@
     <span class="hcp-count" id="hcpCount">—</span>
     <span class="hcp-label">credits</span>
   </button>
+  
+  <!-- Auth section -->
+  <div class="header-auth" id="headerAuth">
+    <button class="auth-signin-btn" id="authSigninBtn" onclick="openSigninModal()" style="display: none;">Sign in</button>
+  </div>
+  <div class="user-menu" id="userMenu" style="display: none;">
+    <button class="user-menu-trigger" onclick="toggleUserMenu()">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <span class="user-menu-name" id="userMenuName">User</span>
+    </button>
+    <div class="user-menu-dropdown">
+      <div style="padding: 10px 14px; font-size: 12px; color: var(--text-dim);" id="userMenuEmail">—</div>
+      <div class="user-menu-divider"></div>
+      <a href="/account" class="user-menu-item">Account</a>
+      <div class="user-menu-divider"></div>
+      <button class="user-menu-item danger" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
 </header>
+
+<!-- Sync banner (shown when user has local data to migrate) -->
+<div class="sync-banner" id="syncBanner">
+  You have local drafts. Sign in to save them to your account.
+  <button onclick="openSigninModal()">Sign in</button>
+</div>
 
 <div class="mobile-tabs" id="mobileTabs">
   <button class="mobile-tab active" id="tabSetup" onclick="switchTab('setup')">Setup</button>
@@ -1535,7 +1693,7 @@
     <div class="completion-bar-title">Your article is ready</div>
     <div class="completion-bar-sub">Copy, export, or preview it before closing — articles aren't saved yet.</div>
   </div>
-  <button class="completion-bar-btn" onclick="openPreview()">Preview Article →</button>
+  <button class="completion-bar-btn" onclick="openPreview()">Preview →</button>
   <button class="completion-bar-dismiss" onclick="document.getElementById('completionBar').classList.remove('visible');document.getElementById('completionBarSpacer').style.height='0'" title="Dismiss">✕</button>
 </div>
 
@@ -1553,33 +1711,18 @@
   <aside class="sidebar">
   <div class="sidebar-scroll">
 
-    <!-- Credits -->
-    <div class="sidebar-card no-collapse">
-      <div class="sidebar-card-title">Credits</div>
-      <div class="credit-display">
-        <div class="credit-balance">
-          <span class="credit-num" id="creditNum">—</span>
-          <span class="credit-unit">articles left</span>
-        </div>
-        <button class="credit-topup" onclick="openCreditsModal()">Top up →</button>
+    <!-- Credits - simplified, main display is in header -->
+    <div class="sidebar-card no-collapse" id="creditsCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="sidebar-card-title">Credits</div>
+        <button class="credit-topup" onclick="openCreditsModal()">Buy credits →</button>
       </div>
       <div class="credit-low-warn" id="creditLowWarn">
-        Running low — top up to keep generating.
+        Running low — buy more to keep generating.
       </div>
-      <div class="field-hint" style="margin-top:10px;">
-        Credits are tied to this device &amp; browser. <a id="refundLink" href="/refund" target="_blank" style="color:var(--text-dim);font-size:10px;text-decoration:none;border-bottom:1px solid transparent;opacity:0.55;transition:opacity 0.2s;" onmouseover="this.style.opacity='1';this.style.borderBottomColor='var(--text-dim)'" onmouseout="this.style.opacity='0.55';this.style.borderBottomColor='transparent'">not happy? refund</a>
-      </div>
-      <!-- Own API key — power user escape hatch -->
-      <div class="own-key-toggle" id="ownKeyToggle" onclick="toggleOwnKey()">
-        <span class="okt-icon">›</span> Use my own API key instead
-      </div>
-      <div class="own-key-inline" id="ownKeyInline">
-        <div class="api-key-wrapper">
-          <input type="password" id="apiKey" placeholder="sk-ant-..." />
-          <button class="toggle-key" onclick="toggleKey()">show</button>
-        </div>
-        <div class="field-hint">Bypasses credits — billed to your Anthropic account directly.</div>
-      </div>
+      <!-- Hidden elements for JS compatibility -->
+      <span id="creditNum" style="display:none;">—</span>
+      <a id="refundLink" href="/refund" style="display:none;"></a>
     </div>
 
     <div class="error-msg" id="errorMsg"></div>
@@ -1587,7 +1730,7 @@
     <!-- Your Article -->
     <div class="sidebar-card">
       <div class="sidebar-card-header" onclick="toggleSidebarCard('article')">
-        <div class="sidebar-card-title">Your Article</div>
+        <div class="sidebar-card-title">Your article</div>
         <span class="sidebar-card-summary" id="articleSummary"></span>
         <span class="sidebar-card-chevron open" id="articleChevron">▼</span>
       </div>
@@ -1598,7 +1741,7 @@
         </div>
 
         <div>
-          <div class="field-label">Target Keyword</div>
+          <div class="field-label">Target keyword</div>
           <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
         </div>
 
@@ -1608,7 +1751,7 @@
         </div>
 
         <div>
-          <div class="field-label">Audience Type</div>
+          <div class="field-label">Audience</div>
           <div class="type-toggle">
             <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
             <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
@@ -1617,7 +1760,7 @@
         </div>
 
         <div>
-          <div class="field-label">Writing Style</div>
+          <div class="field-label">Tone</div>
           <select id="tone">
             <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
             <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
@@ -1627,7 +1770,7 @@
         </div>
 
         <div>
-          <div class="field-label">AI Model</div>
+          <div class="field-label">Model</div>
           <select id="model">
             <option value="claude-opus-4-6">Opus — Best Quality</option>
             <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
@@ -1640,7 +1783,7 @@
     <!-- Promote Your Brand -->
     <div class="sidebar-card">
       <div class="sidebar-card-header" onclick="toggleSidebarCard('brand')">
-        <div class="sidebar-card-title">Promote Your Brand</div>
+        <div class="sidebar-card-title">Promote your brand</div>
         <span class="sidebar-card-summary" id="brandSummary">Optional</span>
         <span class="sidebar-card-chevron" id="brandChevron">▼</span>
       </div>
@@ -1657,7 +1800,7 @@
       </div>
 
       <div>
-        <div class="field-label">Product or Service Name</div>
+        <div class="field-label">Product or service name</div>
         <input type="text" id="productName" placeholder="e.g. Acme CRM, FlowHero, Notion" />
 
       <div class="product-fields inactive" id="productFields">
@@ -1666,7 +1809,7 @@
           <textarea id="productDesc" rows="2" placeholder="e.g. a CRM for small sales teams — closes deals faster without Salesforce's complexity"></textarea>
         </div>
         <div>
-          <div class="field-label">Website URL</div>
+          <div class="field-label">Website URL (optional)</div>
           <input type="text" id="productUrl" placeholder="e.g. https://yourproduct.com" />
         </div>
       </div>
@@ -1700,9 +1843,9 @@
       </div><!-- /sidebar-card-body#brandBody -->
     </div>
 
-    <!-- Advanced Settings -->
+    <!-- Advanced settings -->
     <button class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
-      ⚙ Advanced Settings
+      ⚙ Advanced
       <span class="adv-toggle-icon">▼</span>
     </button>
     <div class="advanced-section" id="advancedSection">
@@ -1771,7 +1914,7 @@
   </div><!-- /sidebar-scroll -->
 
   <div class="sidebar-footer">
-    <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate Article</button>
+    <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate</button>
   </div>
 
   </aside>
@@ -1784,68 +1927,68 @@
     <div class="agent-panel" id="panel1">
       <div class="agent-panel-header">
         <div class="agent-step-num">1</div>
-        <span class="agent-label label-1">Planning Your Article</span>
+        <span class="agent-label label-1">Planning</span>
         <span class="agent-status-pill" id="pill1">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out1">Hit Generate Article to begin.</div>
+        <div class="agent-output-text" id="out1">Fill in your topic and keyword, then hit Generate.</div>
       </div>
     </div>
 
     <div class="agent-panel" id="panel2">
       <div class="agent-panel-header">
         <div class="agent-step-num">2</div>
-        <span class="agent-label label-2">Gathering Research</span>
+        <span class="agent-label label-2">Research</span>
         <span class="agent-status-pill" id="pill2">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out2">Follows after planning.</div>
+        <div class="agent-output-text" id="out2"></div>
       </div>
     </div>
 
     <div class="agent-panel" id="panel3">
       <div class="agent-panel-header">
         <div class="agent-step-num">3</div>
-        <span class="agent-label label-3">Writing First Draft</span>
+        <span class="agent-label label-3">Writing</span>
         <span class="agent-status-pill" id="pill3">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out3">Follows after research.</div>
+        <div class="agent-output-text" id="out3"></div>
       </div>
     </div>
 
     <div class="agent-panel" id="panel4">
       <div class="agent-panel-header">
         <div class="agent-step-num">4</div>
-        <span class="agent-label label-4">SEO &amp; Structure</span>
+        <span class="agent-label label-4">SEO</span>
         <span class="agent-status-pill" id="pill4">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out4">Follows after writing.</div>
+        <div class="agent-output-text" id="out4"></div>
       </div>
     </div>
 
     <div class="agent-panel" id="panel5">
       <div class="agent-panel-header">
         <div class="agent-step-num">5</div>
-        <span class="agent-label label-5">Refining the Voice</span>
+        <span class="agent-label label-5">Refining</span>
         <span class="agent-status-pill" id="pill5">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out5">Follows after SEO pass.</div>
+        <div class="agent-output-text" id="out5"></div>
       </div>
     </div>
 
     <div class="agent-panel final-panel" id="panel6">
       <div class="agent-panel-header">
         <div class="agent-step-num">6</div>
-        <span class="agent-label label-6">Humanizing the Voice</span>
+        <span class="agent-label label-6">Humanizing</span>
         <span class="agent-status-pill" id="pill6">—</span>
         <button class="copy-btn" id="copyBtn" onclick="copyArticle()">Copy</button>
-        <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview Article →</button>
+        <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview →</button>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out6">Follows after refining.</div>
+        <div class="agent-output-text" id="out6"></div>
       </div>
     </div>
 
@@ -1859,9 +2002,9 @@
 <div class="preview-overlay" id="previewOverlay">
 
   <div class="preview-topbar">
-    <button class="preview-back-btn" onclick="closePreview()">← back to pipeline</button>
+    <button class="preview-back-btn" onclick="closePreview()">← Back to editor</button>
     <span class="preview-topbar-label">article preview</span>
-    <button class="save-draft-btn" id="saveDraftBtn" onclick="saveDraft()">Save Draft</button>
+    <button class="save-draft-btn" id="saveDraftBtn" onclick="saveDraft()">Save draft</button>
     <div class="preview-topbar-stats">
       <div class="preview-stat" id="statWords">words: <span id="previewWordCount">—</span></div>
       <div class="preview-stat" id="statRead">read: <span id="previewReadTime">—</span></div>
@@ -1896,7 +2039,7 @@
         <div class="preview-seo-hd">
           <div class="preview-seo-title-group">
             <div class="preview-seo-eyebrow">analysis</div>
-            <div class="preview-seo-title">SEO Report</div>
+            <div class="preview-seo-title">SEO report</div>
           </div>
           <span class="seo-score-pill neutral" id="seoScorePill">—</span>
         </div>
@@ -1926,7 +2069,7 @@
 
           <div class="seo-metric-block">
             <div class="seo-metric-label">
-              Word Count
+              Word count
               <span class="seo-metric-val" id="seoWordsVal">—</span>
             </div>
             <div class="seo-metric-track">
@@ -2050,12 +2193,12 @@
         </div>
 
         <div class="impl-tabs">
-          <button class="impl-tab active" data-tab="Copy" onclick="switchImplTab('Copy')">Copy &amp; Export</button>
+          <button class="impl-tab active" data-tab="Copy" onclick="switchImplTab('Copy')">Copy &amp; export</button>
           <button class="impl-tab" data-tab="WP"      onclick="switchImplTab('WP')">WordPress</button>
           <button class="impl-tab" data-tab="Webflow" onclick="switchImplTab('Webflow')">Webflow</button>
           <button class="impl-tab" data-tab="Ghost"   onclick="switchImplTab('Ghost')">Ghost / Substack</button>
           <button class="impl-tab" data-tab="CMS"     onclick="switchImplTab('CMS')">Any CMS</button>
-          <button class="impl-tab" data-tab="Drafts"  onclick="switchImplTab('Drafts')">Saved Drafts</button>
+          <button class="impl-tab" data-tab="Drafts"  onclick="switchImplTab('Drafts')">Saved drafts</button>
         </div>
 
         <!-- Copy & Export -->
@@ -2150,7 +2293,7 @@
 
         <!-- Saved Drafts -->
         <div class="impl-tab-body" id="implTabDrafts">
-          <p class="drafts-empty">No saved drafts yet. Click <strong>Save Draft</strong> in the topbar to save this article to your browser.</p>
+          <p class="drafts-empty">Save a draft and it'll show up here.</p>
         </div>
 
         <!-- Any CMS -->
@@ -2618,7 +2761,7 @@ function openCreditsModal(outOfCredits = false) {
   document.getElementById('creditsModal').classList.add('open');
   document.getElementById('modalSub').textContent = outOfCredits
     ? 'You\'re out of articles. Top up to keep generating.'
-    : 'One purchase = one full article, written by 6 AI agents. No API key needed.';
+    : 'One purchase = one full article through all six stages. No API key needed.';
 }
 
 function closeCreditsModal() {
@@ -2839,7 +2982,7 @@ async function runPipeline() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ creditToken: _creditToken }),
       });
-      if (r.status === 402) { openCreditsModal(true); btn2.disabled = false; btn2.textContent = '✦ Generate Article'; return; }
+      if (r.status === 402) { openCreditsModal(true); btn2.disabled = false; btn2.textContent = '✦ Generate'; return; }
       if (!r.ok) throw new Error('Could not start run');
       const d = await r.json();
       authMode = { type: 'run', runToken: d.runToken };
@@ -2847,7 +2990,7 @@ async function runPipeline() {
     } catch (e) {
       showError(e.message);
       document.getElementById('runBtn').disabled = false;
-      document.getElementById('runBtn').textContent = '✦ Generate Article';
+      document.getElementById('runBtn').textContent = '✦ Generate';
       return;
     }
   } else {
@@ -2875,11 +3018,11 @@ async function runPipeline() {
     setPipeNode(i, null); setPanel(i, null); setPill(i, '—', false);
   }
   setOutput(1, '', false);
-  setOutput(2, 'Follows after planning.', false);
-  setOutput(3, 'Follows after research.', false);
-  setOutput(4, 'Follows after writing.', false);
-  setOutput(5, 'Follows after SEO pass.', false);
-  setOutput(6, 'Follows after refining.', false);
+  setOutput(2, '', false);
+  setOutput(3, '', false);
+  setOutput(4, '', false);
+  setOutput(5, '', false);
+  setOutput(6, '', false);
 
   const outputArea = document.getElementById('outputArea');
   outputArea.scrollTop = 0;
@@ -2982,7 +3125,7 @@ async function runPipeline() {
 
   outputArea.removeEventListener('scroll', _checkUserScroll);
   btn.disabled = false;
-  btn.textContent = '✦ Generate Article';
+  btn.textContent = '✦ Generate';
 }
 
 // ── Preview helpers ──────────────────────────────────────────────────────────
@@ -3146,7 +3289,7 @@ function openPreview() {
   if (_revCostNote) {
     const _hasOwnKey = (document.getElementById('apiKey').value || '').trim().length > 0;
     _revCostNote.textContent = _hasOwnKey
-      ? 'Uses your Anthropic API key — no extra credit cost.'
+      ? 'Uses your API key — no credit cost.'
       : 'Uses 1 credit per revision.';
   }
   // Reset revision UI state
@@ -3299,7 +3442,7 @@ async function reviseArticle() {
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
     } else {
-      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+      throw new Error("You're out of credits. Top up to keep writing.");
     }
 
     statusEl.textContent = 'Revising…';
@@ -3386,7 +3529,7 @@ Do not add commentary, preamble, or explanations — only the revised article.`;
       // Scroll preview to top so user sees the updated article
       document.querySelector('.preview-article-scroll').scrollTop = 0;
     } else {
-      throw new Error('Unexpected response format from revision agent.');
+      throw new Error('Something went wrong. Try again.');
     }
   } catch (err) {
     statusEl.textContent = 'Error: ' + err.message;
@@ -3508,7 +3651,7 @@ async function generateRemix(format) {
   copyBtn.style.display = 'none';
 
   const hasOwnKey = ownApiKey.length > 0;
-  creditEl.textContent = hasOwnKey ? 'Uses your API key' : 'Uses 1 credit';
+  creditEl.textContent = hasOwnKey ? 'Using your key' : 'Uses 1 credit';
 
   let authMode;
   try {
@@ -3528,7 +3671,7 @@ async function generateRemix(format) {
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
     } else {
-      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+      throw new Error("You're out of credits. Top up to keep writing.");
     }
 
     const authPayload = authMode.type === 'key'
@@ -3648,7 +3791,7 @@ function renderDraftsTab() {
   if (drafts.length === 0) {
     const p = document.createElement('p');
     p.className = 'impl-tab-desc';
-    p.textContent = 'No saved drafts yet. Click Save Draft in the topbar to save this article.';
+    p.textContent = "Save a draft and it'll show up here.";
     const note = document.createElement('div');
     note.className = 'draft-local-note';
     note.textContent = '\uD83D\uDCBE Drafts live in your browser\u2019s local storage \u2014 this device only, not synced across devices.';
@@ -4361,15 +4504,328 @@ function confirmDeleteDraftFromPreview(id) {
   _previewingDraftId = null;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTH STATE MANAGEMENT
+// ══════════════════════════════════════════════════════════════════════════════
+
+let _authUser = null;
+let _accessToken = localStorage.getItem('byline_access_token') || null;
+
+function getAccessToken() { return _accessToken; }
+function setAccessToken(token) { _accessToken = token; localStorage.setItem('byline_access_token', token); }
+function clearAuth() {
+  _accessToken = null;
+  _authUser = null;
+  localStorage.removeItem('byline_access_token');
+  localStorage.removeItem('byline_refresh_token');
+  localStorage.removeItem('byline_user');
+}
+
+async function fetchWithAuth(url, options = {}) {
+  if (!_accessToken) throw new Error('Not authenticated');
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${_accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+function updateAuthUI() {
+  const signinBtn = document.getElementById('authSigninBtn');
+  const userMenu = document.getElementById('userMenu');
+  const syncBanner = document.getElementById('syncBanner');
+  
+  if (_authUser) {
+    if (signinBtn) signinBtn.style.display = 'none';
+    if (userMenu) {
+      userMenu.style.display = 'block';
+      document.getElementById('userMenuName').textContent = _authUser.name || _authUser.email?.split('@')[0] || 'User';
+      document.getElementById('userMenuEmail').textContent = _authUser.email || '';
+      const avatarEl = document.getElementById('userAvatar');
+      if (_authUser.avatar) {
+        avatarEl.innerHTML = `<img src="${_authUser.avatar}" alt="">`;
+      } else {
+        avatarEl.textContent = (_authUser.name || _authUser.email || '?')[0].toUpperCase();
+      }
+    }
+    if (syncBanner) syncBanner.classList.remove('visible');
+  } else {
+    if (signinBtn) signinBtn.style.display = 'block';
+    if (userMenu) userMenu.style.display = 'none';
+    // Show sync banner if user has local data
+    const drafts = _getDrafts();
+    const products = _getProducts();
+    if ((drafts.length > 0 || products.length > 0) && syncBanner) {
+      syncBanner.classList.add('visible');
+    }
+  }
+}
+
+function toggleUserMenu() {
+  const menu = document.getElementById('userMenu');
+  menu.classList.toggle('open');
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('userMenu');
+  if (menu && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+function openSigninModal() {
+  document.getElementById('signinModal').classList.add('open');
+  document.getElementById('signinEmail').value = '';
+  document.getElementById('signinMessage').className = 'signin-message';
+  document.getElementById('signinMessage').textContent = '';
+}
+
+function closeSigninModal() {
+  document.getElementById('signinModal').classList.remove('open');
+}
+
+function handleSigninBackdrop(e) {
+  if (e.target === document.getElementById('signinModal')) closeSigninModal();
+}
+
+async function signInWithGoogle() {
+  const btn = document.querySelector('.signin-btn.google');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting…';
+  
+  try {
+    const r = await fetch('/api/auth/google');
+    const d = await r.json();
+    if (d.url) {
+      window.location.href = d.url;
+    } else {
+      showSigninError(d.error || 'Could not start Google sign-in');
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Continue with Google';
+    }
+  } catch (e) {
+    showSigninError('Network error. Try again.');
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Continue with Google';
+  }
+}
+
+async function sendMagicLink() {
+  const email = document.getElementById('signinEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    showSigninError('Enter a valid email address');
+    return;
+  }
+  
+  const btn = document.querySelector('.signin-submit');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  
+  try {
+    const r = await fetch('/api/auth/magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const d = await r.json();
+    
+    if (r.ok) {
+      showSigninSuccess('Check your email for the sign-in link');
+      btn.textContent = 'Email sent';
+    } else {
+      showSigninError(d.error || 'Could not send email');
+      btn.disabled = false;
+      btn.textContent = 'Send sign-in link';
+    }
+  } catch (e) {
+    showSigninError('Network error. Try again.');
+    btn.disabled = false;
+    btn.textContent = 'Send sign-in link';
+  }
+}
+
+function showSigninError(msg) {
+  const el = document.getElementById('signinMessage');
+  el.className = 'signin-message error';
+  el.textContent = msg;
+}
+
+function showSigninSuccess(msg) {
+  const el = document.getElementById('signinMessage');
+  el.className = 'signin-message success';
+  el.textContent = msg;
+}
+
+async function checkAuthSession() {
+  if (!_accessToken) {
+    updateAuthUI();
+    return;
+  }
+  
+  try {
+    const r = await fetchWithAuth('/api/auth/me');
+    if (r.ok) {
+      const data = await r.json();
+      _authUser = data.user;
+      localStorage.setItem('byline_user', JSON.stringify(_authUser));
+      // Update credits from server if authenticated
+      if (data.credits !== undefined) {
+        updateCreditDisplay(data.credits);
+      }
+    } else {
+      clearAuth();
+    }
+  } catch (e) {
+    // Keep cached user if network fails
+    const cached = localStorage.getItem('byline_user');
+    if (cached) _authUser = JSON.parse(cached);
+  }
+  
+  updateAuthUI();
+}
+
+async function handleAuthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.substring(1));
+  
+  // Check for auth callback
+  if (params.get('auth') === 'callback') {
+    const accessToken = hash.get('access_token') || params.get('access_token');
+    const refreshToken = hash.get('refresh_token') || params.get('refresh_token');
+    
+    if (accessToken) {
+      setAccessToken(accessToken);
+      if (refreshToken) localStorage.setItem('byline_refresh_token', refreshToken);
+      
+      // Exchange for session and get user
+      try {
+        const r = await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+        });
+        const data = await r.json();
+        if (data.user) {
+          _authUser = data.user;
+          localStorage.setItem('byline_user', JSON.stringify(_authUser));
+          
+          // Migrate local data if this is first sign-in
+          await migrateLocalData();
+        }
+      } catch (e) {
+        console.error('Session error:', e);
+      }
+    }
+    
+    // Clean URL
+    window.history.replaceState({}, '', '/app');
+    updateAuthUI();
+  }
+}
+
+async function migrateLocalData() {
+  const drafts = _getDrafts();
+  const products = _getProducts();
+  const creditToken = localStorage.getItem('byline_credit_token');
+  
+  if (drafts.length === 0 && products.length === 0 && !creditToken) return;
+  
+  try {
+    const r = await fetchWithAuth('/api/user/migrate', {
+      method: 'POST',
+      body: JSON.stringify({ drafts, products, creditToken }),
+    });
+    
+    if (r.ok) {
+      const result = await r.json();
+      console.log('Migration result:', result.migrated);
+      
+      // Clear local storage after successful migration
+      if (result.migrated.drafts > 0) localStorage.removeItem('byline_drafts');
+      if (result.migrated.products > 0) localStorage.removeItem('byline_products');
+      if (result.migrated.credits > 0) {
+        localStorage.removeItem('byline_credit_token');
+        localStorage.removeItem('byline_credit_bal');
+        _creditToken = null;
+      }
+      
+      // Refresh displays
+      renderDraftsDash();
+      renderProductDropdown();
+      await refreshCredits();
+    }
+  } catch (e) {
+    console.error('Migration error:', e);
+  }
+}
+
+async function signOut() {
+  try {
+    await fetchWithAuth('/api/auth/sign-out', { method: 'POST' });
+  } catch (e) { /* ignore */ }
+  
+  clearAuth();
+  updateAuthUI();
+  document.getElementById('userMenu').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ANALYTICS TRACKING
+// ══════════════════════════════════════════════════════════════════════════════
+
+function trackEvent(event, properties = {}) {
+  // Track via server
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, properties }),
+  }).catch(() => {});
+  
+  // Vercel Web Analytics
+  if (window.va) {
+    window.va('event', { name: event, ...properties });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ══════════════════════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', async () => {
   for (let n = 1; n <= 6; n++) {
     document.getElementById('sys' + n).value = PROMPTS[n];
   }
+  
+  // Check if auth is available before showing auth UI
+  let authEnabled = false;
+  try {
+    const r = await fetch('/api/auth/status');
+    const data = await r.json();
+    authEnabled = data.enabled;
+  } catch (e) { /* auth not available */ }
+  
+  if (authEnabled) {
+    // Show auth UI only if auth is configured
+    const signinBtn = document.getElementById('authSigninBtn');
+    if (signinBtn) signinBtn.style.display = '';
+    
+    // Auth flow: check callback first, then session
+    await handleAuthCallback();
+    await checkAuthSession();
+  }
+  
   handleUrlParams();       // handle ?token= from Stripe redirect
   loadSavedOwnKey();       // restore saved own API key if any
   refreshCredits();        // verify credit token with server and update display
   renderDraftsDash();      // show saved drafts if any
   renderProductDropdown(); // show saved products if any
+  
+  // Track page view
+  trackEvent('app_view');
 });
 </script>
 
@@ -4377,6 +4833,35 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="draft-toast" id="draftToast">
   <div class="draft-toast-title">Draft saved ✓</div>
   <div class="draft-toast-note">Stored in your browser only — won't sync across devices or browsers.</div>
+</div>
+
+<!-- Sign-in Modal -->
+<div class="modal-overlay signin-modal" id="signinModal" onclick="handleSigninBackdrop(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeSigninModal()">✕</button>
+    <h2 class="signin-title">Sign in to Byline</h2>
+    <p class="signin-sub">Save your work across devices and manage your credits in one place.</p>
+    
+    <div class="signin-methods">
+      <button class="signin-btn google" onclick="signInWithGoogle()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+    
+    <div class="signin-divider">or</div>
+    
+    <form class="signin-email-form" onsubmit="event.preventDefault(); sendMagicLink();">
+      <input type="email" id="signinEmail" placeholder="you@example.com" autocomplete="email" required>
+      <button type="submit" class="signin-submit">Send sign-in link</button>
+    </form>
+    
+    <div class="signin-message" id="signinMessage"></div>
+    
+    <p class="signin-footer">
+      By signing in, you agree to our <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.
+    </p>
+  </div>
 </div>
 
 <!-- Buy Credits Modal -->
@@ -4390,7 +4875,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="modal-eyebrow">Byline</div>
     <div class="modal-title">Generate articles instantly</div>
-    <div class="modal-sub" id="modalSub">One purchase = one full article, written by 6 AI agents. No API key needed.</div>
+    <div class="modal-sub" id="modalSub">One purchase = one full article through all six stages. No API key needed.</div>
 
     <div class="pack-grid">
       <div class="pack-card" id="pack-starter" onclick="selectPack('starter')">
@@ -4414,7 +4899,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>
 
-    <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy with Card →</button>
+    <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy credits →</button>
 
     <p class="modal-storage-note">
       Articles are stored locally in your browser.<br>
@@ -4422,11 +4907,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </p>
 
     <div class="modal-own-key-toggle" id="modalOwnKeyToggle" onclick="toggleModalOwnKey()">
-      <span class="arrow">›</span> Have your own Anthropic API key?
+      <span class="arrow">›</span> Have your own API key?
     </div>
     <div class="modal-own-key-body" id="modalOwnKeyBody">
       <div class="own-key-section">
-        <label>Paste your key — bypasses credits entirely, billed to your Anthropic account.</label>
+        <label>Paste your key to bypass credits.</label>
         <div class="own-key-row">
           <input type="password" id="modalApiKey" placeholder="sk-ant-..." autocomplete="off" />
           <button class="own-key-save" onclick="saveOwnKey()">Save key</button>

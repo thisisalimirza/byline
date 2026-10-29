@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0c09"/>
+      <stop offset="100%" style="stop-color:#181611"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Logo mark -->
+  <rect x="520" y="180" width="64" height="64" rx="14" fill="#d4854a"/>
+  <text x="552" y="228" font-family="Georgia, serif" font-size="38" font-weight="600" fill="#0d0c09" text-anchor="middle">B</text>
+  
+  <!-- Brand name -->
+  <text x="600" y="300" font-family="Georgia, serif" font-size="56" font-weight="600" fill="#ede9e0" text-anchor="middle">Byline</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="360" font-family="system-ui, sans-serif" font-size="24" fill="#8a8478" text-anchor="middle">Articles that rank and sound human</text>
+  
+  <!-- Decorative line -->
+  <rect x="400" y="400" width="400" height="2" fill="#d4854a" opacity="0.3"/>
+  
+  <!-- Stats row -->
+  <text x="350" y="480" font-family="system-ui, sans-serif" font-size="18" fill="#5e5b54" text-anchor="middle">6-stage pipeline</text>
+  <text x="600" y="480" font-family="system-ui, sans-serif" font-size="18" fill="#5e5b54" text-anchor="middle">SEO-optimized</text>
+  <text x="850" y="480" font-family="system-ui, sans-serif" font-size="18" fill="#5e5b54" text-anchor="middle">From $0.33/article</text>
+</svg>

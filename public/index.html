@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Byline — AI Articles That Rank and Sound Human</title>
-<meta name="description" content="Byline runs six specialized AI agents to write, refine, humanize, and SEO-optimize articles that actually rank — without sounding like AI. Pay per article, no subscription.">
+<title>Byline — Articles That Rank and Sound Human</title>
+<meta name="description" content="Byline writes, refines, and SEO-optimizes articles that actually rank — without sounding robotic. Pay per article, no subscription.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://bylineblogs.com/">
 
@@ -12,8 +12,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Byline">
 <meta property="og:url" content="https://bylineblogs.com/">
-<meta property="og:title" content="Byline — AI Articles That Rank and Sound Human">
-<meta property="og:description" content="Six specialized AI agents write, refine, humanize, and SEO-optimize your articles. No robotic filler. No generic intros. Just articles that earn their place in search.">
+<meta property="og:title" content="Byline — Articles That Rank and Sound Human">
+<meta property="og:description" content="Byline writes, refines, and SEO-optimizes your articles. No robotic filler. No generic intros. Just articles that earn their place in search.">
 <meta property="og:image" content="https://bylineblogs.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,8 +21,8 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@bylineblogs">
-<meta name="twitter:title" content="Byline — AI Articles That Rank and Sound Human">
-<meta name="twitter:description" content="Six specialized AI agents write, refine, humanize, and SEO-optimize your articles. No robotic filler. Just articles that earn their place in search.">
+<meta name="twitter:title" content="Byline — Articles That Rank and Sound Human">
+<meta name="twitter:description" content="Byline writes, refines, and SEO-optimizes your articles. No robotic filler. Just articles that earn their place in search.">
 <meta name="twitter:image" content="https://bylineblogs.com/og-image.png">
 
 <!-- Vercel Web Analytics -->
@@ -31,11 +31,20 @@
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 
+<!-- PostHog Analytics -->
+<script>
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  if (window.POSTHOG_API_KEY) {
+    posthog.init(window.POSTHOG_API_KEY, { api_host: 'https://us.i.posthog.com', capture_pageview: true });
+  }
+</script>
+
 <!-- Favicon — inline SVG data URI matching the orange B brand mark -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
-<!-- Google Search Console verification — replace content value with your GSC verification code -->
-<!-- <meta name="google-site-verification" content="REPLACE_WITH_YOUR_GSC_CODE"> -->
 
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
@@ -46,7 +55,7 @@
   "url": "https://bylineblogs.com",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
-  "description": "Byline runs six specialized AI agents in sequence to write, refine, humanize, and SEO-optimize articles that don't sound like they were written by a machine.",
+  "description": "Byline writes, refines, and SEO-optimizes articles that actually rank and sound human. Pay per article, no subscription.",
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "USD",
@@ -55,9 +64,9 @@
     "offerCount": "3"
   },
   "featureList": [
-    "6-stage AI writing pipeline",
+    "Six editing passes",
     "SEO optimization with keyword placement",
-    "Voice humanization to remove AI patterns",
+    "Voice refinement for natural reading",
     "Product promotion integration",
     "Pay-per-article pricing"
   ],
@@ -82,8 +91,8 @@
   --border: rgba(255,255,255,0.07);
   --border-hover: rgba(255,255,255,0.13);
   --text: #ede9e0;
-  --text-muted: #8a8478;
-  --text-dim: #4e4b44;
+  --text-muted: #a39d90;
+  --text-dim: #8f897d;
   --accent: #d4854a;
   --accent-soft: rgba(212,133,74,0.12);
   --accent-glow: rgba(212,133,74,0.18);
@@ -140,6 +149,7 @@ nav {
 .nav-logo {
   display: flex; align-items: center; gap: 8px;
   text-decoration: none;
+  min-height: 44px; padding: 8px 0;
 }
 .nav-logo-mark {
   width: 28px; height: 28px;
@@ -169,7 +179,9 @@ nav {
   display: flex; align-items: center; gap: 0.75rem;
 }
 .btn-ghost {
-  padding: 7px 16px;
+  padding: 10px 16px;
+  min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
   background: none; border: 1px solid var(--border);
   border-radius: 7px;
   font-family: var(--sans); font-size: 13px; font-weight: 500;
@@ -178,7 +190,9 @@ nav {
 }
 .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
 .btn-primary {
-  padding: 8px 18px;
+  padding: 10px 18px;
+  min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
   background: var(--accent);
   border: none; border-radius: 7px;
   font-family: var(--sans); font-size: 13px; font-weight: 700;
@@ -463,6 +477,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   padding: 1.75rem 1.4rem;
   position: relative;
   transition: background 0.2s;
+  display: flex; flex-direction: column;
 }
 .step-card:hover { background: var(--surface2); }
 .step-num-circle {
@@ -488,13 +503,13 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .step-4 .step-name { color: var(--a4); }
 .step-5 .step-name { color: var(--a5); }
 .step-6 .step-name { color: #e8b84b; }
-.step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; flex: 1; }
 .step-tag {
-  display: inline-block; margin-top: 0.75rem;
+  display: inline-block; margin-top: auto; padding-top: 0.75rem;
   padding: 3px 8px;
   border-radius: 100px; font-size: 10px; font-weight: 600;
   background: var(--surface2); color: var(--text-dim);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border); align-self: flex-start;
 }
 
 /* ── Features ── */
@@ -681,7 +696,7 @@ footer {
 .compare-section .section-heading { text-align: center; }
 .compare-section .section-sub { text-align: center; margin: 0 auto 2.5rem; }
 .compare-panels { position: relative; }
-.compare-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.compare-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
 
 /* ── ChatGPT window mockup ── */
 .compare-col.chatgpt-col { background: none; border: none; padding: 0; }
@@ -745,10 +760,11 @@ footer {
 }
 
 /* ── Annotation toggle ── */
-.anno-toggle { display: flex; justify-content: flex-end; grid-column: 1/-1; margin-bottom: 6px; }
+.anno-toggle { display: flex; justify-content: flex-end; grid-column: 1/-1; margin-bottom: 6px; max-width: 100%; }
 .anno-toggle-btn {
   background: transparent; border: 1px solid var(--border);
   color: var(--text-dim); font-size: 11px; font-family: var(--sans);
+  min-height: 44px;
   font-weight: 600; padding: 5px 14px; border-radius: 100px;
   cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
 }
@@ -782,7 +798,7 @@ footer {
 .col-badge.ai-badge { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border); }
 .col-badge.byline-badge { background: rgba(212,133,74,0.12); color: var(--accent); border: 1px solid rgba(212,133,74,0.25); }
 .compare-article { font-size: 13px; line-height: 1.65; color: var(--text-muted); }
-.compare-article h1 {
+.compare-article h1, .compare-article .article-title {
   font-family: var(--display); font-size: 16px; font-weight: 500;
   color: var(--text); line-height: 1.3; margin-bottom: 14px;
 }
@@ -820,14 +836,20 @@ footer {
 .prompt-pill {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 100px; padding: 5px 14px; font-size: 11px;
-  color: var(--text-muted); font-style: italic; white-space: nowrap;
+  color: var(--text-muted); font-style: italic;
+  white-space: normal; max-width: 100%; text-align: center;
 }
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
-  /* Fix compare panel: .active was never applied by JS, so use .compare-panel directly */
-  .compare-panel { grid-template-columns: 1fr; }
+  /* Fix compare panel: single column, prevent overflow */
+  .compare-panel { grid-template-columns: minmax(0, 1fr); }
   .compare-col.ai-col { display: none; }
+  .compare-col, .chatgpt-window { max-width: 100%; overflow: hidden; }
+  
+  /* Prompt banner: wrap text, constrain width */
+  .prompt-banner { flex-wrap: wrap; padding: 0 1rem; }
+  .prompt-pill { white-space: normal; max-width: calc(100% - 2rem); }
 
   .nav-links { display: none; }
   /* Hide ghost nav button on mobile — keep only the primary CTA */
@@ -857,10 +879,8 @@ footer {
   /* Stats: 2 columns */
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
 
-  /* Hero mockup: hide the app body, keep the topbar as a visual */
-  .mock-body { display: none; }
-  .hero-mockup { min-height: 60px; }
-  .hero-mockup-wrap { padding-bottom: 2.5rem; }
+  /* Hero mockup: hide entirely on mobile since it's just empty chrome */
+  .hero-mockup-wrap { display: none; }
 
   /* Show promo text before visual on mobile (grid order) */
   .promo-feature-right { order: -1; }
@@ -911,13 +931,14 @@ footer {
 .proof-inner { max-width: 860px; margin: 0 auto; }
 .proof-strip .section-sub { margin: 0 auto; text-align: center; }
 .proof-cards {
-  display: flex; gap: 1.5rem; align-items: center;
+  display: flex; gap: 1.5rem; align-items: stretch;
   justify-content: center; margin-top: 2.75rem;
 }
 .proof-card {
   flex: 1; max-width: 380px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 16px; padding: 1.75rem; text-align: left;
+  display: flex; flex-direction: column;
 }
 .proof-byline {
   border-color: rgba(212,133,74,0.35);
@@ -943,10 +964,12 @@ footer {
 }
 .proof-card-note {
   font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.35rem;
+  flex: 1;
 }
-.proof-card-actions { display: flex; flex-direction: column; gap: 8px; }
+.proof-card-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
 .proof-btn {
-  display: block; text-align: center; padding: 9px 16px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 9px 16px; border-radius: 8px;
   font-family: var(--sans); font-size: 13px; font-weight: 600; text-decoration: none;
   background: var(--surface2); border: 1px solid var(--border); color: var(--text);
   transition: opacity 0.15s;
@@ -954,7 +977,8 @@ footer {
 .proof-btn:hover { opacity: 0.78; }
 .proof-btn-accent { background: var(--accent); color: #0d0c09; border-color: transparent; }
 .proof-btn-ghost {
-  display: block; text-align: center; padding: 8px 16px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 8px 16px; border-radius: 8px;
   font-family: var(--sans); font-size: 12px; font-weight: 500; text-decoration: none;
   color: var(--text-muted); border: 1px solid var(--border); background: transparent;
   transition: color 0.15s;
@@ -980,26 +1004,25 @@ footer {
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="/app" class="btn-ghost">Open App</a>
-    <a href="/app" class="btn-primary">Try Byline →</a>
+    <a href="/app" class="btn-primary">Start writing →</a>
   </div>
 </nav>
 
 <!-- ── Hero ── -->
 <div class="hero-section">
   <div class="hero-eyebrow">
-    <span>✦</span> Powered by Claude — <span>6-stage writing pipeline</span>
+    <span>✦</span> Six editing passes, one article
   </div>
   <h1 class="hero-headline">
     Articles that rank.<br>
     Writing that sounds <em>genuinely human.</em>
   </h1>
   <p class="hero-sub">
-    Byline runs six specialized AI agents in sequence to write, refine, humanize, and
+    Byline runs six specialized stages to write, refine, humanize, and
     SEO-optimize articles that don't sound like they were written by a machine.
   </p>
   <div class="hero-actions">
-    <a href="/app" class="btn-hero">✦ Start generating →</a>
+    <a href="/app" class="btn-hero">✦ Start writing →</a>
     <a href="#how-it-works" class="btn-hero-secondary">See how it works</a>
   </div>
 
@@ -1110,8 +1133,8 @@ footer {
       <div class="stat-label">Words, fully formatted and SEO-ready</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num"><em>$0.40</em></div>
-      <div class="stat-label">Per article — pay as you go, no subscription</div>
+      <div class="stat-num"><em>from $0.33</em></div>
+      <div class="stat-label">Per article — $5 for 10, $10 for 25, $25 for 75</div>
     </div>
   </div>
 </div>
@@ -1121,22 +1144,22 @@ footer {
   <div class="why-grid">
     <div>
       <div class="eyebrow">Why Byline</div>
-      <h2 class="section-heading">Most AI writing<br>is <em>instantly recognizable.</em></h2>
+      <h2 class="section-heading">Most generated content<br>is <em>instantly recognizable.</em></h2>
       <p class="section-sub">Generic openers. Walls of text. The same hollow phrases appearing in every article. Byline is built specifically to eliminate all of it — at every stage of the process.</p>
     </div>
     <div class="why-cards">
       <div class="why-card">
         <div class="why-card-icon">01</div>
         <div class="why-card-text">
-          <strong>Standard AI tools produce AI-sounding copy</strong>
-          <p>Byline runs a dedicated Refiner to strip AI patterns, then a Humanizer as the final step — injecting voice, rhythm, and opinion after the SEO work is already locked in.</p>
+          <strong>Standard tools produce robotic copy</strong>
+          <p>Byline runs a dedicated Refiner to strip mechanical patterns, then a Humanizer as the final step — injecting voice, rhythm, and opinion after the SEO work is already locked in.</p>
         </div>
       </div>
       <div class="why-card">
         <div class="why-card-icon">02</div>
         <div class="why-card-text">
           <strong>Generic content doesn't rank</strong>
-          <p>Every article is shaped by a Strategist and then SEO-edited by a sixth agent that checks keyword placement, scannability, and subheading quality before the final output.</p>
+          <p>Every article is shaped by a Strategist and then SEO-edited in a final pass that checks keyword placement, scannability, and subheading quality before the final output.</p>
         </div>
       </div>
       <div class="why-card">
@@ -1232,7 +1255,7 @@ footer {
                     <li><span class="anno-bad">"Optimize performance"</span></li>
                   </ul>
                   <p>…are too abstract. They sound nice but don't mean anything concrete.</p>
-                  <div class="anno bad">❌ These three bullets appear in AI responses to every email marketing prompt on the internet. They're abstract enough to apply to anything, which means they apply to nothing.</div>
+                  <div class="anno bad">❌ These three bullets appear in generated responses to every email marketing prompt on the internet. They're abstract enough to apply to anything, which means they apply to nothing.</div>
                 </div>
 
                 <p class="chatgpt-section"><strong>4. Poor Targeting</strong></p>
@@ -1252,7 +1275,7 @@ footer {
                   <p>Finally, <span class="anno-bad">it's important to acknowledge</span> the environment: decision-makers are overwhelmed with emails daily.</p>
                   <p><strong>Conclusion</strong></p>
                   <p>Low reply rates in B2B email campaigns aren't caused by a single mistake — they're usually the result of multiple small misalignments. Improving results isn't about sending more emails. <span class="anno-bad">When campaigns shift from volume-driven to insight-driven, reply rates don't just improve — they become predictable.</span></p>
-                  <div class="anno bad">❌ Classic AI ending: a reframe that sounds meaningful but says nothing specific. "Volume-driven to insight-driven" could close any B2B marketing article ever written.</div>
+                  <div class="anno bad">❌ Classic robotic ending: a reframe that sounds meaningful but says nothing specific. "Volume-driven to insight-driven" could close any B2B marketing article ever written.</div>
                 </div>
 
                 <div class="chatgpt-scroll-fade"></div>
@@ -1269,7 +1292,7 @@ footer {
         <div class="compare-article">
 
           <div class="anno-wrap">
-            <h1><span class="anno-good">How to Increase B2B Email Campaign Reply Rates from 1.4% to 8.7%</span></h1>
+            <div class="article-title"><span class="anno-good">How to Increase B2B Email Campaign Reply Rates from 1.4% to 8.7%</span></div>
             <div class="anno good">✓ Specific numbers in the title. Readers immediately know this is about a concrete, measurable gap — not a generic "improve your email" article.</div>
           </div>
 
@@ -1348,7 +1371,7 @@ function toggleAnnotations() {
   <div class="proof-inner">
     <div class="eyebrow" style="text-align:center;margin-bottom:10px;">Read the full articles</div>
     <h2 class="section-heading">Download both.<br><em>Judge for yourself.</em></h2>
-    <p class="section-sub" style="max-width:520px;">Same topic. Same goal. One came straight from ChatGPT. The other went through Byline's six-stage pipeline. Read them side by side and decide which one you'd actually publish.</p>
+    <p class="section-sub" style="max-width:520px;">Same topic. Same goal. One came straight from a chatbot. The other went through Byline's six stages. Read them side by side and decide which one you'd actually publish.</p>
 
     <div class="proof-cards">
 
@@ -1377,9 +1400,10 @@ function toggleAnnotations() {
           Byline
         </div>
         <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
-        <div class="proof-card-note">Strategy, research, writing, SEO, voice refinement, humanization — six agents in sequence.</div>
+        <div class="proof-card-note">Strategy, research, writing, SEO, voice refinement, humanization — six stages in sequence.</div>
         <div class="proof-card-actions">
           <a href="/Why%20Most%20Small%20Businesses%20Set%20Up%20Local%20Business%20Google%20SEO%20Wrong%20%E2%80%94%20Then%20Wonder%20W.pdf" download="byline-article.pdf" class="proof-btn proof-btn-accent">Download PDF</a>
+          <a href="/app" class="proof-btn-ghost">Try it yourself</a>
         </div>
       </div>
 
@@ -1391,8 +1415,8 @@ function toggleAnnotations() {
 <div class="pipeline-section" id="how-it-works">
   <div class="pipeline-inner">
     <div class="steps-header">
-      <div class="eyebrow">The Pipeline</div>
-      <h2 class="section-heading">Six agents.<br><em>Articles that earn their place.</em></h2>
+      <div class="eyebrow">How it works</div>
+      <h2 class="section-heading">Six stages.<br><em>Articles that earn their place.</em></h2>
       <p class="section-sub">Each stage has one job and hands off to the next. The writer gets a real research brief. The cleanup stage gets a full draft. The SEO stage gets something already polished. No step is trying to do everything at once.</p>
     </div>
     <div class="steps-grid">
@@ -1423,8 +1447,8 @@ function toggleAnnotations() {
       <div class="step-card step-5">
         <div class="step-num-circle">5</div>
         <div class="step-name">Refiner</div>
-        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing AI tells like copula avoidance, synonym cycling, and em dash overuse.</p>
-        <span class="step-tag">removes AI patterns</span>
+        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing robotic tells like copula avoidance, synonym cycling, and em dash overuse.</p>
+        <span class="step-tag">removes robotic patterns</span>
       </div>
       <div class="step-card step-6">
         <div class="step-num-circle">6</div>
@@ -1444,17 +1468,17 @@ function toggleAnnotations() {
     <div class="feat-card">
       <div class="feat-icon">01</div>
       <div class="feat-name">Online-format writing rules</div>
-      <p class="feat-desc">Short paragraphs, mandatory subheadings, hooks that land in 2 sentences. These rules are enforced at every stage — not suggestions, hard constraints the pipeline can't skip.</p>
+      <p class="feat-desc">Short paragraphs, mandatory subheadings, hooks that land in 2 sentences. These rules are enforced at every stage — not suggestions, hard constraints that can't be skipped.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">02</div>
       <div class="feat-name">Built-in SEO optimization</div>
-      <p class="feat-desc">Keyword placement in the first 100 words, in subheadings, and throughout the body. The final agent scores your title and meta description and flags anything off-target.</p>
+      <p class="feat-desc">Keyword placement in the first 100 words, in subheadings, and throughout the body. The final pass scores your title and meta description and flags anything off-target.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">03</div>
       <div class="feat-name">Four writing tones</div>
-      <p class="feat-desc">Conversational, authoritative, investigative, or practical. The tone preference flows through every agent — from how the strategist frames the angle to how the humanizer shapes the rhythm.</p>
+      <p class="feat-desc">Conversational, authoritative, investigative, or practical. The tone preference flows through every stage — from how the strategist frames the angle to how the humanizer shapes the rhythm.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">04</div>
@@ -1495,7 +1519,7 @@ function toggleAnnotations() {
     <div class="promo-feature-right">
       <div class="eyebrow">Product Promotion</div>
       <h2 class="section-heading">Promote your product<br><em>without it reading like an ad.</em></h2>
-      <p class="section-sub" style="margin-bottom:1.5rem">Four promotion styles, each with different instructions flowing through the strategist, writer, and humanizer agents.</p>
+      <p class="section-sub" style="margin-bottom:1.5rem">Four promotion styles, each with different instructions flowing through the strategist, writer, and humanizer stages.</p>
       <div class="promo-style-list">
         <div class="promo-style-item">
           <div class="promo-style-dot" style="background:var(--text-dim)"></div>
@@ -1525,7 +1549,7 @@ function toggleAnnotations() {
       <div class="eyebrow">SEO &amp; Preview</div>
       <h2 class="section-heading">See the score<br>before you <em>hit publish.</em></h2>
       <p class="section-sub" style="margin-bottom:1.5rem">The article preview screen shows your word count, read time, and SEO scores for title length and meta description — with green/amber/red indicators so you know exactly what to fix.</p>
-      <p class="section-sub">Subheadings are checked to ensure they read as specific claims, not vague labels. The final agent ensures the keyword appears in the right places — not stuffed, not missing.</p>
+      <p class="section-sub">Subheadings are checked to ensure they read as specific claims, not vague labels. The final pass ensures the keyword appears in the right places — not stuffed, not missing.</p>
     </div>
     <div class="seo-visual">
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-dim);margin-bottom:4px">SEO Metrics</div>
@@ -1572,8 +1596,8 @@ function toggleAnnotations() {
   <h2 class="section-heading">Questions &amp; answers</h2>
   <div class="faq-grid">
     <div class="faq-item">
-      <div class="faq-q">Do I need an Anthropic account?</div>
-      <p class="faq-a">No. The default path is credits — buy a pack and start generating immediately, no API key needed. If you'd prefer to use your own Anthropic key, that option is available under "Use my own API key" in the app and bypasses credits entirely.</p>
+      <div class="faq-q">Do I need an account?</div>
+      <p class="faq-a">No. Buy a credit pack and start writing immediately. If you already have drafts saved locally, they'll stay on your device until you choose to sign in.</p>
     </div>
     <div class="faq-item">
       <div class="faq-q">How much does it cost per article?</div>
@@ -1600,8 +1624,8 @@ function toggleAnnotations() {
       <p class="faq-a">Articles are typically 1,000–1,400 words by default — long enough to rank, short enough to actually get read. If you want longer or shorter, you can adjust it in the settings.</p>
     </div>
     <div class="faq-item">
-      <div class="faq-q">How is Byline different from ChatGPT or other AI writers?</div>
-      <p class="faq-a">Most AI tools generate one pass of text and call it done. Byline runs six stages — planning, research, writing, cleanup, voice editing, and SEO — each purpose-built and passing its output to the next. The result reads and ranks differently because it's built differently.</p>
+      <div class="faq-q">How is Byline different from ChatGPT or other writing tools?</div>
+      <p class="faq-a">Most tools generate one pass of text and call it done. Byline runs six stages — planning, research, writing, cleanup, voice editing, and SEO — each purpose-built and passing its output to the next. The result reads and ranks differently because it's built differently.</p>
     </div>
   </div>
 </section>
@@ -1611,9 +1635,9 @@ function toggleAnnotations() {
   <div class="cta-glow"></div>
   <div class="eyebrow">Get started</div>
   <h2 class="section-heading">Your next article,<br><em>written and ranked.</em></h2>
-  <p class="section-sub">Enter your topic, pick a credit, and let the pipeline run. Your article will be ready to publish in minutes.</p>
+  <p class="section-sub">Enter your topic and get a publish-ready article in about three minutes.</p>
   <div class="cta-actions">
-    <a href="/app" class="btn-hero">✦ Open Byline →</a>
+    <a href="/app" class="btn-hero">✦ Start writing →</a>
   </div>
   <p class="cta-note">No account needed — credits start at $5 for 10 articles</p>
 </div>
@@ -1621,9 +1645,22 @@ function toggleAnnotations() {
 <!-- ── Footer ── -->
 <footer>
   <span class="footer-logo">Byline</span>
-  <a href="/refund" style="font-size:12px;color:var(--text-dim);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='var(--text-muted)'" onmouseout="this.style.color='var(--text-dim)'">Refund Policy</a>
-  <span class="footer-note">Built with Claude — AI Article Studio</span>
+  <div class="footer-links">
+    <a href="/terms">Terms</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/refund">Refunds</a>
+  </div>
+  <span class="footer-note">© 2026 Byline</span>
 </footer>
+
+<style>
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { 
+    font-size: 13px; color: var(--text-muted); text-decoration: none; 
+    transition: color 0.2s; min-height: 44px; display: inline-flex; align-items: center; 
+  }
+  .footer-links a:hover { color: var(--text); }
+</style>
 
 </body>
 </html>
