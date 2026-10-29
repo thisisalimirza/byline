@@ -64,4 +64,26 @@ test.describe('Landing Page', () => {
     const box = await main.boundingBox();
     expect(box?.width).toBeLessThan(1400); // Max content width
   });
+
+  test('touch targets at 390px are at least 44px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    
+    // Check all visible interactive elements
+    const interactiveElements = page.locator('a:visible, button:visible, input:visible, select:visible, [onclick]:visible');
+    const count = await interactiveElements.count();
+    
+    const violations = [];
+    for (let i = 0; i < count; i++) {
+      const el = interactiveElements.nth(i);
+      const box = await el.boundingBox();
+      if (box && box.height < 44) {
+        const tag = await el.evaluate(e => e.tagName.toLowerCase());
+        const text = await el.textContent();
+        violations.push(`${tag} "${text?.slice(0, 30)}" height=${box.height}px`);
+      }
+    }
+    
+    expect(violations, `Touch targets under 44px: ${violations.join(', ')}`).toHaveLength(0);
+  });
 });

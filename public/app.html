@@ -27,8 +27,8 @@
     --border: rgba(255,255,255,0.065);
     --border-hover: rgba(255,255,255,0.13);
     --text: #f0ece4;
-    --text-muted: #8c887f;
-    --text-dim: #504d47;
+    --text-muted: #a39d90;
+    --text-dim: #8f897d;
 
     --accent: #d4854a;
     --accent-soft: rgba(212,133,74,0.12);
@@ -1690,7 +1690,7 @@
     <div class="completion-bar-title">Your article is ready</div>
     <div class="completion-bar-sub">Copy, export, or preview it before closing — articles aren't saved yet.</div>
   </div>
-  <button class="completion-bar-btn" onclick="openPreview()">Preview Article →</button>
+  <button class="completion-bar-btn" onclick="openPreview()">Preview →</button>
   <button class="completion-bar-dismiss" onclick="document.getElementById('completionBar').classList.remove('visible');document.getElementById('completionBarSpacer').style.height='0'" title="Dismiss">✕</button>
 </div>
 
@@ -1720,17 +1720,6 @@
       <!-- Hidden elements for JS compatibility -->
       <span id="creditNum" style="display:none;">—</span>
       <a id="refundLink" href="/refund" style="display:none;"></a>
-      <!-- Own API key — power user escape hatch -->
-      <div class="own-key-toggle" id="ownKeyToggle" onclick="toggleOwnKey()">
-        <span class="okt-icon">›</span> Use my own API key instead
-      </div>
-      <div class="own-key-inline" id="ownKeyInline">
-        <div class="api-key-wrapper">
-          <input type="password" id="apiKey" placeholder="sk-ant-..." />
-          <button class="toggle-key" onclick="toggleKey()">show</button>
-        </div>
-        <div class="field-hint">Bypasses credits — billed directly to your Anthropic account.</div>
-      </div>
     </div>
 
     <div class="error-msg" id="errorMsg"></div>
@@ -1738,7 +1727,7 @@
     <!-- Your Article -->
     <div class="sidebar-card">
       <div class="sidebar-card-header" onclick="toggleSidebarCard('article')">
-        <div class="sidebar-card-title">Your Article</div>
+        <div class="sidebar-card-title">Your article</div>
         <span class="sidebar-card-summary" id="articleSummary"></span>
         <span class="sidebar-card-chevron open" id="articleChevron">▼</span>
       </div>
@@ -1791,7 +1780,7 @@
     <!-- Promote Your Brand -->
     <div class="sidebar-card">
       <div class="sidebar-card-header" onclick="toggleSidebarCard('brand')">
-        <div class="sidebar-card-title">Promote Your Brand</div>
+        <div class="sidebar-card-title">Promote your brand</div>
         <span class="sidebar-card-summary" id="brandSummary">Optional</span>
         <span class="sidebar-card-chevron" id="brandChevron">▼</span>
       </div>
@@ -1808,7 +1797,7 @@
       </div>
 
       <div>
-        <div class="field-label">Product or Service Name</div>
+        <div class="field-label">Product or service name</div>
         <input type="text" id="productName" placeholder="e.g. Acme CRM, FlowHero, Notion" />
 
       <div class="product-fields inactive" id="productFields">
@@ -1817,7 +1806,7 @@
           <textarea id="productDesc" rows="2" placeholder="e.g. a CRM for small sales teams — closes deals faster without Salesforce's complexity"></textarea>
         </div>
         <div>
-          <div class="field-label">Website URL</div>
+          <div class="field-label">Website URL (optional)</div>
           <input type="text" id="productUrl" placeholder="e.g. https://yourproduct.com" />
         </div>
       </div>
@@ -1851,9 +1840,9 @@
       </div><!-- /sidebar-card-body#brandBody -->
     </div>
 
-    <!-- Advanced Settings -->
+    <!-- Advanced settings -->
     <button class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
-      ⚙ Advanced Settings
+      ⚙ Advanced
       <span class="adv-toggle-icon">▼</span>
     </button>
     <div class="advanced-section" id="advancedSection">
@@ -1922,7 +1911,7 @@
   </div><!-- /sidebar-scroll -->
 
   <div class="sidebar-footer">
-    <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate Article</button>
+    <button class="run-btn" id="runBtn" onclick="runPipeline()">✦ Generate</button>
   </div>
 
   </aside>
@@ -1935,18 +1924,18 @@
     <div class="agent-panel" id="panel1">
       <div class="agent-panel-header">
         <div class="agent-step-num">1</div>
-        <span class="agent-label label-1">Planning Your Article</span>
+        <span class="agent-label label-1">Planning</span>
         <span class="agent-status-pill" id="pill1">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out1">Fill in your topic and keyword, then click Generate.</div>
+        <div class="agent-output-text" id="out1">Fill in your topic and keyword, then hit Generate.</div>
       </div>
     </div>
 
     <div class="agent-panel" id="panel2">
       <div class="agent-panel-header">
         <div class="agent-step-num">2</div>
-        <span class="agent-label label-2">Gathering Research</span>
+        <span class="agent-label label-2">Research</span>
         <span class="agent-status-pill" id="pill2">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1957,7 +1946,7 @@
     <div class="agent-panel" id="panel3">
       <div class="agent-panel-header">
         <div class="agent-step-num">3</div>
-        <span class="agent-label label-3">Writing First Draft</span>
+        <span class="agent-label label-3">Writing</span>
         <span class="agent-status-pill" id="pill3">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1968,7 +1957,7 @@
     <div class="agent-panel" id="panel4">
       <div class="agent-panel-header">
         <div class="agent-step-num">4</div>
-        <span class="agent-label label-4">SEO &amp; Structure</span>
+        <span class="agent-label label-4">SEO</span>
         <span class="agent-status-pill" id="pill4">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1979,7 +1968,7 @@
     <div class="agent-panel" id="panel5">
       <div class="agent-panel-header">
         <div class="agent-step-num">5</div>
-        <span class="agent-label label-5">Refining the Voice</span>
+        <span class="agent-label label-5">Refining</span>
         <span class="agent-status-pill" id="pill5">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1990,10 +1979,10 @@
     <div class="agent-panel final-panel" id="panel6">
       <div class="agent-panel-header">
         <div class="agent-step-num">6</div>
-        <span class="agent-label label-6">Humanizing the Voice</span>
+        <span class="agent-label label-6">Humanizing</span>
         <span class="agent-status-pill" id="pill6">—</span>
         <button class="copy-btn" id="copyBtn" onclick="copyArticle()">Copy</button>
-        <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview Article →</button>
+        <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview →</button>
       </div>
       <div class="agent-panel-body">
         <div class="agent-output-text" id="out6"></div>
@@ -2010,9 +1999,9 @@
 <div class="preview-overlay" id="previewOverlay">
 
   <div class="preview-topbar">
-    <button class="preview-back-btn" onclick="closePreview()">← back to pipeline</button>
+    <button class="preview-back-btn" onclick="closePreview()">← Back to editor</button>
     <span class="preview-topbar-label">article preview</span>
-    <button class="save-draft-btn" id="saveDraftBtn" onclick="saveDraft()">Save Draft</button>
+    <button class="save-draft-btn" id="saveDraftBtn" onclick="saveDraft()">Save draft</button>
     <div class="preview-topbar-stats">
       <div class="preview-stat" id="statWords">words: <span id="previewWordCount">—</span></div>
       <div class="preview-stat" id="statRead">read: <span id="previewReadTime">—</span></div>
@@ -2047,7 +2036,7 @@
         <div class="preview-seo-hd">
           <div class="preview-seo-title-group">
             <div class="preview-seo-eyebrow">analysis</div>
-            <div class="preview-seo-title">SEO Report</div>
+            <div class="preview-seo-title">SEO report</div>
           </div>
           <span class="seo-score-pill neutral" id="seoScorePill">—</span>
         </div>
@@ -2077,7 +2066,7 @@
 
           <div class="seo-metric-block">
             <div class="seo-metric-label">
-              Word Count
+              Word count
               <span class="seo-metric-val" id="seoWordsVal">—</span>
             </div>
             <div class="seo-metric-track">
@@ -2201,12 +2190,12 @@
         </div>
 
         <div class="impl-tabs">
-          <button class="impl-tab active" data-tab="Copy" onclick="switchImplTab('Copy')">Copy &amp; Export</button>
+          <button class="impl-tab active" data-tab="Copy" onclick="switchImplTab('Copy')">Copy &amp; export</button>
           <button class="impl-tab" data-tab="WP"      onclick="switchImplTab('WP')">WordPress</button>
           <button class="impl-tab" data-tab="Webflow" onclick="switchImplTab('Webflow')">Webflow</button>
           <button class="impl-tab" data-tab="Ghost"   onclick="switchImplTab('Ghost')">Ghost / Substack</button>
           <button class="impl-tab" data-tab="CMS"     onclick="switchImplTab('CMS')">Any CMS</button>
-          <button class="impl-tab" data-tab="Drafts"  onclick="switchImplTab('Drafts')">Saved Drafts</button>
+          <button class="impl-tab" data-tab="Drafts"  onclick="switchImplTab('Drafts')">Saved drafts</button>
         </div>
 
         <!-- Copy & Export -->
@@ -2301,7 +2290,7 @@
 
         <!-- Saved Drafts -->
         <div class="impl-tab-body" id="implTabDrafts">
-          <p class="drafts-empty">No saved drafts yet. Click <strong>Save Draft</strong> in the topbar to save this article to your browser.</p>
+          <p class="drafts-empty">Save a draft and it'll show up here.</p>
         </div>
 
         <!-- Any CMS -->
@@ -2990,7 +2979,7 @@ async function runPipeline() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ creditToken: _creditToken }),
       });
-      if (r.status === 402) { openCreditsModal(true); btn2.disabled = false; btn2.textContent = '✦ Generate Article'; return; }
+      if (r.status === 402) { openCreditsModal(true); btn2.disabled = false; btn2.textContent = '✦ Generate'; return; }
       if (!r.ok) throw new Error('Could not start run');
       const d = await r.json();
       authMode = { type: 'run', runToken: d.runToken };
@@ -2998,7 +2987,7 @@ async function runPipeline() {
     } catch (e) {
       showError(e.message);
       document.getElementById('runBtn').disabled = false;
-      document.getElementById('runBtn').textContent = '✦ Generate Article';
+      document.getElementById('runBtn').textContent = '✦ Generate';
       return;
     }
   } else {
@@ -3133,7 +3122,7 @@ async function runPipeline() {
 
   outputArea.removeEventListener('scroll', _checkUserScroll);
   btn.disabled = false;
-  btn.textContent = '✦ Generate Article';
+  btn.textContent = '✦ Generate';
 }
 
 // ── Preview helpers ──────────────────────────────────────────────────────────
@@ -3297,7 +3286,7 @@ function openPreview() {
   if (_revCostNote) {
     const _hasOwnKey = (document.getElementById('apiKey').value || '').trim().length > 0;
     _revCostNote.textContent = _hasOwnKey
-      ? 'Uses your Anthropic API key — no extra credit cost.'
+      ? 'Uses your API key — no credit cost.'
       : 'Uses 1 credit per revision.';
   }
   // Reset revision UI state
@@ -3450,7 +3439,7 @@ async function reviseArticle() {
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
     } else {
-      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+      throw new Error('You're out of credits. Top up to keep writing.');
     }
 
     statusEl.textContent = 'Revising…';
@@ -3537,7 +3526,7 @@ Do not add commentary, preamble, or explanations — only the revised article.`;
       // Scroll preview to top so user sees the updated article
       document.querySelector('.preview-article-scroll').scrollTop = 0;
     } else {
-      throw new Error('Unexpected response format from revision agent.');
+      throw new Error('Something went wrong. Try again.');
     }
   } catch (err) {
     statusEl.textContent = 'Error: ' + err.message;
@@ -3659,7 +3648,7 @@ async function generateRemix(format) {
   copyBtn.style.display = 'none';
 
   const hasOwnKey = ownApiKey.length > 0;
-  creditEl.textContent = hasOwnKey ? 'Uses your API key' : 'Uses 1 credit';
+  creditEl.textContent = hasOwnKey ? 'Using your key' : 'Uses 1 credit';
 
   let authMode;
   try {
@@ -3679,7 +3668,7 @@ async function generateRemix(format) {
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
     } else {
-      throw new Error('No credits or API key. Add credits or enter your Anthropic API key.');
+      throw new Error('You're out of credits. Top up to keep writing.');
     }
 
     const authPayload = authMode.type === 'key'
@@ -3799,7 +3788,7 @@ function renderDraftsTab() {
   if (drafts.length === 0) {
     const p = document.createElement('p');
     p.className = 'impl-tab-desc';
-    p.textContent = 'No saved drafts yet. Click Save Draft in the topbar to save this article.';
+    p.textContent = 'Save a draft and it'll show up here.';
     const note = document.createElement('div');
     note.className = 'draft-local-note';
     note.textContent = '\uD83D\uDCBE Drafts live in your browser\u2019s local storage \u2014 this device only, not synced across devices.';
@@ -4893,7 +4882,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     </div>
 
-    <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy with Card →</button>
+    <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy credits →</button>
 
     <p class="modal-storage-note">
       Articles are stored locally in your browser.<br>
@@ -4901,11 +4890,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     </p>
 
     <div class="modal-own-key-toggle" id="modalOwnKeyToggle" onclick="toggleModalOwnKey()">
-      <span class="arrow">›</span> Have your own Anthropic API key?
+      <span class="arrow">›</span> Have your own API key?
     </div>
     <div class="modal-own-key-body" id="modalOwnKeyBody">
       <div class="own-key-section">
-        <label>Paste your key — bypasses credits entirely, billed to your Anthropic account.</label>
+        <label>Paste your key to bypass credits.</label>
         <div class="own-key-row">
           <input type="password" id="modalApiKey" placeholder="sk-ant-..." autocomplete="off" />
           <button class="own-key-save" onclick="saveOwnKey()">Save key</button>
