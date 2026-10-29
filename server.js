@@ -227,6 +227,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // AUTH ENDPOINTS
 // ══════════════════════════════════════════════════════════════════════════════
 
+// ── GET /api/auth/status ──────────────────────────────────────────────────────
+// Returns whether authentication is configured and available
+app.get('/api/auth/status', (req, res) => {
+  res.json({ enabled: !!supabase });
+});
+
 // ── POST /api/auth/magic-link ─────────────────────────────────────────────────
 app.post('/api/auth/magic-link', rateLimit('auth'), async (req, res) => {
   if (!supabase) {

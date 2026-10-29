@@ -14,6 +14,9 @@
 <script defer src="/_vercel/insights/script.js"></script>
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
@@ -1655,7 +1658,7 @@
   
   <!-- Auth section -->
   <div class="header-auth" id="headerAuth">
-    <button class="auth-signin-btn" id="authSigninBtn" onclick="openSigninModal()">Sign in</button>
+    <button class="auth-signin-btn" id="authSigninBtn" onclick="openSigninModal()" style="display: none;">Sign in</button>
   </div>
   <div class="user-menu" id="userMenu" style="display: none;">
     <button class="user-menu-trigger" onclick="toggleUserMenu()">
@@ -3439,7 +3442,7 @@ async function reviseArticle() {
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
     } else {
-      throw new Error('You're out of credits. Top up to keep writing.');
+      throw new Error("You're out of credits. Top up to keep writing.");
     }
 
     statusEl.textContent = 'Revising…';
@@ -3668,7 +3671,7 @@ async function generateRemix(format) {
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
     } else {
-      throw new Error('You're out of credits. Top up to keep writing.');
+      throw new Error("You're out of credits. Top up to keep writing.");
     }
 
     const authPayload = authMode.type === 'key'
@@ -3788,7 +3791,7 @@ function renderDraftsTab() {
   if (drafts.length === 0) {
     const p = document.createElement('p');
     p.className = 'impl-tab-desc';
-    p.textContent = 'Save a draft and it'll show up here.';
+    p.textContent = "Save a draft and it'll show up here.";
     const note = document.createElement('div');
     note.className = 'draft-local-note';
     note.textContent = '\uD83D\uDCBE Drafts live in your browser\u2019s local storage \u2014 this device only, not synced across devices.';
@@ -4797,9 +4800,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('sys' + n).value = PROMPTS[n];
   }
   
-  // Auth flow: check callback first, then session
-  await handleAuthCallback();
-  await checkAuthSession();
+  // Check if auth is available before showing auth UI
+  let authEnabled = false;
+  try {
+    const r = await fetch('/api/auth/status');
+    const data = await r.json();
+    authEnabled = data.enabled;
+  } catch (e) { /* auth not available */ }
+  
+  if (authEnabled) {
+    // Show auth UI only if auth is configured
+    const signinBtn = document.getElementById('authSigninBtn');
+    if (signinBtn) signinBtn.style.display = '';
+    
+    // Auth flow: check callback first, then session
+    await handleAuthCallback();
+    await checkAuthSession();
+  }
   
   handleUrlParams();       // handle ?token= from Stripe redirect
   loadSavedOwnKey();       // restore saved own API key if any

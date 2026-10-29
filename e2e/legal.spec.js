@@ -7,10 +7,10 @@ test.describe('Legal Pages', () => {
     
     await expect(page).toHaveTitle(/Terms/i);
     
-    // Should have key sections
-    await expect(page.getByText(/Agreement to Terms/i)).toBeVisible();
-    await expect(page.getByText(/Payment/i)).toBeVisible();
-    await expect(page.getByText(/Contact/i)).toBeVisible();
+    // Should have key sections (use .first() since text appears in multiple elements)
+    await expect(page.getByText(/Agreement to Terms/i).first()).toBeVisible();
+    await expect(page.getByText(/Payment/i).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Contact/i })).toBeVisible();
     
     // Back link should work
     const backLink = page.getByRole('link', { name: /back/i }).first();
@@ -22,10 +22,10 @@ test.describe('Legal Pages', () => {
     
     await expect(page).toHaveTitle(/Privacy/i);
     
-    // Should have key sections
-    await expect(page.getByText(/Information We Collect/i)).toBeVisible();
-    await expect(page.getByText(/Third-Party/i)).toBeVisible();
-    await expect(page.getByText(/Contact/i)).toBeVisible();
+    // Should have key sections (use .first() since text appears in multiple elements)
+    await expect(page.getByText(/Information We Collect/i).first()).toBeVisible();
+    await expect(page.getByText(/Third-Party/i).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Contact/i })).toBeVisible();
   });
 
   test('refund page loads', async ({ page }) => {

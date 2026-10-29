@@ -43,16 +43,14 @@ test.describe('Account Page', () => {
     await page.goto('/account');
     
     // Wait for content to load
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle');
     
-    // Should have links to legal pages
-    const termsLink = page.getByRole('link', { name: /terms/i });
-    const privacyLink = page.getByRole('link', { name: /privacy/i });
+    // Should have links to legal pages in footer
+    const footerLinks = page.locator('.footer-links');
+    await expect(footerLinks).toBeVisible();
     
-    // At least one should be visible (may be in different states)
-    const hasTerms = await termsLink.isVisible().catch(() => false);
-    const hasPrivacy = await privacyLink.isVisible().catch(() => false);
-    
-    expect(hasTerms || hasPrivacy).toBe(true);
+    // Check links exist within footer
+    const termsLink = footerLinks.getByRole('link', { name: /terms/i });
+    await expect(termsLink).toBeVisible();
   });
 });

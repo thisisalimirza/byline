@@ -12,8 +12,8 @@ test.describe('Landing Page', () => {
     const headline = page.locator('h1').first();
     await expect(headline).toBeVisible();
     
-    // Primary CTA should exist
-    const ctaButton = page.getByRole('link', { name: /start writing|try it|get started/i });
+    // Primary CTA should exist (multiple CTAs on page, check first one)
+    const ctaButton = page.getByRole('link', { name: /start writing|try it|get started/i }).first();
     await expect(ctaButton).toBeVisible();
   });
 

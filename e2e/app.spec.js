@@ -2,11 +2,45 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('App Page', () => {
-  test('loads without errors', async ({ page }) => {
+  test('loads without JavaScript errors', async ({ page }) => {
+    const errors = [];
+    const consoleErrors = [];
+    
+    // Capture page errors (uncaught exceptions)
+    page.on('pageerror', error => {
+      errors.push(error.message);
+    });
+    
+    // Capture console errors
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text());
+      }
+    });
+    
     await page.goto('/app');
+    
+    // Wait for page to fully load and scripts to execute
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
     
     // Check page title
     await expect(page).toHaveTitle(/Byline/);
+    
+    // No JavaScript errors should have occurred
+    expect(errors, `Page errors: ${errors.join(', ')}`).toHaveLength(0);
+    
+    // Filter out expected console errors (like network errors for missing services)
+    const criticalErrors = consoleErrors.filter(e => 
+      !e.includes('Failed to load resource') && 
+      !e.includes('net::') &&
+      !e.includes('favicon')
+    );
+    expect(criticalErrors, `Console errors: ${criticalErrors.join(', ')}`).toHaveLength(0);
+  });
+  
+  test('loads and renders main UI', async ({ page }) => {
+    await page.goto('/app');
     
     // Logo should be visible
     const logo = page.locator('.logo, .logo-mark').first();
@@ -93,5 +127,41 @@ test.describe('App - Generation Flow', () => {
     // Should show some kind of error or prompt to buy credits
     // (The exact behavior depends on implementation)
     await page.waitForTimeout(1000);
+  });
+});
+
+test.describe('App - Buy Credits Flow', () => {
+  test('Buy credits button opens modal with pack options', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    
+    await page.goto('/app');
+    await page.waitForLoadState('networkidle');
+    
+    // No JS errors before interaction
+    expect(errors, `Page errors on load: ${errors.join(', ')}`).toHaveLength(0);
+    
+    // Find and click the Buy credits button (in sidebar or header)
+    const buyBtn = page.locator('button:has-text("Buy credits"), button:has-text("Top up"), .credit-topup, .header-credit-pill').first();
+    await expect(buyBtn).toBeVisible();
+    await buyBtn.click();
+    
+    // No JS errors after clicking
+    expect(errors, `Page errors after click: ${errors.join(', ')}`).toHaveLength(0);
+    
+    // Credits modal should appear
+    const modal = page.locator('#creditsModal, .modal-overlay:visible').first();
+    await expect(modal).toBeVisible({ timeout: 2000 });
+    
+    // Modal should have pack options
+    const packCard = page.locator('.pack-card').first();
+    await expect(packCard).toBeVisible();
+    
+    // Modal CTA button should be visible
+    const modalBuyBtn = page.locator('#modalCta, button:has-text("Buy credits")').first();
+    await expect(modalBuyBtn).toBeVisible();
+    
+    // No JS errors during modal interaction
+    expect(errors, `Page errors with modal: ${errors.join(', ')}`).toHaveLength(0);
   });
 });
