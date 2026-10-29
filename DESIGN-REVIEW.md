@@ -158,6 +158,67 @@ Measured on prod just now:
 
 ---
 
+## 2026-10-29 3:45 PM ET critic pass
+
+**Reviewed**: Production (https://bylineblogs.com) after PR #5 merged  
+**Viewports**: 390px, 1180px, 1512px
+
+### Verified on Prod
+- ✅ No horizontal overflow at 390/1180/1512 on any page
+- ✅ Favicon, og-image, 404 page, legal pages all live
+- ✅ Auth still disabled (`/api/auth/status` enabled:false)
+
+### New Findings (ranked by impact)
+
+#### 1. Home — Two proof sections with DIFFERENT articles (HIGH)
+- **Location**: "See the difference" + "Download both / Judge for yourself"
+- **Issue**: Comparison windows show a B2B email reply-rate article, then PDFs offer a Local SEO article. Confusing and duplicative (home is ~12,100px tall at 390).
+- **Fix**: Removed duplicate "Download both" section; added single "Try it yourself" CTA at bottom of comparison section.
+- **Status**: ✅ Fixed on branch
+
+#### 2. Home 1180/1512 — How it works 6-column layout issues (HIGH)
+- **Location**: "How it works" cards
+- **Issue**: 6 columns at 172px each; body runs 9–10 lines of 13px dim text; tags wrap ("removes robotic patterns").
+- **Fix**: Changed to `repeat(3, minmax(0,1fr))` grid (2 rows of 3), body 14px/1.6, tags nowrap pinned to bottom, step-card flexbox for equal heights.
+- **Status**: ✅ Fixed on branch
+
+#### 3. Leftovers from PR #6 branch (MEDIUM)
+- **Issue (a)**: index.html `.chatgpt-model-pill` showing "4o" — deleted the element entirely.
+- **Issue (b)**: "How it works" cards renamed to match app: Planning, Drafting, SEO, Refining, Humanizing, Final. Colors unified (step-6 now uses --a5 purple instead of yellow).
+- **Status**: ✅ Fixed on branch
+
+#### 4. Home — "No account needed" stated 3x (MEDIUM)
+- **Location**: Feature card 04, FAQ "Do I need an account?", final CTA note
+- **Issue**: Contradicts sign-in work when auth is enabled.
+- **Fix**: CTA note changed to "Credits start at $5 for 10 articles" (kept FAQ mention as single source).
+- **Status**: ✅ Fixed on branch
+
+#### 5. Home 1512 — Headline orphans (MEDIUM)
+- **Issue**: Hero h1 breaks to a lone "human." on line 3; Product promotion h2 leaves "ad." alone on last line.
+- **Fix**: Added `h1, h2 { text-wrap: balance; }` globally.
+- **Status**: ✅ Fixed on branch
+
+#### 6. Home — Three numbering systems (LOW)
+- **Issue**: Why cards use "01" mono chips, How it works uses colored circled 1–6, Features uses "01" chips. Only How it works is a sequence.
+- **Fix**: Keep circled numbers for stages only; remove number chips from Why-Byline and Features cards (use small icon or nothing).
+- **Status**: Noted
+
+#### 7. App — Placeholder truncation and touch target (LOW)
+- **Issue**: "Who is this for?" truncates to "e.g. small business owners with no marke"; "⚙ Advanced" toggle 35px tall.
+- **Fix**: Shortened placeholder to "e.g. small business owners"; added min-height 44px on Advanced toggle at mobile.
+- **Status**: ✅ Fixed on branch
+
+#### 8. Shared footer inconsistency (LOW)
+- **Issue**: Home footer has Terms/Privacy/Refunds only; account has Request refund/Terms/Privacy/Contact support; 404 has Terms/Privacy/Refunds; legal pages differ.
+- **Fix**: One footer everywhere: Byline · Terms · Privacy · Refunds · Contact (mailto) · © 2026 Byline; same container width as page content; links min-height 44px on mobile.
+- **Note**: /site.webmanifest 404s — add one or drop the reference.
+- **Status**: Noted
+
+#### Owner decision needed (do not change without Ali)
+- Privacy policy still names Anthropic and "sign in with Google" — fine legally, but flagged for review.
+
+---
+
 ## 2026-10-29 (2:17 PM ET) — Design Critic Review
 
 **Reviewed**: Production (https://bylineblogs.com) at `/`, `/app`, `/refund`, 404  

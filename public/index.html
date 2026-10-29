@@ -224,6 +224,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 }
 .hero-eyebrow span { color: var(--accent); }
 
+h1, h2 { text-wrap: balance; }
 .hero-headline {
   font-family: var(--display);
   font-size: clamp(44px, 7vw, 76px);
@@ -465,7 +466,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .steps-header { text-align: center; margin-bottom: 3.5rem; }
 .steps-header .section-sub { margin: 0 auto; }
 .steps-grid {
-  display: grid; grid-template-columns: repeat(6, 1fr);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -476,6 +477,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   background: var(--bg);
   padding: 1.75rem 1.4rem;
   position: relative;
+  display: flex; flex-direction: column;
   transition: background 0.2s;
   display: flex; flex-direction: column;
 }
@@ -502,12 +504,12 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .step-3 .step-name { color: var(--a3); }
 .step-4 .step-name { color: var(--a4); }
 .step-5 .step-name { color: var(--a5); }
-.step-6 .step-name { color: #e8b84b; }
-.step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; flex: 1; }
+.step-6 .step-name { color: var(--a5); }
+.step-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; flex: 1; }
 .step-tag {
-  display: inline-block; margin-top: auto; padding-top: 0.75rem;
-  padding: 3px 8px;
-  border-radius: 100px; font-size: 10px; font-weight: 600;
+  display: inline-block; margin-top: auto; padding-top: 1rem;
+  padding: 4px 10px; white-space: nowrap;
+  border-radius: 100px; font-size: 11px; font-weight: 600;
   background: var(--surface2); color: var(--text-dim);
   border: 1px solid var(--border); align-self: flex-start;
 }
@@ -873,7 +875,7 @@ footer {
   .faq-grid { grid-template-columns: 1fr; }
 
   /* Steps: 2 columns on tablet, ok on most phones */
-  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .steps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps-grid .step-card:last-child { grid-column: unset; }
 
   /* Stats: 2 columns */
@@ -1209,7 +1211,6 @@ footer {
               </div>
               <span class="chatgpt-topbar-name">ChatGPT</span>
             </div>
-            <span class="chatgpt-model-pill">4o</span>
           </div>
 
           <!-- Conversation -->
@@ -1354,7 +1355,17 @@ footer {
 
     </div>
   </div><!-- /compare-panels -->
+
+  <div class="compare-cta">
+    <a href="/app" class="btn-hero">✦ Try it yourself →</a>
+  </div>
 </div>
+
+<style>
+.compare-cta {
+  display: flex; justify-content: center; margin-top: 2rem;
+}
+</style>
 
 <script>
 function toggleAnnotations() {
@@ -1365,51 +1376,6 @@ function toggleAnnotations() {
   btn.textContent = hiding ? 'Show commentary' : 'Hide commentary';
 }
 </script>
-
-<!-- ── See for yourself ── -->
-<div class="proof-strip">
-  <div class="proof-inner">
-    <div class="eyebrow" style="text-align:center;margin-bottom:10px;">Read the full articles</div>
-    <h2 class="section-heading">Download both.<br><em>Judge for yourself.</em></h2>
-    <p class="section-sub" style="max-width:520px;">Same topic. Same goal. One came straight from a chatbot. The other went through Byline's six stages. Read them side by side and decide which one you'd actually publish.</p>
-
-    <div class="proof-cards">
-
-      <!-- ChatGPT card -->
-      <div class="proof-card">
-        <div class="proof-card-label">
-          <div class="proof-logo-gpt">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22.28 9.84a5.84 5.84 0 0 0-.5-4.8 5.9 5.9 0 0 0-6.36-2.83A5.87 5.87 0 0 0 11 .65a5.9 5.9 0 0 0-5.63 4.1 5.87 5.87 0 0 0-3.92 2.84 5.9 5.9 0 0 0 .73 6.92 5.84 5.84 0 0 0 .5 4.79 5.9 5.9 0 0 0 6.36 2.84 5.87 5.87 0 0 0 4.42 1.97 5.9 5.9 0 0 0 5.63-4.1 5.87 5.87 0 0 0 3.92-2.84 5.9 5.9 0 0 0-.73-6.33zm-8.78 12.3a4.37 4.37 0 0 1-2.8-1.02l.14-.08 4.65-2.68a.77.77 0 0 0 .38-.66v-6.55l1.97 1.13a.07.07 0 0 1 .04.06v5.42a4.4 4.4 0 0 1-4.38 4.38zM3.63 18.4a4.37 4.37 0 0 1-.52-2.94l.14.08 4.65 2.69a.77.77 0 0 0 .77 0l5.68-3.28v2.27a.07.07 0 0 1-.03.06L9.6 19.97a4.4 4.4 0 0 1-5.97-1.57zm-1.14-9.6a4.37 4.37 0 0 1 2.28-1.92v5.5a.77.77 0 0 0 .39.67l5.67 3.27-1.96 1.13a.07.07 0 0 1-.07 0L4.1 14.9a4.4 4.4 0 0 1-1.61-6.1zm16.16 3.77-5.68-3.28 1.96-1.13a.07.07 0 0 1 .07 0l4.7 2.72a4.4 4.4 0 0 1-.68 7.93v-5.5a.77.77 0 0 0-.37-.74zm1.95-2.96-.14-.08-4.64-2.7a.77.77 0 0 0-.77 0L9.37 10.1V7.83a.07.07 0 0 1 .03-.06l4.7-2.71a4.4 4.4 0 0 1 6.5 4.55zm-12.3 4.04-1.96-1.13a.07.07 0 0 1-.04-.06V6.97a4.4 4.4 0 0 1 7.22-3.38l-.14.08-4.65 2.68a.77.77 0 0 0-.38.66l-.05 6.54zm1.07-2.3 2.53-1.46 2.53 1.45v2.91l-2.53 1.46-2.53-1.46V11.35z" fill="#000"/></svg>
-          </div>
-          ChatGPT
-        </div>
-        <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
-        <div class="proof-card-note">Unedited first draft. No editing, no stages, no refinement.</div>
-        <div class="proof-card-actions">
-          <a href="/ChatGPT%20-%20Shared%20Content.pdf" download="chatgpt-article.pdf" class="proof-btn">Download PDF</a>
-          <a href="https://chatgpt.com/s/t_69c6a6ae04d48191ac2b317a3860d041" target="_blank" rel="noopener" class="proof-btn-ghost">View on ChatGPT</a>
-        </div>
-      </div>
-
-      <div class="proof-vs">vs</div>
-
-      <!-- Byline card -->
-      <div class="proof-card proof-byline">
-        <div class="proof-card-label">
-          <div class="proof-logo-b">B</div>
-          Byline
-        </div>
-        <div class="proof-card-topic">Why Most Small Businesses Get Local SEO Wrong</div>
-        <div class="proof-card-note">Strategy, research, writing, SEO, voice refinement, humanization — six stages in sequence.</div>
-        <div class="proof-card-actions">
-          <a href="/Why%20Most%20Small%20Businesses%20Set%20Up%20Local%20Business%20Google%20SEO%20Wrong%20%E2%80%94%20Then%20Wonder%20W.pdf" download="byline-article.pdf" class="proof-btn proof-btn-accent">Download PDF</a>
-          <a href="/app" class="proof-btn-ghost">Try it yourself</a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 <!-- ── Pipeline steps ── -->
 <div class="pipeline-section" id="how-it-works">
@@ -1422,39 +1388,39 @@ function toggleAnnotations() {
     <div class="steps-grid">
       <div class="step-card step-1">
         <div class="step-num-circle">1</div>
-        <div class="step-name">Strategist</div>
+        <div class="step-name">Planning</div>
         <p class="step-desc">Defines the angle, reader profile, content pillars, and what makes this article worth reading over the 10 others ranking for the same keyword.</p>
-        <span class="step-tag">brief only — no prose</span>
+        <span class="step-tag">brief only</span>
       </div>
       <div class="step-card step-2">
         <div class="step-num-circle">2</div>
-        <div class="step-name">Researcher</div>
-        <p class="step-desc">Generates specific statistics, named examples, contrarian findings, and expert angles. No vague "studies show" — everything is citable and concrete.</p>
-        <span class="step-tag">raw material only</span>
-      </div>
-      <div class="step-card step-3">
-        <div class="step-num-circle">3</div>
-        <div class="step-name">Writer</div>
+        <div class="step-name">Drafting</div>
         <p class="step-desc">Writes the full article using the brief and research. Enforces 50+ specific rules covering banned words, paragraph length, subheading cadence, and voice.</p>
         <span class="step-tag">1,000–1,400 words</span>
       </div>
-      <div class="step-card step-4">
-        <div class="step-num-circle">4</div>
-        <div class="step-name">SEO Editor</div>
+      <div class="step-card step-3">
+        <div class="step-num-circle">3</div>
+        <div class="step-name">SEO</div>
         <p class="step-desc">Handles keyword placement, scannability, and structure — weaving the target keyword naturally, tightening subheadings, and generating a title and meta description.</p>
         <span class="step-tag">keyword + structure</span>
       </div>
+      <div class="step-card step-4">
+        <div class="step-num-circle">4</div>
+        <div class="step-name">Refining</div>
+        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing robotic tells like copula avoidance, synonym cycling, and em dash overuse.</p>
+        <span class="step-tag">cleans patterns</span>
+      </div>
       <div class="step-card step-5">
         <div class="step-num-circle">5</div>
-        <div class="step-name">Refiner</div>
-        <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing robotic tells like copula avoidance, synonym cycling, and em dash overuse.</p>
-        <span class="step-tag">removes robotic patterns</span>
+        <div class="step-name">Humanizing</div>
+        <p class="step-desc">Runs after SEO keywords are locked in. Injects voice and soul — varying rhythm, adding a defensible opinion, replacing abstract passages with concrete specifics.</p>
+        <span class="step-tag">adds voice</span>
       </div>
       <div class="step-card step-6">
         <div class="step-num-circle">6</div>
-        <div class="step-name">Humanizer</div>
-        <p class="step-desc">Runs last, after keywords are locked in. Injects voice and soul — varying rhythm, adding a defensible opinion, replacing abstract passages with concrete specifics, and running a self-audit to catch what's still robotic.</p>
-        <span class="step-tag">adds soul &amp; voice</span>
+        <div class="step-name">Final</div>
+        <p class="step-desc">Performs a self-audit to catch what's still robotic — checking for remaining patterns, verifying the article sounds genuinely human, and making final polish passes.</p>
+        <span class="step-tag">quality check</span>
       </div>
     </div>
   </div>
@@ -1639,7 +1605,7 @@ function toggleAnnotations() {
   <div class="cta-actions">
     <a href="/app" class="btn-hero">✦ Start writing →</a>
   </div>
-  <p class="cta-note">No account needed — credits start at $5 for 10 articles</p>
+  <p class="cta-note">Credits start at $5 for 10 articles</p>
 </div>
 
 <!-- ── Footer ── -->
