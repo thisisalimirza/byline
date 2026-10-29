@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Byline — Articles That Rank and Sound Human</title>
+<title>Byline — Articles that rank and sound human</title>
 <meta name="description" content="Byline writes, refines, and SEO-optimizes articles that actually rank — without sounding robotic. Pay per article, no subscription.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://bylineblogs.com/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Byline">
 <meta property="og:url" content="https://bylineblogs.com/">
-<meta property="og:title" content="Byline — Articles That Rank and Sound Human">
+<meta property="og:title" content="Byline — Articles that rank and sound human">
 <meta property="og:description" content="Byline writes, refines, and SEO-optimizes your articles. No robotic filler. No generic intros. Just articles that earn their place in search.">
 <meta property="og:image" content="https://bylineblogs.com/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@bylineblogs">
-<meta name="twitter:title" content="Byline — Articles That Rank and Sound Human">
+<meta name="twitter:title" content="Byline — Articles that rank and sound human">
 <meta name="twitter:description" content="Byline writes, refines, and SEO-optimizes your articles. No robotic filler. Just articles that earn their place in search.">
 <meta name="twitter:image" content="https://bylineblogs.com/og-image.png">
 
@@ -125,6 +125,9 @@ body {
 /* iOS: remove tap flash, improve touch responsiveness */
 * { -webkit-tap-highlight-color: transparent; }
 a, button { touch-action: manipulation; }
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ── Noise grain overlay ── */
 body::before {
@@ -1020,8 +1023,8 @@ footer {
     Writing that sounds <em>genuinely human.</em>
   </h1>
   <p class="hero-sub">
-    Byline runs six specialized stages to write, refine, humanize, and
-    SEO-optimize articles that don't sound like they were written by a machine.
+    Byline runs six specialized stages to write, refine, humanize, and optimize
+    articles for search — without sounding like they were written by a machine.
   </p>
   <div class="hero-actions">
     <a href="/app" class="btn-hero">✦ Start writing →</a>
@@ -1076,7 +1079,7 @@ footer {
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--a2);color:var(--a2)">2</div>
-              <span class="mock-step-label" style="color:var(--a2)">Drafting</span>
+              <span class="mock-step-label" style="color:var(--a2)">Research</span>
               <span class="mock-step-pill">done ✓</span>
             </div>
             <div class="mock-line"></div>
@@ -1085,7 +1088,7 @@ footer {
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--a3);color:var(--a3)">3</div>
-              <span class="mock-step-label" style="color:var(--a3)">SEO</span>
+              <span class="mock-step-label" style="color:var(--a3)">Writing</span>
               <span class="mock-step-pill active">working…</span>
             </div>
             <div class="mock-line"></div>
@@ -1095,21 +1098,21 @@ footer {
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--text-dim);color:var(--text-dim)">4</div>
-              <span class="mock-step-label" style="color:var(--text-dim)">Refining</span>
+              <span class="mock-step-label" style="color:var(--text-dim)">SEO</span>
               <span class="mock-step-pill">—</span>
             </div>
           </div>
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--text-dim);color:var(--text-dim)">5</div>
-              <span class="mock-step-label" style="color:var(--text-dim)">Humanizing</span>
+              <span class="mock-step-label" style="color:var(--text-dim)">Refining</span>
               <span class="mock-step-pill">—</span>
             </div>
           </div>
           <div class="mock-panel">
             <div class="mock-panel-hd">
               <div class="mock-step-num" style="border-color:var(--text-dim);color:var(--text-dim)">6</div>
-              <span class="mock-step-label" style="color:var(--text-dim)">Final</span>
+              <span class="mock-step-label" style="color:var(--text-dim)">Humanizing</span>
               <span class="mock-step-pill">—</span>
             </div>
           </div>
@@ -1394,33 +1397,33 @@ function toggleAnnotations() {
       </div>
       <div class="step-card step-2">
         <div class="step-num-circle">2</div>
-        <div class="step-name">Drafting</div>
-        <p class="step-desc">Writes the full article using the brief and research. Enforces 50+ specific rules covering banned words, paragraph length, subheading cadence, and voice.</p>
-        <span class="step-tag">1,000–1,400 words</span>
+        <div class="step-name">Research</div>
+        <p class="step-desc">Generates specific statistics, named examples, contrarian findings, and expert angles. No vague "studies show" — everything is citable and concrete.</p>
+        <span class="step-tag">raw material</span>
       </div>
       <div class="step-card step-3">
         <div class="step-num-circle">3</div>
+        <div class="step-name">Writing</div>
+        <p class="step-desc">Writes the full article using the brief and research. Enforces 50+ specific rules covering banned words, paragraph length, subheading cadence, and voice.</p>
+        <span class="step-tag">1,000–1,400 words</span>
+      </div>
+      <div class="step-card step-4">
+        <div class="step-num-circle">4</div>
         <div class="step-name">SEO</div>
         <p class="step-desc">Handles keyword placement, scannability, and structure — weaving the target keyword naturally, tightening subheadings, and generating a title and meta description.</p>
         <span class="step-tag">keyword + structure</span>
       </div>
-      <div class="step-card step-4">
-        <div class="step-num-circle">4</div>
+      <div class="step-card step-5">
+        <div class="step-num-circle">5</div>
         <div class="step-name">Refining</div>
         <p class="step-desc">Runs four forensic passes: vocabulary, structure, tone, and rhythm — surgically removing robotic tells like copula avoidance, synonym cycling, and em dash overuse.</p>
         <span class="step-tag">cleans patterns</span>
       </div>
-      <div class="step-card step-5">
-        <div class="step-num-circle">5</div>
-        <div class="step-name">Humanizing</div>
-        <p class="step-desc">Runs after SEO keywords are locked in. Injects voice and soul — varying rhythm, adding a defensible opinion, replacing abstract passages with concrete specifics.</p>
-        <span class="step-tag">adds voice</span>
-      </div>
       <div class="step-card step-6">
         <div class="step-num-circle">6</div>
-        <div class="step-name">Final</div>
-        <p class="step-desc">Performs a self-audit to catch what's still robotic — checking for remaining patterns, verifying the article sounds genuinely human, and making final polish passes.</p>
-        <span class="step-tag">quality check</span>
+        <div class="step-name">Humanizing</div>
+        <p class="step-desc">Runs last, after keywords are locked in. Injects voice and soul — varying rhythm, adding a defensible opinion, replacing abstract passages with concrete specifics.</p>
+        <span class="step-tag">adds voice</span>
       </div>
     </div>
   </div>
@@ -1468,7 +1471,7 @@ function toggleAnnotations() {
 <section>
   <div class="promo-feature">
     <div class="promo-visual">
-      <div class="promo-vis-title">Promote Your Brand</div>
+      <div class="promo-vis-title">Promote your brand</div>
       <div class="promo-style-grid">
         <div class="promo-style-btn active-none">None</div>
         <div class="promo-style-btn active-soft">Soft</div>
@@ -1563,7 +1566,7 @@ function toggleAnnotations() {
   <div class="faq-grid">
     <div class="faq-item">
       <div class="faq-q">Do I need an account?</div>
-      <p class="faq-a">No. Buy a credit pack and start writing immediately. If you already have drafts saved locally, they'll stay on your device until you choose to sign in.</p>
+      <p class="faq-a">No. Buy a credit pack and start writing immediately. Your drafts are saved locally in your browser.</p>
     </div>
     <div class="faq-item">
       <div class="faq-q">How much does it cost per article?</div>
@@ -1591,7 +1594,7 @@ function toggleAnnotations() {
     </div>
     <div class="faq-item">
       <div class="faq-q">How is Byline different from ChatGPT or other writing tools?</div>
-      <p class="faq-a">Most tools generate one pass of text and call it done. Byline runs six stages — planning, research, writing, cleanup, voice editing, and SEO — each purpose-built and passing its output to the next. The result reads and ranks differently because it's built differently.</p>
+      <p class="faq-a">Most tools generate one pass of text and call it done. Byline runs six stages — planning, research, writing, SEO, refining, and humanizing — each purpose-built and passing its output to the next. The result reads and ranks differently because it's built differently.</p>
     </div>
   </div>
 </section>
