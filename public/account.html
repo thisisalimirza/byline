@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account — Byline</title>
+<meta name="description" content="Manage your Byline account, view credits and purchase history.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://bylineblogs.com/account">
+
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0c0a; --surface: #191714; --surface2: #1f1d17;
+    --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.13);
+    --text: #f0ece4; --text-muted: #8c887f; --text-dim: #504d47;
+    --accent: #d4854a; --accent-soft: rgba(212,133,74,0.1);
+    --green: #4ec99a; --green-soft: rgba(78,201,154,0.1);
+    --red: #e87a6a;
+    --sans: 'Plus Jakarta Sans', sans-serif; --display: 'Fraunces', Georgia, serif;
+    --r: 10px;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--sans); min-height: 100vh;
+  }
+  
+  /* ── Header ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center;
+    padding: 0 max(1.5rem, env(safe-area-inset-left));
+    height: 58px;
+    background: rgba(13,12,10,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--accent); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-size: 15px; font-weight: 600;
+    color: #0d0c09;
+  }
+  .logo-name {
+    font-family: var(--display);
+    font-size: 18px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.03em;
+  }
+  .header-actions {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .btn-ghost {
+    padding: 7px 14px;
+    background: none; border: 1px solid var(--border);
+    border-radius: 7px;
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer;
+    text-decoration: none; transition: all 0.15s;
+  }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+  .btn-primary {
+    padding: 8px 16px;
+    background: var(--accent); border: none; border-radius: 7px;
+    font-family: var(--sans); font-size: 13px; font-weight: 600;
+    color: #0d0c09; cursor: pointer;
+    text-decoration: none; transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  
+  /* ── Main content ── */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+  
+  h1 {
+    font-family: var(--display);
+    font-size: 28px; font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 14px; color: var(--text-muted);
+    margin-bottom: 40px;
+  }
+  
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  .card-body { padding: 24px; }
+  
+  /* ── Credits card ── */
+  .credits-display {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .credits-num {
+    font-family: var(--display);
+    font-size: 48px; font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .credits-label {
+    font-size: 16px; color: var(--text-muted);
+  }
+  .credits-note {
+    font-size: 13px; color: var(--text-dim);
+    line-height: 1.5;
+  }
+  
+  /* ── User info ── */
+  .user-info {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .user-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display);
+    font-size: 22px; font-weight: 600;
+    color: var(--accent);
+    overflow: hidden;
+  }
+  .user-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .user-details { flex: 1; }
+  .user-name {
+    font-size: 18px; font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .user-email {
+    font-size: 13px; color: var(--text-muted);
+  }
+  
+  /* ── Purchase history ── */
+  .purchase-list {
+    display: flex; flex-direction: column;
+  }
+  .purchase-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .purchase-item:last-child { border-bottom: none; }
+  .purchase-info { flex: 1; }
+  .purchase-desc {
+    font-size: 14px; font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .purchase-date {
+    font-size: 12px; color: var(--text-dim);
+  }
+  .purchase-amount {
+    font-size: 14px; font-weight: 600;
+    color: var(--text);
+  }
+  .purchase-status {
+    font-size: 11px; padding: 3px 8px;
+    border-radius: 4px; margin-left: 10px;
+  }
+  .purchase-status.completed {
+    background: var(--green-soft);
+    color: var(--green);
+  }
+  .purchase-status.refunded {
+    background: rgba(232,122,106,0.1);
+    color: var(--red);
+  }
+  
+  /* ── Empty states ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .empty-state-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  .empty-state-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  
+  /* ── Loading state ── */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  .loading::after {
+    content: '';
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin-left: 12px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  /* ── Sign-in prompt ── */
+  .signin-prompt {
+    text-align: center;
+    padding: 80px 20px;
+  }
+  .signin-prompt h2 {
+    font-family: var(--display);
+    font-size: 24px; font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .signin-prompt p {
+    font-size: 14px; color: var(--text-muted);
+    margin-bottom: 28px;
+    max-width: 360px;
+    margin-left: auto; margin-right: auto;
+  }
+  
+  /* ── Actions ── */
+  .actions {
+    display: flex; gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-danger {
+    padding: 8px 16px;
+    background: none; border: 1px solid rgba(232,122,106,0.3);
+    border-radius: 7px;
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    color: var(--red); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-danger:hover {
+    background: rgba(232,122,106,0.1);
+    border-color: rgba(232,122,106,0.5);
+  }
+  
+  /* ── Footer links ── */
+  .footer-links {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 24px; flex-wrap: wrap;
+    justify-content: center;
+  }
+  .footer-links a {
+    font-size: 13px; color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .footer-links a:hover { color: var(--text-muted); }
+  
+  /* ── Responsive ── */
+  @media (max-width: 500px) {
+    main { padding: 32px 16px 60px; }
+    h1 { font-size: 24px; }
+    .credits-num { font-size: 40px; }
+    .user-info { gap: 12px; }
+    .user-avatar { width: 48px; height: 48px; font-size: 18px; }
+    .card-body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">
+    <div class="logo-mark">B</div>
+    <span class="logo-name">Byline</span>
+  </a>
+  <div class="header-actions">
+    <a href="/app" class="btn-ghost">← Back to app</a>
+  </div>
+</header>
+
+<main>
+  <!-- Loading state -->
+  <div id="loadingState" class="loading">Loading your account</div>
+  
+  <!-- Sign-in prompt (shown when not authenticated) -->
+  <div id="signinPrompt" class="signin-prompt" style="display: none;">
+    <h2>Sign in to view your account</h2>
+    <p>Create an account to sync your work across devices and manage your credits.</p>
+    <div class="actions">
+      <a href="/app" class="btn-primary">Go to app →</a>
+    </div>
+  </div>
+  
+  <!-- Account content (shown when authenticated) -->
+  <div id="accountContent" style="display: none;">
+    <h1>Your account</h1>
+    <p class="subtitle" id="userEmail"></p>
+    
+    <!-- User profile card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Profile</span>
+      </div>
+      <div class="card-body">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div class="user-details">
+            <div class="user-name" id="userName">—</div>
+            <div class="user-email" id="userEmailDisplay">—</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-danger" onclick="signOut()">Sign out</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Credits card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Credits</span>
+        <a href="/app" class="btn-primary" style="font-size: 12px; padding: 6px 12px;">Buy more</a>
+      </div>
+      <div class="card-body">
+        <div class="credits-display">
+          <span class="credits-num" id="creditsNum">0</span>
+          <span class="credits-label">articles remaining</span>
+        </div>
+        <p class="credits-note">Credits are used to generate articles. One credit = one full article run through all six AI agents.</p>
+      </div>
+    </div>
+    
+    <!-- Purchase history card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Purchase history</span>
+      </div>
+      <div class="card-body" id="purchaseHistory">
+        <div class="loading" id="purchaseLoading">Loading purchases</div>
+      </div>
+    </div>
+    
+    <div class="footer-links">
+      <a href="/refund">Request refund</a>
+      <a href="/terms">Terms of service</a>
+      <a href="/privacy">Privacy policy</a>
+      <a href="mailto:ali@braskgroup.com">Contact support</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  const API_BASE = '';
+  
+  function getAccessToken() {
+    return localStorage.getItem('byline_access_token');
+  }
+  
+  function setAccessToken(token) {
+    localStorage.setItem('byline_access_token', token);
+  }
+  
+  function clearAuth() {
+    localStorage.removeItem('byline_access_token');
+    localStorage.removeItem('byline_refresh_token');
+    localStorage.removeItem('byline_user');
+  }
+  
+  async function fetchWithAuth(url, options = {}) {
+    const token = getAccessToken();
+    if (!token) throw new Error('Not authenticated');
+    
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+  
+  async function loadAccount() {
+    const token = getAccessToken();
+    
+    if (!token) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('signinPrompt').style.display = 'block';
+      return;
+    }
+    
+    try {
+      const res = await fetchWithAuth('/api/auth/me');
+      if (!res.ok) {
+        if (res.status === 401) {
+          clearAuth();
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('signinPrompt').style.display = 'block';
+          return;
+        }
+        throw new Error('Failed to load account');
+      }
+      
+      const data = await res.json();
+      displayAccount(data);
+      loadPurchases();
+    } catch (e) {
+      console.error('Account load error:', e);
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('signinPrompt').style.display = 'block';
+    }
+  }
+  
+  function displayAccount(data) {
+    const { user, credits } = data;
+    
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('accountContent').style.display = 'block';
+    
+    document.getElementById('userEmail').textContent = user.email || '';
+    document.getElementById('userEmailDisplay').textContent = user.email || '—';
+    document.getElementById('userName').textContent = user.name || user.email?.split('@')[0] || 'User';
+    document.getElementById('creditsNum').textContent = credits || 0;
+    
+    const avatarEl = document.getElementById('userAvatar');
+    if (user.avatar) {
+      avatarEl.innerHTML = `<img src="${user.avatar}" alt="">`;
+    } else {
+      const initial = (user.name || user.email || '?')[0].toUpperCase();
+      avatarEl.textContent = initial;
+    }
+  }
+  
+  async function loadPurchases() {
+    const container = document.getElementById('purchaseHistory');
+    const loadingEl = document.getElementById('purchaseLoading');
+    
+    try {
+      const res = await fetchWithAuth('/api/user/purchases');
+      if (!res.ok) throw new Error('Failed to load purchases');
+      
+      const { purchases } = await res.json();
+      
+      loadingEl.style.display = 'none';
+      
+      if (!purchases || purchases.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🛒</div>
+            <p class="empty-state-text">No purchases yet. Buy credits to start generating articles.</p>
+            <a href="/app" class="btn-primary">Get credits →</a>
+          </div>
+        `;
+        return;
+      }
+      
+      const listHtml = purchases.map(p => {
+        const date = new Date(p.created_at).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        const amount = (p.amount_cents / 100).toFixed(2);
+        const statusClass = p.status === 'refunded' ? 'refunded' : 'completed';
+        const statusText = p.status === 'refunded' ? 'Refunded' : 'Completed';
+        
+        return `
+          <div class="purchase-item">
+            <div class="purchase-info">
+              <div class="purchase-desc">${p.credits_purchased} article credits</div>
+              <div class="purchase-date">${date}</div>
+            </div>
+            <div>
+              <span class="purchase-amount">$${amount}</span>
+              <span class="purchase-status ${statusClass}">${statusText}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      container.innerHTML = `<div class="purchase-list">${listHtml}</div>`;
+    } catch (e) {
+      console.error('Purchases load error:', e);
+      loadingEl.textContent = 'Could not load purchases';
+    }
+  }
+  
+  async function signOut() {
+    try {
+      await fetchWithAuth('/api/auth/sign-out', { method: 'POST' });
+    } catch (e) { /* ignore */ }
+    
+    clearAuth();
+    window.location.href = '/app';
+  }
+  
+  // Initialize
+  document.addEventListener('DOMContentLoaded', loadAccount);
+</script>
+</body>
+</html>
