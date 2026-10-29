@@ -29,14 +29,13 @@ test.describe('Landing Page', () => {
     await expect(appLink).toBeVisible();
   });
 
-  test('responsive layout at mobile width (390px)', async ({ page }) => {
+  test('responsive layout at mobile width (390px) - no horizontal overflow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
     
-    // Page should not have horizontal overflow
-    const body = page.locator('body');
-    const box = await body.boundingBox();
-    expect(box?.width).toBeLessThanOrEqual(390);
+    // Critical: document.scrollWidth must not exceed viewport width
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(scrollWidth).toBeLessThanOrEqual(390);
     
     // Hero should still be visible
     const headline = page.locator('h1').first();

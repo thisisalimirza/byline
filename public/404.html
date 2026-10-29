@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — Byline</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0c09; --surface: #181611; --border: rgba(255,255,255,0.07);
+    --text: #ede9e0; --text-muted: #8a8478; --text-dim: #5e5b54;
+    --accent: #d4854a; --accent-glow: rgba(212,133,74,0.18);
+    --sans: 'Plus Jakarta Sans', sans-serif; --display: 'Fraunces', Georgia, serif;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--sans); min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  nav {
+    padding: 0 max(1.5rem, env(safe-area-inset-left));
+    height: 58px; display: flex; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px; text-decoration: none;
+  }
+  .nav-logo-mark {
+    width: 28px; height: 28px; background: var(--accent); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-size: 15px; font-weight: 600; color: #0d0c09;
+  }
+  .nav-logo-name {
+    font-family: var(--display); font-size: 18px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.03em;
+  }
+  main {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 3rem 1.5rem; text-align: center;
+  }
+  .error-code {
+    font-family: var(--display); font-size: 100px; font-weight: 500;
+    color: var(--accent); line-height: 1; margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+  h1 {
+    font-family: var(--display); font-size: 28px; font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+  p {
+    font-size: 15px; color: var(--text-muted); margin-bottom: 2rem;
+    max-width: 360px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px; padding: 12px 24px;
+    background: var(--accent); border: none; border-radius: 8px;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    color: #0d0c09; text-decoration: none;
+    box-shadow: 0 2px 12px var(--accent-glow);
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.9; }
+  footer {
+    padding: 1.5rem; text-align: center;
+    font-size: 12px; color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 0.75rem; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">B</div>
+    <span class="nav-logo-name">Byline</span>
+  </a>
+</nav>
+<main>
+  <div class="error-code">404</div>
+  <h1>Page not found</h1>
+  <p>The page you're looking for doesn't exist or has been moved.</p>
+  <a href="/" class="btn">Back to home</a>
+</main>
+<footer>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
+  <a href="/refund">Refunds</a>
+</footer>
+</body>
+</html>

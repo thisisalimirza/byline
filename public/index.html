@@ -42,8 +42,6 @@
 <!-- Favicon — inline SVG data URI matching the orange B brand mark -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4854a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='600' fill='%230d0c09' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
 
-<!-- Google Search Console verification — replace content value with your GSC verification code -->
-<!-- <meta name="google-site-verification" content="REPLACE_WITH_YOUR_GSC_CODE"> -->
 
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
@@ -177,7 +175,9 @@ nav {
   display: flex; align-items: center; gap: 0.75rem;
 }
 .btn-ghost {
-  padding: 7px 16px;
+  padding: 10px 16px;
+  min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
   background: none; border: 1px solid var(--border);
   border-radius: 7px;
   font-family: var(--sans); font-size: 13px; font-weight: 500;
@@ -186,7 +186,9 @@ nav {
 }
 .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
 .btn-primary {
-  padding: 8px 18px;
+  padding: 10px 18px;
+  min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
   background: var(--accent);
   border: none; border-radius: 7px;
   font-family: var(--sans); font-size: 13px; font-weight: 700;
@@ -471,6 +473,7 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
   padding: 1.75rem 1.4rem;
   position: relative;
   transition: background 0.2s;
+  display: flex; flex-direction: column;
 }
 .step-card:hover { background: var(--surface2); }
 .step-num-circle {
@@ -496,13 +499,13 @@ section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
 .step-4 .step-name { color: var(--a4); }
 .step-5 .step-name { color: var(--a5); }
 .step-6 .step-name { color: #e8b84b; }
-.step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; flex: 1; }
 .step-tag {
-  display: inline-block; margin-top: 0.75rem;
+  display: inline-block; margin-top: auto; padding-top: 0.75rem;
   padding: 3px 8px;
   border-radius: 100px; font-size: 10px; font-weight: 600;
   background: var(--surface2); color: var(--text-dim);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border); align-self: flex-start;
 }
 
 /* ── Features ── */
@@ -689,7 +692,7 @@ footer {
 .compare-section .section-heading { text-align: center; }
 .compare-section .section-sub { text-align: center; margin: 0 auto 2.5rem; }
 .compare-panels { position: relative; }
-.compare-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.compare-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
 
 /* ── ChatGPT window mockup ── */
 .compare-col.chatgpt-col { background: none; border: none; padding: 0; }
@@ -753,10 +756,11 @@ footer {
 }
 
 /* ── Annotation toggle ── */
-.anno-toggle { display: flex; justify-content: flex-end; grid-column: 1/-1; margin-bottom: 6px; }
+.anno-toggle { display: flex; justify-content: flex-end; grid-column: 1/-1; margin-bottom: 6px; max-width: 100%; }
 .anno-toggle-btn {
   background: transparent; border: 1px solid var(--border);
   color: var(--text-dim); font-size: 11px; font-family: var(--sans);
+  min-height: 44px;
   font-weight: 600; padding: 5px 14px; border-radius: 100px;
   cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
 }
@@ -790,7 +794,7 @@ footer {
 .col-badge.ai-badge { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border); }
 .col-badge.byline-badge { background: rgba(212,133,74,0.12); color: var(--accent); border: 1px solid rgba(212,133,74,0.25); }
 .compare-article { font-size: 13px; line-height: 1.65; color: var(--text-muted); }
-.compare-article h1 {
+.compare-article h1, .compare-article .article-title {
   font-family: var(--display); font-size: 16px; font-weight: 500;
   color: var(--text); line-height: 1.3; margin-bottom: 14px;
 }
@@ -828,14 +832,20 @@ footer {
 .prompt-pill {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 100px; padding: 5px 14px; font-size: 11px;
-  color: var(--text-muted); font-style: italic; white-space: nowrap;
+  color: var(--text-muted); font-style: italic;
+  white-space: normal; max-width: 100%; text-align: center;
 }
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
-  /* Fix compare panel: .active was never applied by JS, so use .compare-panel directly */
-  .compare-panel { grid-template-columns: 1fr; }
+  /* Fix compare panel: single column, prevent overflow */
+  .compare-panel { grid-template-columns: minmax(0, 1fr); }
   .compare-col.ai-col { display: none; }
+  .compare-col, .chatgpt-window { max-width: 100%; overflow: hidden; }
+  
+  /* Prompt banner: wrap text, constrain width */
+  .prompt-banner { flex-wrap: wrap; padding: 0 1rem; }
+  .prompt-pill { white-space: normal; max-width: calc(100% - 2rem); }
 
   .nav-links { display: none; }
   /* Hide ghost nav button on mobile — keep only the primary CTA */
@@ -865,10 +875,8 @@ footer {
   /* Stats: 2 columns */
   .stats-inner { grid-template-columns: repeat(2, 1fr); }
 
-  /* Hero mockup: hide the app body, keep the topbar as a visual */
-  .mock-body { display: none; }
-  .hero-mockup { min-height: 60px; }
-  .hero-mockup-wrap { padding-bottom: 2.5rem; }
+  /* Hero mockup: hide entirely on mobile since it's just empty chrome */
+  .hero-mockup-wrap { display: none; }
 
   /* Show promo text before visual on mobile (grid order) */
   .promo-feature-right { order: -1; }
@@ -919,13 +927,14 @@ footer {
 .proof-inner { max-width: 860px; margin: 0 auto; }
 .proof-strip .section-sub { margin: 0 auto; text-align: center; }
 .proof-cards {
-  display: flex; gap: 1.5rem; align-items: center;
+  display: flex; gap: 1.5rem; align-items: stretch;
   justify-content: center; margin-top: 2.75rem;
 }
 .proof-card {
   flex: 1; max-width: 380px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 16px; padding: 1.75rem; text-align: left;
+  display: flex; flex-direction: column;
 }
 .proof-byline {
   border-color: rgba(212,133,74,0.35);
@@ -951,8 +960,9 @@ footer {
 }
 .proof-card-note {
   font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.35rem;
+  flex: 1;
 }
-.proof-card-actions { display: flex; flex-direction: column; gap: 8px; }
+.proof-card-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
 .proof-btn {
   display: block; text-align: center; padding: 9px 16px; border-radius: 8px;
   font-family: var(--sans); font-size: 13px; font-weight: 600; text-decoration: none;
@@ -988,8 +998,7 @@ footer {
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-cta">
-    <a href="/app" class="btn-ghost">Open App</a>
-    <a href="/app" class="btn-primary">Try Byline →</a>
+    <a href="/app" class="btn-primary">Start writing →</a>
   </div>
 </nav>
 
@@ -1007,7 +1016,7 @@ footer {
     SEO-optimize articles that don't sound like they were written by a machine.
   </p>
   <div class="hero-actions">
-    <a href="/app" class="btn-hero">✦ Start generating →</a>
+    <a href="/app" class="btn-hero">✦ Start writing →</a>
     <a href="#how-it-works" class="btn-hero-secondary">See how it works</a>
   </div>
 
@@ -1118,8 +1127,8 @@ footer {
       <div class="stat-label">Words, fully formatted and SEO-ready</div>
     </div>
     <div class="stat-item">
-      <div class="stat-num"><em>$0.40</em></div>
-      <div class="stat-label">Per article — pay as you go, no subscription</div>
+      <div class="stat-num"><em>from $0.33</em></div>
+      <div class="stat-label">Per article — $5 for 10, $10 for 25, $25 for 75</div>
     </div>
   </div>
 </div>
@@ -1277,7 +1286,7 @@ footer {
         <div class="compare-article">
 
           <div class="anno-wrap">
-            <h1><span class="anno-good">How to Increase B2B Email Campaign Reply Rates from 1.4% to 8.7%</span></h1>
+            <div class="article-title"><span class="anno-good">How to Increase B2B Email Campaign Reply Rates from 1.4% to 8.7%</span></div>
             <div class="anno good">✓ Specific numbers in the title. Readers immediately know this is about a concrete, measurable gap — not a generic "improve your email" article.</div>
           </div>
 
@@ -1388,6 +1397,7 @@ function toggleAnnotations() {
         <div class="proof-card-note">Strategy, research, writing, SEO, voice refinement, humanization — six agents in sequence.</div>
         <div class="proof-card-actions">
           <a href="/Why%20Most%20Small%20Businesses%20Set%20Up%20Local%20Business%20Google%20SEO%20Wrong%20%E2%80%94%20Then%20Wonder%20W.pdf" download="byline-article.pdf" class="proof-btn proof-btn-accent">Download PDF</a>
+          <a href="/app" class="proof-btn-ghost">Try it yourself</a>
         </div>
       </div>
 
@@ -1621,7 +1631,7 @@ function toggleAnnotations() {
   <h2 class="section-heading">Your next article,<br><em>written and ranked.</em></h2>
   <p class="section-sub">Enter your topic, pick a credit, and let the pipeline run. Your article will be ready to publish in minutes.</p>
   <div class="cta-actions">
-    <a href="/app" class="btn-hero">✦ Open Byline →</a>
+    <a href="/app" class="btn-hero">✦ Start writing →</a>
   </div>
   <p class="cta-note">No account needed — credits start at $5 for 10 articles</p>
 </div>
@@ -1639,8 +1649,11 @@ function toggleAnnotations() {
 
 <style>
   .footer-links { display: flex; gap: 20px; }
-  .footer-links a { font-size: 12px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
-  .footer-links a:hover { color: var(--text-muted); }
+  .footer-links a { 
+    font-size: 13px; color: var(--text-muted); text-decoration: none; 
+    transition: color 0.2s; min-height: 44px; display: inline-flex; align-items: center; 
+  }
+  .footer-links a:hover { color: var(--text); }
 </style>
 
 </body>

@@ -49,17 +49,20 @@ test.describe('Legal Pages', () => {
     await expect(page).toHaveURL(/privacy/);
   });
 
-  test('legal pages are responsive at 390px', async ({ page }) => {
+  test('legal pages are responsive at 390px - no overflow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     
-    await page.goto('/terms');
-    
-    // No horizontal scroll
-    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-    expect(scrollWidth).toBeLessThanOrEqual(400);
-    
-    // Content should be readable
-    const content = page.locator('.card, main').first();
-    await expect(content).toBeVisible();
+    // Test all legal pages
+    for (const path of ['/terms', '/privacy', '/refund']) {
+      await page.goto(path);
+      
+      // Critical: document.scrollWidth must not exceed viewport width
+      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+      expect(scrollWidth).toBeLessThanOrEqual(390);
+      
+      // Content should be readable
+      const content = page.locator('.card, main').first();
+      await expect(content).toBeVisible();
+    }
   });
 });

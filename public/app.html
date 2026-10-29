@@ -307,6 +307,8 @@
     padding: 0.65rem 1rem 1rem;
     border-top: 1px solid var(--border);
     background: var(--bg);
+    position: sticky;
+    bottom: 0;
   }
 
   /* Card containers */
@@ -314,7 +316,9 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    overflow: hidden;
+    overflow: visible;
+    flex-shrink: 0;
+    height: auto;
   }
   .sidebar-card-header {
     display: flex;
@@ -370,7 +374,7 @@
     color: var(--text);
     font-family: var(--sans);
     font-size: 13px; font-weight: 400;
-    padding: 9px 12px;
+    padding: 10px 12px; min-height: 44px;
     outline: none;
     transition: border-color 0.2s, background 0.2s;
     resize: none;
@@ -404,9 +408,10 @@
   .credit-unit { font-size: 13px; color: var(--text-muted); }
   .credit-topup {
     background: var(--accent-soft); border: 1px solid rgba(212,133,74,0.3);
-    border-radius: 20px; padding: 5px 14px;
+    border-radius: 20px; padding: 10px 16px; min-height: 44px;
     font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--accent);
     cursor: pointer; transition: background 0.15s;
+    display: inline-flex; align-items: center; justify-content: center;
   }
   .credit-topup:hover { background: var(--accent-glow); }
   .credit-low-warn {
@@ -429,9 +434,9 @@
 
   /* ── Credit pill in header ────────────────────────────────────────────────── */
   .header-credit-pill {
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
     background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 5px 12px; cursor: pointer;
+    border-radius: 20px; padding: 10px 14px; min-height: 44px; cursor: pointer;
     font-size: 12px; transition: border-color 0.15s;
   }
   .header-credit-pill:hover { border-color: var(--border-hover); }
@@ -444,7 +449,8 @@
     margin-left: 12px;
   }
   .auth-signin-btn {
-    padding: 6px 14px;
+    padding: 10px 14px; min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
     background: none; border: 1px solid var(--border);
     border-radius: 7px;
     font-family: var(--sans); font-size: 12px; font-weight: 500;
@@ -455,7 +461,7 @@
   .user-menu { position: relative; }
   .user-menu-trigger {
     display: flex; align-items: center; gap: 8px;
-    padding: 4px 10px 4px 4px;
+    padding: 6px 12px 6px 6px; min-height: 44px;
     background: var(--surface2); border: 1px solid var(--border);
     border-radius: 20px; cursor: pointer;
     transition: border-color 0.15s;
@@ -656,12 +662,13 @@
   /* Audience type toggle */
   .type-toggle { display: flex; gap: 5px; }
   .type-btn {
-    flex: 1; padding: 7px 4px;
+    flex: 1; padding: 10px 6px; min-height: 44px;
     background: var(--surface2); border: 1px solid var(--border);
     border-radius: var(--r-sm);
     color: var(--text-muted);
     font-family: var(--sans); font-size: 12px; font-weight: 600;
     cursor: pointer; text-align: center; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
   }
   .type-btn:hover { border-color: var(--border-hover); color: var(--text); }
   .type-btn.active { background: var(--surface3); border-color: var(--border-hover); color: var(--text); }
@@ -1701,22 +1708,18 @@
   <aside class="sidebar">
   <div class="sidebar-scroll">
 
-    <!-- Credits -->
-    <div class="sidebar-card no-collapse">
-      <div class="sidebar-card-title">Credits</div>
-      <div class="credit-display">
-        <div class="credit-balance">
-          <span class="credit-num" id="creditNum">—</span>
-          <span class="credit-unit">articles left</span>
-        </div>
-        <button class="credit-topup" onclick="openCreditsModal()">Top up →</button>
+    <!-- Credits - simplified, main display is in header -->
+    <div class="sidebar-card no-collapse" id="creditsCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="sidebar-card-title">Credits</div>
+        <button class="credit-topup" onclick="openCreditsModal()">Buy credits →</button>
       </div>
       <div class="credit-low-warn" id="creditLowWarn">
-        Running low — top up to keep generating.
+        Running low — buy more to keep generating.
       </div>
-      <div class="field-hint" style="margin-top:10px;">
-        Credits are tied to this device &amp; browser. <a id="refundLink" href="/refund" target="_blank" style="color:var(--text-dim);font-size:10px;text-decoration:none;border-bottom:1px solid transparent;opacity:0.55;transition:opacity 0.2s;" onmouseover="this.style.opacity='1';this.style.borderBottomColor='var(--text-dim)'" onmouseout="this.style.opacity='0.55';this.style.borderBottomColor='transparent'">not happy? refund</a>
-      </div>
+      <!-- Hidden elements for JS compatibility -->
+      <span id="creditNum" style="display:none;">—</span>
+      <a id="refundLink" href="/refund" style="display:none;"></a>
       <!-- Own API key — power user escape hatch -->
       <div class="own-key-toggle" id="ownKeyToggle" onclick="toggleOwnKey()">
         <span class="okt-icon">›</span> Use my own API key instead
@@ -1726,7 +1729,7 @@
           <input type="password" id="apiKey" placeholder="sk-ant-..." />
           <button class="toggle-key" onclick="toggleKey()">show</button>
         </div>
-        <div class="field-hint">Bypasses credits — billed to your Anthropic account directly.</div>
+        <div class="field-hint">Bypasses credits — billed directly to your Anthropic account.</div>
       </div>
     </div>
 
@@ -1746,7 +1749,7 @@
         </div>
 
         <div>
-          <div class="field-label">Target Keyword</div>
+          <div class="field-label">Target keyword</div>
           <input type="text" id="keyword" placeholder="e.g. local SEO for small business" />
         </div>
 
@@ -1756,7 +1759,7 @@
         </div>
 
         <div>
-          <div class="field-label">Audience Type</div>
+          <div class="field-label">Audience</div>
           <div class="type-toggle">
             <button class="type-btn active" id="btnB2B" onclick="setType('B2B')">B2B</button>
             <button class="type-btn" id="btnB2C" onclick="setType('B2C')">B2C</button>
@@ -1765,7 +1768,7 @@
         </div>
 
         <div>
-          <div class="field-label">Writing Style</div>
+          <div class="field-label">Tone</div>
           <select id="tone">
             <option value="conversational and direct, like a smart colleague explaining it over coffee — not a professor lecturing">Conversational</option>
             <option value="authoritative and data-driven, like The Economist — confident, uses evidence, no fluff">Authoritative</option>
@@ -1775,7 +1778,7 @@
         </div>
 
         <div>
-          <div class="field-label">AI Model</div>
+          <div class="field-label">Model</div>
           <select id="model">
             <option value="claude-opus-4-6">Opus — Best Quality</option>
             <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
@@ -1936,7 +1939,7 @@
         <span class="agent-status-pill" id="pill1">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out1">Hit Generate Article to begin.</div>
+        <div class="agent-output-text" id="out1">Fill in your topic and keyword, then click Generate.</div>
       </div>
     </div>
 
@@ -1947,7 +1950,7 @@
         <span class="agent-status-pill" id="pill2">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out2">Follows after planning.</div>
+        <div class="agent-output-text" id="out2"></div>
       </div>
     </div>
 
@@ -1958,7 +1961,7 @@
         <span class="agent-status-pill" id="pill3">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out3">Follows after research.</div>
+        <div class="agent-output-text" id="out3"></div>
       </div>
     </div>
 
@@ -1969,7 +1972,7 @@
         <span class="agent-status-pill" id="pill4">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out4">Follows after writing.</div>
+        <div class="agent-output-text" id="out4"></div>
       </div>
     </div>
 
@@ -1980,7 +1983,7 @@
         <span class="agent-status-pill" id="pill5">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out5">Follows after SEO pass.</div>
+        <div class="agent-output-text" id="out5"></div>
       </div>
     </div>
 
@@ -1993,7 +1996,7 @@
         <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview Article →</button>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out6">Follows after refining.</div>
+        <div class="agent-output-text" id="out6"></div>
       </div>
     </div>
 
@@ -3023,11 +3026,11 @@ async function runPipeline() {
     setPipeNode(i, null); setPanel(i, null); setPill(i, '—', false);
   }
   setOutput(1, '', false);
-  setOutput(2, 'Follows after planning.', false);
-  setOutput(3, 'Follows after research.', false);
-  setOutput(4, 'Follows after writing.', false);
-  setOutput(5, 'Follows after SEO pass.', false);
-  setOutput(6, 'Follows after refining.', false);
+  setOutput(2, '', false);
+  setOutput(3, '', false);
+  setOutput(4, '', false);
+  setOutput(5, '', false);
+  setOutput(6, '', false);
 
   const outputArea = document.getElementById('outputArea');
   outputArea.scrollTop = 0;

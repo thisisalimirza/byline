@@ -1381,12 +1381,28 @@ app.get('/api/health', (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
+// 404 HANDLER
+// ══════════════════════════════════════════════════════════════════════════════
+
+app.use((req, res, next) => {
+  // API routes return JSON 404
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  // All other routes return styled 404 page
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
 // ERROR HANDLING
 // ══════════════════════════════════════════════════════════════════════════════
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({ error: 'Something went wrong' });
+  if (req.path.startsWith('/api/')) {
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+  res.status(500).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 // ══════════════════════════════════════════════════════════════════════════════

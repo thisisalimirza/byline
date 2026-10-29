@@ -45,13 +45,13 @@ test.describe('App Page', () => {
     await expect(creditsText).toBeVisible();
   });
 
-  test('responsive at mobile width (390px)', async ({ page }) => {
+  test('responsive at mobile width (390px) - no horizontal overflow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/app');
     
-    // Page should not overflow horizontally
+    // Critical: document.scrollWidth must not exceed viewport width
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-    expect(scrollWidth).toBeLessThanOrEqual(400); // Small tolerance
+    expect(scrollWidth).toBeLessThanOrEqual(390);
     
     // Main content should be visible
     const main = page.locator('main, .sidebar, #topic').first();
