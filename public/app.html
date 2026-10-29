@@ -68,6 +68,9 @@
     grid-template-rows: auto auto auto auto 1fr;
   }
 
+  /* Visible focus ring for keyboard navigation */
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
   /* ── Header ── */
   header {
     padding: 0 1.75rem;
@@ -1547,6 +1550,7 @@
     .revision-body { flex-direction: column; }
     .revision-btn { width: 100%; }
     .remix-formats { grid-template-columns: 1fr; }
+    .advanced-toggle { min-height: 44px; }
   }
 
   /* ════════════════════ PDF Panel ════════════════════════════ */
@@ -1635,27 +1639,27 @@
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-2">
       <span class="pipe-node-num">2</span>
-      <span class="pipe-node-label">Draft</span>
+      <span class="pipe-node-label">Research</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-3">
       <span class="pipe-node-num">3</span>
-      <span class="pipe-node-label">SEO</span>
+      <span class="pipe-node-label">Write</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-4">
       <span class="pipe-node-num">4</span>
-      <span class="pipe-node-label">Refine</span>
+      <span class="pipe-node-label">SEO</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-5">
       <span class="pipe-node-num">5</span>
-      <span class="pipe-node-label">Humanize</span>
+      <span class="pipe-node-label">Refine</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-6">
       <span class="pipe-node-num">6</span>
-      <span class="pipe-node-label">Final</span>
+      <span class="pipe-node-label">Humanize</span>
     </div>
   </div>
   <button class="header-credit-pill" id="headerCreditPill" onclick="openCreditsModal()">
@@ -1754,7 +1758,7 @@
 
         <div>
           <div class="field-label">Who is this for?</div>
-          <input type="text" id="audience" placeholder="e.g. small business owners with no marketing budget" />
+          <input type="text" id="audience" placeholder="e.g. small business owners" />
         </div>
 
         <div>
@@ -1868,7 +1872,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(2)">
           <div class="agent-dot" style="background:var(--a2)"></div>
-          <span class="agent-config-title">Drafting</span>
+          <span class="agent-config-title">Research</span>
           <span class="agent-config-chevron" id="chev2">▼</span>
         </div>
         <div class="agent-config-body" id="cfg2">
@@ -1878,7 +1882,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(3)">
           <div class="agent-dot" style="background:var(--a3)"></div>
-          <span class="agent-config-title">SEO</span>
+          <span class="agent-config-title">Writing</span>
           <span class="agent-config-chevron" id="chev3">▼</span>
         </div>
         <div class="agent-config-body" id="cfg3">
@@ -1888,7 +1892,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(4)">
           <div class="agent-dot" style="background:var(--a4)"></div>
-          <span class="agent-config-title">Refining</span>
+          <span class="agent-config-title">SEO</span>
           <span class="agent-config-chevron" id="chev4">▼</span>
         </div>
         <div class="agent-config-body" id="cfg4">
@@ -1898,7 +1902,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(5)">
           <div class="agent-dot" style="background:var(--a5)"></div>
-          <span class="agent-config-title">Humanizing</span>
+          <span class="agent-config-title">Refining</span>
           <span class="agent-config-chevron" id="chev5">▼</span>
         </div>
         <div class="agent-config-body" id="cfg5">
@@ -1908,7 +1912,7 @@
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(6)">
           <div class="agent-dot" style="background:#e8b84b"></div>
-          <span class="agent-config-title">Final</span>
+          <span class="agent-config-title">Humanizing</span>
           <span class="agent-config-chevron" id="chev6">▼</span>
         </div>
         <div class="agent-config-body" id="cfg6">
@@ -1944,7 +1948,7 @@
     <div class="agent-panel hidden-until-active" id="panel2">
       <div class="agent-panel-header">
         <div class="agent-step-num">2</div>
-        <span class="agent-label label-2">Drafting</span>
+        <span class="agent-label label-2">Research</span>
         <span class="agent-status-pill" id="pill2">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1955,7 +1959,7 @@
     <div class="agent-panel hidden-until-active" id="panel3">
       <div class="agent-panel-header">
         <div class="agent-step-num">3</div>
-        <span class="agent-label label-3">SEO</span>
+        <span class="agent-label label-3">Writing</span>
         <span class="agent-status-pill" id="pill3">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1966,7 +1970,7 @@
     <div class="agent-panel hidden-until-active" id="panel4">
       <div class="agent-panel-header">
         <div class="agent-step-num">4</div>
-        <span class="agent-label label-4">Refining</span>
+        <span class="agent-label label-4">SEO</span>
         <span class="agent-status-pill" id="pill4">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1977,7 +1981,7 @@
     <div class="agent-panel hidden-until-active" id="panel5">
       <div class="agent-panel-header">
         <div class="agent-step-num">5</div>
-        <span class="agent-label label-5">Humanizing</span>
+        <span class="agent-label label-5">Refining</span>
         <span class="agent-status-pill" id="pill5">—</span>
       </div>
       <div class="agent-panel-body">
@@ -1988,7 +1992,7 @@
     <div class="agent-panel hidden-until-active final-panel" id="panel6">
       <div class="agent-panel-header">
         <div class="agent-step-num">6</div>
-        <span class="agent-label label-6">Final</span>
+        <span class="agent-label label-6">Humanizing</span>
         <span class="agent-status-pill" id="pill6">—</span>
         <button class="copy-btn" id="copyBtn" onclick="copyArticle()">Copy</button>
         <button class="preview-article-btn" id="previewBtn" onclick="openPreview()">Preview →</button>
