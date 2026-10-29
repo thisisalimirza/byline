@@ -4,6 +4,96 @@ Record design decisions, issues found, and fixes applied during development.
 
 ---
 
+## 2026-10-29 3:17 PM ET critic pass
+
+**Reviewed**: Production (https://bylineblogs.com) after PR #5 merged  
+**Viewports**: 390px, 1180px, 1512px
+
+### Confirmed Fixed on Prod
+
+- ✅ Home @390 horizontal overflow
+- ✅ App sidebar clipping
+- ✅ Production basics (og-image.png, favicon.ico, 404.html, sitemap)
+- ✅ Single "Start writing" CTA label
+- ✅ Download cards alignment
+- ✅ Removed "AI" from title, hero pill, and footer
+- ✅ Refund subhead clarified
+
+### New Findings (ranked by impact)
+
+#### 1. Auth is off — account page is a dead end (CRITICAL)
+- **Location**: /account, /app, /api/auth/status
+- **Issue**: `/api/auth/status` returns `enabled:false`, so Sign-in is hidden. /account says "Sign in to view your account" but its only button is "Go to app" (dead end). /account is still in sitemap.
+- **Copy contradictions when auth is off**:
+  - Home feature 04: "No sign-up… nothing stored on our end"
+  - Buy modal: "Articles are stored locally in your browser…"
+  - Refund: "No purchases found on this device"
+- **Fix**: Make /account button open sign-in modal or link to /app?signin=1; remove /account from sitemap while auth is disabled; make copy conditional on auth state
+- **Missing env vars for auth**: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- **Status**: Fixed on branch
+
+#### 2. Vendor and model names still visible
+- **Location**: app.html, index.html, buy modal, terms.html
+- **Issues**:
+  - App sidebar: "Model" dropdown with Opus/Sonnet/Sonnet 4.5
+  - Home: "GPT-4o" pill in comparison window
+  - Home: "Straight from the model to the page"
+  - Buy modal: "No API key needed", "Have your own API key?"
+  - Terms §2: "currently Anthropic"
+- **Fix**: Model → Quality (Best/Fast); remove GPT-4o pill; "Unedited first draft"; move own-key to Advanced; remove Anthropic from Terms
+- **Note**: ChatGPT comparison section and FAQ await Ali's decision
+- **Status**: Fixed on branch
+
+#### 3. Empty stage panels on first load
+- **Issue**: Six empty panels at every width, panel 1 has monospace debug-looking text, panels 2-6 empty. At 390px, panels render under Setup below Generate so Setup/Results tabs do nothing.
+- **Fix**: Show one friendly empty state in normal type, hide panels 2-6 until they start; on mobile show results only under Results tab
+- **Status**: Fixed on branch
+
+#### 4. Stage names use four sets and two orders
+- **Location**: header stepper, panels, home "How it works", hero mockup
+- **Issues**:
+  - Header: Plan/Research/Write/SEO/Refine/Humanize
+  - Panels: Planning/Research/Writing/SEO/Refining/Humanizing
+  - Home: Strategist/Researcher/Writer/SEO Editor/Refiner/Humanizer
+  - Mockup: Planning Your Article… with Refine before SEO, in Title Case
+- **Fix**: Pick one set (Planning/Research/Writing/SEO/Refining/Humanizing), remove duplicate header stepper at 1180/1512, redraw mockup
+- **Status**: Fixed on branch
+
+#### 5. Sidebar spacing issues
+- **Issues**: Advanced nested inside Promote card with double border; Credits card duplicates header's "0 credits"; at 390px Generate not full-width and Advanced toggle 35px (under 44px)
+- **Fix**: Advanced as its own card with 8px gap; fold Credits into header pill + Buy button; Generate full-width and 44px min-height on Advanced at mobile
+- **Status**: Fixed on branch
+
+#### 6. Buy-credits modal issues
+- **Issues**: Title "Generate articles instantly" (not descriptive), wrong subhead "One purchase = one full article" (it's one CREDIT = one article), BEST VALUE badge on 75 pack but highlight on 25, badge floats in gap at 390px
+- **Fix**: Title "Buy credits", subhead "1 credit = 1 finished article. Credits never expire.", move badge to selected pack, fix mobile layout
+- **Status**: Fixed on branch
+
+#### 7. Legal pages need consistent header/footer
+- **Issues**: Terms, Privacy, Refund don't have same logo header and footer as 404 and Account; "← Back to Byline" sits outside card on Terms at 1512; footer links 16px and account buttons 32px (under 44px)
+- **Fix**: Add consistent header/footer, sentence-case headings, 44px min-height on all touch targets
+- **Status**: Fixed on branch
+
+#### 8. How it works cards — tag wrapping
+- **Issues**: At 1180/1512, Refiner tag wraps and sits higher than others, Humanizer text runs into its tag
+- **Fix**: Shorter nowrap tags pinned to card bottom with 16px space above
+- **Status**: Fixed on branch
+
+#### 9. Comparison windows unequal height
+- **Issue**: ChatGPT window ends ~25px above Byline window
+- **Fix**: Equal height (stretch) with scroll hint pinned inside
+- **Status**: Fixed on branch
+
+#### 10. Jargon fixes
+- **Issues**:
+  - OG image: "6-stage pipeline" → "Six editing passes"
+  - Terms: "full pipeline run" → "1 article"
+  - Refund: "Enter token manually" → "Restore a purchase with your receipt code"
+  - FAQ: "Advanced Settings" → "Advanced"
+- **Status**: Fixed on branch
+
+---
+
 ## 2026-10-29 (2:50 PM ET) — Design Critic Follow-up
 
 **Reviewed**: Production + PR #5 preview  

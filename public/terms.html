@@ -29,16 +29,47 @@
   body {
     background: var(--bg); color: var(--text);
     font-family: var(--sans); min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 60px 20px 80px;
+    display: flex; flex-direction: column;
+  }
+  nav {
+    padding: 0 max(1.5rem, env(safe-area-inset-left));
+    height: 58px; display: flex; align-items: center;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px; text-decoration: none;
+  }
+  .nav-logo-mark {
+    width: 28px; height: 28px; background: var(--accent); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-size: 15px; font-weight: 600; color: #0d0c09;
+  }
+  .nav-logo-name {
+    font-family: var(--display); font-size: 18px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.03em;
+  }
+  .content-wrap {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 48px 20px 60px;
   }
   a.back {
     display: flex; align-items: center; gap: 6px;
     font-size: 13px; color: var(--text-muted); text-decoration: none;
-    margin-bottom: 48px; align-self: flex-start; max-width: 680px; width: 100%;
-    transition: color 0.15s;
+    margin-bottom: 32px; align-self: flex-start; max-width: 680px; width: 100%;
+    transition: color 0.15s; min-height: 44px;
   }
   a.back:hover { color: var(--text); }
+  footer {
+    padding: 1.5rem; text-align: center;
+    font-size: 12px; color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { 
+    color: var(--text-muted); text-decoration: none; 
+    margin: 0 0.75rem; min-height: 44px; display: inline-flex; align-items: center;
+  }
+  footer a:hover { color: var(--text); }
   .card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 16px; padding: 36px 40px; width: 100%; max-width: 680px;
@@ -67,12 +98,23 @@
     margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);
     display: flex; gap: 24px; flex-wrap: wrap;
   }
-  .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; }
+  .footer-links a { 
+    font-size: 13px; color: var(--text-muted); text-decoration: none; 
+    min-height: 44px; display: inline-flex; align-items: center;
+  }
   .footer-links a:hover { color: var(--text); }
 </style>
 </head>
 <body>
 
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">B</div>
+    <span class="nav-logo-name">Byline</span>
+  </a>
+</nav>
+
+<div class="content-wrap">
 <a class="back" href="/">← Back to Byline</a>
 
 <div class="card">
@@ -80,25 +122,25 @@
   <h1>Terms of Service</h1>
   <p class="updated">Last updated: October 29, 2026</p>
 
-  <h2>1. Agreement to Terms</h2>
+  <h2>1. Agreement to terms</h2>
   <p>By accessing or using Byline ("the Service"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the Service.</p>
 
-  <h2>2. Description of Service</h2>
-  <p>Byline is an article writing tool that helps you create, refine, and optimize content. The Service uses third-party providers (currently Anthropic) to generate content based on your inputs.</p>
+  <h2>2. Description of service</h2>
+  <p>Byline is an article writing tool that helps you create, refine, and optimize content. The Service uses third-party providers to generate content based on your inputs.</p>
 
-  <h2>3. User Accounts</h2>
+  <h2>3. User accounts</h2>
   <p>When you create an account with us, you must provide accurate and complete information. You are responsible for safeguarding your account credentials and for any activities or actions under your account.</p>
 
-  <h2>4. Payment and Credits</h2>
+  <h2>4. Payment and credits</h2>
   <ul>
     <li>Credits are purchased in packs and used to generate articles</li>
-    <li>One credit equals one article generation (full pipeline run)</li>
+    <li>One credit equals one article (all six stages)</li>
     <li>Credits do not expire but are non-transferable</li>
     <li>Refunds are available per our <a href="/refund">Refund Policy</a></li>
     <li>Prices are in USD and may change with notice</li>
   </ul>
 
-  <h2>5. Acceptable Use</h2>
+  <h2>5. Acceptable use</h2>
   <p>You agree not to use the Service to:</p>
   <ul>
     <li>Generate illegal, harmful, or misleading content</li>
@@ -108,11 +150,11 @@
     <li>Infringe on intellectual property rights</li>
   </ul>
 
-  <h2>6. Content Ownership</h2>
+  <h2>6. Content ownership</h2>
   <p>You retain ownership of content you create using Byline. However, you grant us a limited license to process your inputs through our systems and third-party providers to deliver the Service.</p>
   <p>Generated content may not be unique. Similar inputs from different users may produce similar outputs. You are responsible for reviewing and editing generated content before publication.</p>
 
-  <h2>7. Third-Party Services</h2>
+  <h2>7. Third-party services</h2>
   <p>The Service relies on third-party providers including Anthropic (content generation), Stripe (payments), and Supabase (data storage). Your use of these services through Byline is also subject to their respective terms.</p>
 
   <h2>8. Disclaimers</h2>
@@ -123,10 +165,10 @@
     <li>Content will rank in search engines or achieve specific results</li>
   </ul>
 
-  <h2>9. Limitation of Liability</h2>
+  <h2>9. Limitation of liability</h2>
   <p>To the maximum extent permitted by law, Byline and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues.</p>
 
-  <h2>10. Changes to Terms</h2>
+  <h2>10. Changes to terms</h2>
   <p>We reserve the right to modify these terms at any time. We will notify users of material changes via email or through the Service. Continued use after changes constitutes acceptance of the new terms.</p>
 
   <h2>11. Termination</h2>
@@ -136,11 +178,18 @@
   <p>Questions about these Terms? Contact us at <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>.</p>
 
   <div class="footer-links">
-    <a href="/privacy">Privacy Policy</a>
-    <a href="/refund">Refund Policy</a>
+    <a href="/privacy">Privacy policy</a>
+    <a href="/refund">Refund policy</a>
     <a href="/">Home</a>
   </div>
 </div>
+</div>
+
+<footer>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
+  <a href="/refund">Refunds</a>
+</footer>
 
 </body>
 </html>
