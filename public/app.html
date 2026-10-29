@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Byline — AI Article Studio</title>
+<title>Byline — Article Studio</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://bylineblogs.com/app">
 
@@ -2769,7 +2769,7 @@ function openCreditsModal(outOfCredits = false) {
   document.getElementById('creditsModal').classList.add('open');
   document.getElementById('modalSub').textContent = outOfCredits
     ? 'You\'re out of articles. Top up to keep generating.'
-    : 'One purchase = one full article, written by 6 AI agents. No API key needed.';
+    : 'One purchase = one full article through all six stages. No API key needed.';
 }
 
 function closeCreditsModal() {
@@ -4869,7 +4869,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     <div class="modal-eyebrow">Byline</div>
     <div class="modal-title">Generate articles instantly</div>
-    <div class="modal-sub" id="modalSub">One purchase = one full article, written by 6 AI agents. No API key needed.</div>
+    <div class="modal-sub" id="modalSub">One purchase = one full article through all six stages. No API key needed.</div>
 
     <div class="pack-grid">
       <div class="pack-card" id="pack-starter" onclick="selectPack('starter')">
