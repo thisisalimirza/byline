@@ -909,6 +909,13 @@
     color: var(--text-dim); white-space: pre-wrap; word-break: break-word;
   }
   .agent-output-text.filled { color: var(--text-muted); }
+  .agent-output-text.empty-state {
+    font-family: var(--sans); font-size: 14px; color: var(--text-muted);
+    text-align: center; padding: 2rem; line-height: 1.6;
+  }
+  
+  /* Hide empty panels 2-6 until generation starts */
+  .agent-panel.hidden-until-active { display: none; }
 
   .agent-panel.final-panel .agent-panel-header { border-bottom-color: rgba(169,125,240,0.2); }
 
@@ -1770,11 +1777,10 @@
         </div>
 
         <div>
-          <div class="field-label">Model</div>
+          <div class="field-label">Quality</div>
           <select id="model">
-            <option value="claude-opus-4-6">Opus — Best Quality</option>
-            <option value="claude-sonnet-4-6" selected>Sonnet — Faster</option>
-            <option value="claude-sonnet-4-20250514">Sonnet 4.5</option>
+            <option value="claude-opus-4-6">Best</option>
+            <option value="claude-sonnet-4-6" selected>Fast</option>
           </select>
         </div>
       </div>
@@ -1931,11 +1937,11 @@
         <span class="agent-status-pill" id="pill1">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text" id="out1">Fill in your topic and keyword, then hit Generate.</div>
+        <div class="agent-output-text empty-state" id="out1">Enter your topic and keyword on the left, then click Generate to start.</div>
       </div>
     </div>
 
-    <div class="agent-panel" id="panel2">
+    <div class="agent-panel hidden-until-active" id="panel2">
       <div class="agent-panel-header">
         <div class="agent-step-num">2</div>
         <span class="agent-label label-2">Research</span>
@@ -1946,7 +1952,7 @@
       </div>
     </div>
 
-    <div class="agent-panel" id="panel3">
+    <div class="agent-panel hidden-until-active" id="panel3">
       <div class="agent-panel-header">
         <div class="agent-step-num">3</div>
         <span class="agent-label label-3">Writing</span>
@@ -1957,7 +1963,7 @@
       </div>
     </div>
 
-    <div class="agent-panel" id="panel4">
+    <div class="agent-panel hidden-until-active" id="panel4">
       <div class="agent-panel-header">
         <div class="agent-step-num">4</div>
         <span class="agent-label label-4">SEO</span>
@@ -1968,7 +1974,7 @@
       </div>
     </div>
 
-    <div class="agent-panel" id="panel5">
+    <div class="agent-panel hidden-until-active" id="panel5">
       <div class="agent-panel-header">
         <div class="agent-step-num">5</div>
         <span class="agent-label label-5">Refining</span>
@@ -1979,7 +1985,7 @@
       </div>
     </div>
 
-    <div class="agent-panel final-panel" id="panel6">
+    <div class="agent-panel hidden-until-active final-panel" id="panel6">
       <div class="agent-panel-header">
         <div class="agent-step-num">6</div>
         <span class="agent-label label-6">Humanizing</span>
@@ -2760,8 +2766,8 @@ async function refreshCredits() {
 function openCreditsModal(outOfCredits = false) {
   document.getElementById('creditsModal').classList.add('open');
   document.getElementById('modalSub').textContent = outOfCredits
-    ? 'You\'re out of articles. Top up to keep generating.'
-    : 'One purchase = one full article through all six stages. No API key needed.';
+    ? "You're out of credits. Top up to keep writing."
+    : '1 credit = 1 finished article. Credits never expire.';
 }
 
 function closeCreditsModal() {
@@ -2948,6 +2954,14 @@ async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage
 
 // ── Pipeline orchestration ───────────────────────────────────────────────────
 async function runPipeline() {
+  // Show all panels when generation starts
+  document.querySelectorAll('.agent-panel.hidden-until-active').forEach(p => {
+    p.classList.remove('hidden-until-active');
+  });
+  // Clear empty state styling from panel 1
+  const out1 = document.getElementById('out1');
+  if (out1) out1.classList.remove('empty-state');
+  
   const ownApiKey = document.getElementById('apiKey').value.trim();
   const topic     = document.getElementById('topic').value.trim();
   const keyword   = document.getElementById('keyword').value.trim();
@@ -4874,8 +4888,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>
 
     <div class="modal-eyebrow">Byline</div>
-    <div class="modal-title">Generate articles instantly</div>
-    <div class="modal-sub" id="modalSub">One purchase = one full article through all six stages. No API key needed.</div>
+    <div class="modal-title">Buy credits</div>
+    <div class="modal-sub" id="modalSub">1 credit = 1 finished article. Credits never expire.</div>
 
     <div class="pack-grid">
       <div class="pack-card" id="pack-starter" onclick="selectPack('starter')">
@@ -4884,13 +4898,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="pack-price">$5</div>
         <div class="pack-per">$0.50 each</div>
       </div>
-      <div class="pack-card selected" id="pack-creator" onclick="selectPack('creator')">
+      <div class="pack-card" id="pack-creator" onclick="selectPack('creator')">
         <div class="pack-credits">25</div>
         <div class="pack-label">articles</div>
         <div class="pack-price">$10</div>
         <div class="pack-per">$0.40 each</div>
       </div>
-      <div class="pack-card" id="pack-studio" onclick="selectPack('studio')">
+      <div class="pack-card selected" id="pack-studio" onclick="selectPack('studio')">
         <div class="pack-badge">Best value</div>
         <div class="pack-credits">75</div>
         <div class="pack-label">articles</div>
@@ -4901,23 +4915,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     <button class="modal-cta" id="modalCta" onclick="purchaseCredits()">Buy credits →</button>
 
-    <p class="modal-storage-note">
-      Articles are stored locally in your browser.<br>
-      They won't transfer across devices or browsers.
+    <p class="modal-storage-note" id="modalStorageNote">
+      Secure payment via Stripe. Credits are added instantly.
     </p>
-
-    <div class="modal-own-key-toggle" id="modalOwnKeyToggle" onclick="toggleModalOwnKey()">
-      <span class="arrow">›</span> Have your own API key?
-    </div>
-    <div class="modal-own-key-body" id="modalOwnKeyBody">
-      <div class="own-key-section">
-        <label>Paste your key to bypass credits.</label>
-        <div class="own-key-row">
-          <input type="password" id="modalApiKey" placeholder="sk-ant-..." autocomplete="off" />
-          <button class="own-key-save" onclick="saveOwnKey()">Save key</button>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 

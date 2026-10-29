@@ -40,8 +40,8 @@ test.describe('Legal Pages', () => {
   test('legal pages link to each other', async ({ page }) => {
     await page.goto('/terms');
     
-    // Should have link to privacy
-    const privacyLink = page.getByRole('link', { name: /privacy/i });
+    // Should have link to privacy (use .first() since header and footer both have privacy links)
+    const privacyLink = page.getByRole('link', { name: /privacy/i }).first();
     await expect(privacyLink).toBeVisible();
     
     // Navigate and verify

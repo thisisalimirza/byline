@@ -32,8 +32,29 @@
   body {
     background: var(--bg); color: var(--text);
     font-family: var(--sans); min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 60px 20px;
+    display: flex; flex-direction: column;
+  }
+  nav {
+    padding: 0 max(1.5rem, env(safe-area-inset-left));
+    height: 58px; display: flex; align-items: center;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px; text-decoration: none;
+  }
+  .nav-logo-mark {
+    width: 28px; height: 28px; background: var(--accent); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-size: 15px; font-weight: 600; color: #0d0c09;
+  }
+  .nav-logo-name {
+    font-family: var(--display); font-size: 18px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.03em;
+  }
+  .content-wrap {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 48px 20px 60px;
   }
   a.back {
     display: inline-flex; align-items: center; gap: 6px;
@@ -45,6 +66,16 @@
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 16px; padding: 36px; width: 100%; max-width: 520px;
   }
+  footer {
+    padding: 1.5rem; text-align: center;
+    font-size: 12px; color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { 
+    color: var(--text-muted); text-decoration: none; 
+    margin: 0 0.75rem; min-height: 44px; display: inline-flex; align-items: center;
+  }
+  footer a:hover { color: var(--text); }
   .eyebrow {
     font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
@@ -141,6 +172,14 @@
 </head>
 <body>
 
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">B</div>
+    <span class="nav-logo-name">Byline</span>
+  </a>
+</nav>
+
+<div class="content-wrap">
 <div class="card">
   <a class="back" href="/app">← Back to Byline</a>
   <div class="eyebrow" style="margin-top:16px;">Refunds</div>
@@ -166,13 +205,13 @@
 
   <!-- Manual fallback -->
   <div class="manual-toggle" id="manualToggle" onclick="toggleManual()">
-    <span class="arrow">›</span> Purchased on a different device? Enter token manually
+    <span class="arrow">›</span> Purchased on a different device? Restore with receipt code
   </div>
   <div class="manual-section" id="manualSection">
     <div style="height:16px;"></div>
-    <label for="tokenInput">Credit token</label>
+    <label for="tokenInput">Receipt code</label>
     <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
-    <p class="hint">Open the app on the device where you purchased, click "Request a refund" in the Credits sidebar — it will pass the token automatically.</p>
+    <p class="hint">Open the app on the device where you purchased and click "Request a refund" — it will pass the code automatically.</p>
     <button class="manual-btn" id="manualBtn" onclick="submitManual()">Process refund →</button>
   </div>
 
@@ -337,5 +376,13 @@
 
   window.addEventListener('DOMContentLoaded', loadPurchases);
 </script>
+</div>
+
+<footer>
+  <a href="/terms">Terms</a>
+  <a href="/privacy">Privacy</a>
+  <a href="/refund">Refunds</a>
+</footer>
+
 </body>
 </html>
