@@ -158,6 +158,138 @@ Measured on prod just now:
 
 ---
 
+## 2026-10-29 3:45 PM ET critic pass
+
+**Reviewed**: Production (https://bylineblogs.com) after PR #5 merged  
+**Viewports**: 390px, 1180px, 1512px
+
+### Verified on Prod
+- ✅ No horizontal overflow at 390/1180/1512 on any page
+- ✅ Favicon, og-image, 404 page, legal pages all live
+- ✅ Auth still disabled (`/api/auth/status` enabled:false)
+
+### New Findings (ranked by impact)
+
+#### 1. Home — Two proof sections with DIFFERENT articles (HIGH)
+- **Location**: "See the difference" + "Download both / Judge for yourself"
+- **Issue**: Comparison windows show a B2B email reply-rate article, then PDFs offer a Local SEO article. Confusing and duplicative (home is ~12,100px tall at 390).
+- **Fix**: Removed duplicate "Download both" section; added single "Try it yourself" CTA at bottom of comparison section.
+- **Status**: ✅ Fixed on branch
+
+#### 2. Home 1180/1512 — How it works 6-column layout issues (HIGH)
+- **Location**: "How it works" cards
+- **Issue**: 6 columns at 172px each; body runs 9–10 lines of 13px dim text; tags wrap ("removes robotic patterns").
+- **Fix**: Changed to `repeat(3, minmax(0,1fr))` grid (2 rows of 3), body 14px/1.6, tags nowrap pinned to bottom, step-card flexbox for equal heights.
+- **Status**: ✅ Fixed on branch
+
+#### 3. Leftovers from PR #6 branch (MEDIUM)
+- **Issue (a)**: index.html `.chatgpt-model-pill` showing "4o" — deleted the element entirely.
+- **Issue (b)**: "How it works" cards renamed to match app: Planning, Drafting, SEO, Refining, Humanizing, Final. Colors unified (step-6 now uses --a5 purple instead of yellow).
+- **Status**: ✅ Fixed on branch
+
+#### 4. Home — "No account needed" stated 3x (MEDIUM)
+- **Location**: Feature card 04, FAQ "Do I need an account?", final CTA note
+- **Issue**: Contradicts sign-in work when auth is enabled.
+- **Fix**: CTA note changed to "Credits start at $5 for 10 articles" (kept FAQ mention as single source).
+- **Status**: ✅ Fixed on branch
+
+#### 5. Home 1512 — Headline orphans (MEDIUM)
+- **Issue**: Hero h1 breaks to a lone "human." on line 3; Product promotion h2 leaves "ad." alone on last line.
+- **Fix**: Added `h1, h2 { text-wrap: balance; }` globally.
+- **Status**: ✅ Fixed on branch
+
+#### 6. Home — Three numbering systems (LOW)
+- **Issue**: Why cards use "01" mono chips, How it works uses colored circled 1–6, Features uses "01" chips. Only How it works is a sequence.
+- **Fix**: Keep circled numbers for stages only; remove number chips from Why-Byline and Features cards (use small icon or nothing).
+- **Status**: Noted
+
+#### 7. App — Placeholder truncation and touch target (LOW)
+- **Issue**: "Who is this for?" truncates to "e.g. small business owners with no marke"; "⚙ Advanced" toggle 35px tall.
+- **Fix**: Shortened placeholder to "e.g. small business owners"; added min-height 44px on Advanced toggle at mobile.
+- **Status**: ✅ Fixed on branch
+
+#### 8. Shared footer inconsistency (LOW)
+- **Issue**: Home footer has Terms/Privacy/Refunds only; account has Request refund/Terms/Privacy/Contact support; 404 has Terms/Privacy/Refunds; legal pages differ.
+- **Fix**: One footer everywhere: Byline · Terms · Privacy · Refunds · Contact (mailto) · © 2026 Byline; same container width as page content; links min-height 44px on mobile.
+- **Note**: /site.webmanifest 404s — add one or drop the reference.
+- **Status**: Noted
+
+#### Owner decision needed (do not change without Ali)
+- Privacy policy still names Anthropic and "sign in with Google" — fine legally, but flagged for review.
+
+---
+
+## 2026-10-29 4:15 PM ET critic pass
+
+**Reviewed**: Production (https://bylineblogs.com) unchanged since 3:45 PM  
+**Viewports**: 390px, 1180px, 1512px
+
+### New Findings (ranked by impact)
+
+#### 1. Vendor/model names still visible (HIGH)
+- **Location**: app.html Model dropdown, home comparison pill, Terms §7, Privacy
+- **Issues**:
+  - App "Model" dropdown shows "Sonnet — Faster" (should be Quality with Best/Fast) — ✅ Already fixed
+  - Home comparison "4o" pill (still a model name, remove entirely) — ✅ Already removed in 3:45 PM pass
+  - Home download card "Straight from the model to the page" → "Unedited first draft." — ✅ Already removed in 3:45 PM pass
+  - Terms §7 names "Anthropic (content generation)" — ✅ Fixed: changed to "a content-generation provider"
+  - Privacy provider list has "Anthropic — Content generation" — ✅ Fixed: changed to "Content generation provider"
+- **Status**: ✅ Fixed on branch
+
+#### 2. /account dead end (MEDIUM)
+- **Issue**: Only "Go to app →" button, sign-in hidden, still in sitemap.xml
+- **Fix**: Verify PR #7 changes cover this
+- **Status**: Verify
+
+#### 3. Empty stage panels (MEDIUM)
+- **Issue**: Six panels with monospace text; at 390px they stack under Generate so Setup/Results tabs do nothing
+- **Fix**: Verify PR #7 changes cover this
+- **Status**: Verify
+
+#### 4. Stage names not unified (MEDIUM)
+- **Issue**: Use one set everywhere: Planning, Research, Writing, SEO, Refining, Humanizing
+- Home "How it works" cards: ✅ Fixed to Planning, Research, Writing, SEO, Refining, Humanizing
+- App panel/pipeline/config names: ✅ Fixed to match
+- Hero mockup: ✅ Fixed to match
+- FAQ "How is Byline different...": ✅ Fixed order to "planning, research, writing, SEO, refining, and humanizing"
+- **Status**: ✅ Fixed on branch
+
+#### 5. No-accounts copy contradictions (MEDIUM)
+- **Issue**: Feature 04 "No sign-up… nothing stored on our end" and FAQ "until you choose to sign in" contradict reality
+- Feature 04: Already says "Start immediately" with neutral copy
+- FAQ "Do I need an account?": ✅ Fixed to "Your drafts are saved locally in your browser."
+- FAQ "Advanced Settings" → "Advanced": Already correct
+- **Status**: ✅ Fixed on branch
+
+#### 6. App sidebar issues (LOW)
+- **Issue**: Credits card has no number, duplicates header pill; Advanced inside Promote with double border; at 390px Advanced 35px tall, Generate not full width
+- **Status**: Partially addressed in earlier passes
+
+#### 7. How-it-works tag wrapping (LOW)
+- **Issue**: Refiner tag wraps, Humanizer text collides with tag at 1180/1512
+- **Fix**: Short nowrap tags pinned to bottom with 16px above
+- **Status**: Addressed in 3:45 PM pass
+
+#### 8. Comparison windows unequal height (LOW)
+- **Issue**: Left window ends ~15px above Byline window at 1180/1512
+- **Fix**: Stretch to equal height
+- **Status**: Noted
+
+#### 9. Legal pages header/footer (LOW)
+- **Issue**: No logo header/footer; Back link floats outside card; Title Case headings; touch targets under 44px
+- **Fix**: Use 404 page's shared header/footer, sentence case, 44px min targets
+- **Status**: Previously addressed
+
+#### 10. Polish items (LOW)
+- Focus ring: ✅ Added `:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }` to index.html and app.html
+- Hero subhead: ✅ Changed to "optimize articles for search" (avoids SEO-optimize break)
+- App placeholder: ✅ Already shortened in 3:45 PM pass
+- Page title: ✅ Changed to sentence case "Byline — Articles that rank and sound human"
+- Promo visual title: ✅ Changed to sentence case "Promote your brand"
+- **Status**: ✅ Fixed on branch (except "six" count reduction — kept as is)
+
+---
+
 ## 2026-10-29 (2:17 PM ET) — Design Critic Review
 
 **Reviewed**: Production (https://bylineblogs.com) at `/`, `/app`, `/refund`, 404  
