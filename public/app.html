@@ -2856,6 +2856,7 @@ function selectPack(pack) {
 }
 
 async function purchaseCredits() {
+  trackEvent('buy_click', { pack: _selectedPack });
   const btn = document.getElementById('modalCta');
   btn.disabled = true;
   btn.textContent = 'Redirecting to Stripe…';
@@ -3081,7 +3082,10 @@ async function runPipeline() {
         body:    JSON.stringify({ creditToken: _creditToken }),
       });
       if (r.status === 402) { openCreditsModal(true); btn2.disabled = false; btn2.textContent = '✦ Generate'; return; }
-      if (!r.ok) throw new Error('Could not start run');
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || 'The article did not start. Try again in a moment.');
+      }
       const d = await r.json();
       authMode = { type: 'run', runToken: d.runToken };
       updateCreditDisplay(d.remaining);
@@ -4875,12 +4879,20 @@ async function signOut() {
 // ANALYTICS TRACKING
 // ══════════════════════════════════════════════════════════════════════════════
 
+function anonId() {
+  let id = localStorage.getItem('byline_anon');
+  if (!id) {
+    id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+    localStorage.setItem('byline_anon', id);
+  }
+  return id;
+}
+
 function trackEvent(event, properties = {}) {
-  // Track via server
   fetch('/api/track', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ event, properties }),
+    body: JSON.stringify({ event, properties: { distinctId: anonId(), ...properties } }),
   }).catch(() => {});
   
   // Vercel Web Analytics
@@ -4930,8 +4942,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderDraftsDash();      // show saved drafts if any
   renderProductDropdown(); // show saved products if any
   
-  // Track page view
-  trackEvent('app_view');
+  trackEvent('start');
 });
 </script>
 

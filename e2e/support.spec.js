@@ -102,4 +102,98 @@ test.describe('Self-serve API', () => {
     const response = await request.get('/api/purchases');
     expect(response.status()).toBe(401);
   });
+
+  test('funnel events are accepted when analytics is off', async ({ request }) => {
+    for (const event of ['landing_view', 'start', 'generate', 'buy_click', 'checkout_complete', 'refund']) {
+      const response = await request.post('/api/track', {
+        data: { event, properties: { distinctId: 'e2e' } },
+      });
+      expect(response.ok()).toBe(true);
+    }
+    const limited = await request.post('/api/track', { data: { event: 'landing_view' } });
+    expect(limited.headers()['x-ratelimit-limit']).toBeTruthy();
+  });
+});
+
+test.describe('Buy, restore, and refund', () => {
+  test('buying a pack asks checkout for that pack', async ({ page }) => {
+    let pack = '';
+    await page.route('**/api/create-checkout', async (route) => {
+      pack = route.request().postDataJSON().pack;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ url: '/help?bought=1' }),
+      });
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/app');
+    await page.locator('.header-credit-pill').click();
+    await page.locator('#pack-starter').click();
+    await page.locator('#modalCta').click();
+    await page.waitForURL('**/help?bought=1');
+    expect(pack).toBe('starter');
+  });
+
+  test('a verified email can restore credits and refund a pack', async ({ page }) => {
+    await page.route('**/api/restore/request', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ok: true,
+          message: 'If that email has a purchase, we sent a code. It expires in 10 minutes.',
+        }),
+      });
+    });
+    await page.route('**/api/restore/verify', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          token: 'bl_e2e',
+          email: 'reader@example.com',
+          remaining: 10,
+          purchases: [{
+            id: 'cs_e2e',
+            created: Math.floor(Date.now() / 1000),
+            amount: 5,
+            currency: 'USD',
+            credits: 10,
+            used: 0,
+            remaining: 10,
+            refunded: false,
+            eligible: true,
+            refundAmount: 5,
+            kind: 'full',
+            reason: '',
+            receiptUrl: '',
+          }],
+        }),
+      });
+    });
+    await page.route('**/api/refund', async (route) => {
+      const body = route.request().postDataJSON();
+      expect(body.sessionId).toBe('cs_e2e');
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, amount: 5, currency: 'USD', kind: 'full', remaining: 0 }),
+      });
+    });
+
+    await page.setViewportSize({ width: 1180, height: 900 });
+    await page.goto('/refund');
+    await page.getByLabel('Purchase email').fill('reader@example.com');
+    await page.getByRole('button', { name: 'Send code' }).click();
+    await expect(page.getByLabel('Code')).toBeVisible();
+    await page.getByLabel('Code').fill('123456');
+    await page.getByRole('button', { name: 'Verify email' }).click();
+    await expect(page.getByText('Credits restored')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Download my data' })).toBeVisible();
+    await page.getByRole('button', { name: 'Refund', exact: true }).click();
+    await expect(page.getByText('Refund issued')).toBeVisible();
+    await expect(page.getByText(/returning to the original payment/i)).toBeVisible();
+  });
 });

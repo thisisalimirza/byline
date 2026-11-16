@@ -64,6 +64,7 @@ const RATE_LIMITS = {
   verify:     { windowMs: 15 * 60 * 1000, max: 5 },   // codes and checks
   refund:     { windowMs: 60 * 60 * 1000, max: 8 },
   contact:    { windowMs: 60 * 60 * 1000, max: 5 },
+  track:      { windowMs: 60 * 1000, max: 120 },
 };
 
 // ── Storage abstraction (Redis/KV for sessions and rate limits) ───────────────
@@ -196,6 +197,38 @@ function trackEvent(distinctId, event, properties = {}) {
   } catch (e) {
     console.error('PostHog error:', e.message);
   }
+}
+
+async function trackOnce(keys, distinctId, event, properties = {}) {
+  const list = (Array.isArray(keys) ? keys : [keys]).filter(Boolean);
+  try {
+    for (const key of list) {
+      if (await storageGet(key)) return;
+    }
+    for (const key of list) {
+      await storageSet(key, '1', 60 * 60 * 24 * 45);
+    }
+  } catch (e) {
+    console.error('Analytics dedupe:', e.message);
+  }
+  trackEvent(distinctId, event, properties);
+}
+
+async function trackCheckoutComplete(session) {
+  if (!session?.id) return;
+  const distinctId = session.metadata?.user_id
+    || session.metadata?.guest_token
+    || session.customer_details?.email
+    || session.id;
+  await trackOnce(`funnel:checkout:${session.id}`, distinctId, 'checkout_complete', {
+    credits: parseInt(session.metadata?.credits, 10) || 0,
+    amount: (session.amount_total || 0) / 100,
+  });
+}
+
+async function trackRefund(ids, distinctId, properties = {}) {
+  const keys = (Array.isArray(ids) ? ids : [ids]).filter(Boolean).map(id => `funnel:refund:${id}`);
+  await trackOnce(keys, distinctId, 'refund', properties);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -813,10 +846,19 @@ app.post('/api/start-run', optionalAuth, rateLimit('generation'), async (req, re
         });
       
       const runToken = crypto.randomUUID();
+      let sessionId = null;
+      if (stripe) {
+        try {
+          const attributed = await selfserve.spendForUser(stripe, req.user.id);
+          sessionId = attributed.sessionId;
+        } catch (err) {
+          console.error('Credit attribution:', err.message);
+        }
+      }
       await storageSet(`run:${runToken}`, { callsLeft: 6, userId: req.user.id }, 7200);
-      await storageSet(`runcharge:${runToken}`, { userId: req.user.id, returned: false }, 7200);
+      await storageSet(`runcharge:${runToken}`, { userId: req.user.id, sessionId, returned: false }, 7200);
       
-      trackEvent(req.user.id, 'generation_started', { credits_remaining: newBalance });
+      trackEvent(req.user.id, 'generate', { credits_remaining: newBalance });
       return res.json({ runToken, remaining: newBalance, authenticated: true });
     } catch (e) {
       console.error('Start run error:', e.message);
@@ -838,7 +880,7 @@ app.post('/api/start-run', optionalAuth, rateLimit('generation'), async (req, re
       await storageSet(`runcharge:${runToken}`, {
         email: access.e, sessionId: spent.sessionId, returned: false,
       }, 7200);
-      trackEvent(access.e, 'generation_started', { credits_remaining: spent.remaining, guest: true });
+      trackEvent(access.e, 'generate', { credits_remaining: spent.remaining, guest: true });
       return res.json({ runToken, remaining: spent.remaining, authenticated: false });
     } catch (e) {
       console.error('Spend error:', e.message);
@@ -899,12 +941,12 @@ app.post('/api/start-run', optionalAuth, rateLimit('generation'), async (req, re
     creditToken, sessionId, email: entry.email || '', returned: false,
   }, 7200);
   
-  trackEvent(creditToken, 'generation_started', { credits_remaining: entry.remaining, guest: true });
+  trackEvent(creditToken, 'generate', { credits_remaining: entry.remaining, guest: true });
   res.json({ runToken, remaining: entry.remaining, authenticated: false });
 });
 
 // ── POST /api/create-checkout ─────────────────────────────────────────────────
-app.post('/api/create-checkout', optionalAuth, async (req, res) => {
+app.post('/api/create-checkout', optionalAuth, rateLimit('api'), async (req, res) => {
   if (!stripe) {
     return res.status(503).json({ error: 'Payments not available. Try again later.' });
   }
@@ -989,7 +1031,7 @@ app.get('/success', async (req, res) => {
         await addCreditsToUser(userId, credits, session_id, session.payment_intent, session.amount_total, guestToken);
       }
       
-      trackEvent(userId, 'checkout_completed', { credits, amount: session.amount_total / 100 });
+      await trackCheckoutComplete(session);
       return res.redirect(`/app?credits=${credits}&new=1`);
     }
     
@@ -1035,7 +1077,7 @@ app.get('/success', async (req, res) => {
         .ignore();
     }
     
-    trackEvent(token, 'checkout_completed', { credits, amount: session.amount_total / 100, guest: true });
+    await trackCheckoutComplete(session);
     res.redirect(`/app?token=${token}&credits=${credits}&new=1`);
   } catch (err) {
     console.error('Success handler error:', err.message);
@@ -1145,6 +1187,8 @@ app.post('/api/webhook/stripe', async (req, res) => {
             console.error('Webhook metadata update:', e.message);
           }
         }
+
+        await trackCheckoutComplete(session);
         
         if (userId && supabaseAdmin) {
           await addCreditsToUser(
@@ -1194,55 +1238,68 @@ app.post('/api/webhook/stripe', async (req, res) => {
       const charge = event.data.object;
       const paymentIntent = charge.payment_intent;
       
-      // Find and void the purchase
       if (supabaseAdmin && paymentIntent) {
         const { data: purchase } = await supabaseAdmin
           .from('purchases')
           .select('*')
           .eq('stripe_payment_intent', paymentIntent)
-          .single();
+          .maybeSingle();
         
-        if (purchase) {
-          // Update purchase status
-          await supabaseAdmin
+        if (purchase && purchase.status !== 'refunded') {
+          const paid = charge.amount || purchase.amount_cents || 0;
+          const refundedCents = charge.amount_refunded || 0;
+          const fraction = paid > 0 ? Math.min(1, refundedCents / paid) : 1;
+          const creditsToRemove = Math.min(
+            purchase.credits_purchased,
+            Math.max(0, Math.round(purchase.credits_purchased * fraction))
+          );
+
+          const { data: locked } = await supabaseAdmin
             .from('purchases')
             .update({ status: 'refunded' })
-            .eq('id', purchase.id);
-          
-          // Deduct credits if user has them
-          if (purchase.user_id) {
-            const { data: balance } = await supabaseAdmin
-              .from('credit_balances')
-              .select('balance')
-              .eq('user_id', purchase.user_id)
-              .single();
-            
-            if (balance) {
-              const newBalance = Math.max(0, balance.balance - purchase.credits_purchased);
-              await supabaseAdmin
+            .eq('id', purchase.id)
+            .neq('status', 'refunded')
+            .select('id')
+            .maybeSingle();
+
+          if (locked) {
+            if (purchase.user_id && creditsToRemove > 0) {
+              const { data: balance } = await supabaseAdmin
                 .from('credit_balances')
-                .update({ balance: newBalance })
-                .eq('user_id', purchase.user_id);
+                .select('balance')
+                .eq('user_id', purchase.user_id)
+                .single();
               
-              await supabaseAdmin
-                .from('credit_transactions')
-                .insert({
-                  user_id: purchase.user_id,
-                  amount: -purchase.credits_purchased,
-                  balance_after: newBalance,
-                  type: 'refund',
-                  reference_id: paymentIntent,
-                  description: 'Refund processed',
-                });
+              if (balance) {
+                const newBalance = Math.max(0, balance.balance - creditsToRemove);
+                await supabaseAdmin
+                  .from('credit_balances')
+                  .update({ balance: newBalance })
+                  .eq('user_id', purchase.user_id);
+                
+                await supabaseAdmin
+                  .from('credit_transactions')
+                  .insert({
+                    user_id: purchase.user_id,
+                    amount: -creditsToRemove,
+                    balance_after: newBalance,
+                    type: 'refund',
+                    reference_id: paymentIntent,
+                    description: 'Refund processed',
+                  });
+              }
             }
+            
+            if (purchase.guest_token) {
+              await storageDel(`credit:${purchase.guest_token}`);
+            }
+
+            await trackRefund(
+              [paymentIntent, purchase.stripe_session_id],
+              purchase.user_id || purchase.guest_token || 'guest',
+              { amount: refundedCents / 100, credits_removed: creditsToRemove }
+            );
           }
-          
-          // Invalidate guest token if exists
-          if (purchase.guest_token) {
-            await storageDel(`credit:${purchase.guest_token}`);
-          }
-          
-          console.log(`Webhook: Processed refund for purchase ${purchase.id}`);
         }
       }
       break;
@@ -1393,7 +1450,7 @@ app.post('/api/restore/verify', rateLimit('verify'), async (req, res) => {
 
   const packs = await withReceipts(await selfserve.listPacks(stripe, email));
   const token = selfserve.signAccess(email);
-  const remaining = packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+  const remaining = selfserve.spendableRemaining(packs);
   res.json({ token, email, remaining, purchases: packs.map(publicPack) });
 });
 
@@ -1403,7 +1460,7 @@ app.get('/api/purchases', async (req, res) => {
   if (!stripe) return res.status(503).json({ error: 'Payments are not available right now' });
   try {
     const packs = await withReceipts(await selfserve.listPacks(stripe, access.e));
-    const remaining = packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+    const remaining = selfserve.spendableRemaining(packs);
     res.json({ email: access.e, remaining, purchases: packs.map(publicPack) });
   } catch (err) {
     console.error('Purchases:', err.message);
@@ -1445,6 +1502,7 @@ async function refundSession(sessionId, email) {
     });
     return {
       status: 200,
+      paymentIntent: pack.paymentIntent,
       body: {
         success: true,
         amount: refund.amount / 100,
@@ -1504,9 +1562,9 @@ app.post('/api/refund', rateLimit('refund'), async (req, res) => {
       if (!access) return res.status(401).json({ error: 'Verify your email again' });
       const result = await refundSession(sessionId, access.e);
       if (result.status === 200) {
-        trackEvent(access.e, 'refund_processed', { amount: result.body.amount, sessionId });
+        await trackRefund([sessionId, result.paymentIntent], access.e, { amount: result.body.amount, sessionId });
         const packs = await selfserve.listPacks(stripe, access.e);
-        result.body.remaining = packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+        result.body.remaining = selfserve.spendableRemaining(packs);
       }
       return res.status(result.status).json(result.body);
     }
@@ -1523,7 +1581,7 @@ app.post('/api/refund', rateLimit('refund'), async (req, res) => {
     if (result.status === 200) {
       entry.remaining = 0;
       await storageSet(`credit:${creditToken}`, entry);
-      trackEvent(creditToken, 'refund_processed', { amount: result.body.amount });
+      await trackRefund([entry.stripeSessionId, result.paymentIntent], email, { amount: result.body.amount });
     }
     return res.status(result.status).json(result.body);
   } catch (err) {
@@ -1596,7 +1654,7 @@ app.post('/api/contact', rateLimit('contact'), async (req, res) => {
   }
 });
 
-app.post('/api/abort-run', async (req, res) => {
+app.post('/api/abort-run', rateLimit('api'), async (req, res) => {
   const { runToken } = req.body || {};
   if (!runToken) return res.status(400).json({ error: 'Missing run' });
   try {
@@ -1622,6 +1680,9 @@ async function returnRunCredit(runToken) {
   await storageSet(`runcharge:${runToken}`, charge, 7200);
 
   if (charge.userId && supabaseAdmin) {
+    if (charge.sessionId && stripe) {
+      await selfserve.returnToSession(stripe, charge.sessionId).catch(() => {});
+    }
     const { data: balance } = await supabaseAdmin
       .from('credit_balances')
       .select('balance')
@@ -1643,8 +1704,9 @@ async function returnRunCredit(runToken) {
   }
 
   if (charge.sessionId && stripe) {
-    await selfserve.returnToSession(stripe, charge.sessionId);
-  } else if (charge.creditToken) {
+    await selfserve.returnToSession(stripe, charge.sessionId).catch(() => {});
+  }
+  if (charge.creditToken) {
     const entry = await storageGet(`credit:${charge.creditToken}`);
     if (entry) {
       entry.remaining = (entry.remaining || 0) + 1;
@@ -1667,7 +1729,7 @@ async function creditRemaining(charge) {
   }
   if (charge.email && stripe) {
     const packs = await selfserve.listPacks(stripe, charge.email);
-    return packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+    return selfserve.spendableRemaining(packs);
   }
   if (charge.sessionId && stripe) {
     const session = await stripe.checkout.sessions.retrieve(charge.sessionId);
@@ -1752,6 +1814,32 @@ Scoring calibration — be honest:
   }
 });
 
+const RETRYABLE_STATUS = new Set([408, 409, 425, 429, 500, 502, 503, 529]);
+
+async function anthropicStream(body, apiKey) {
+  let lastError = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({ ...body, stream: true }),
+      });
+      if (response.ok || !RETRYABLE_STATUS.has(response.status) || attempt === 2) return response;
+      await response.arrayBuffer().catch(() => {});
+    } catch (err) {
+      lastError = err;
+      if (attempt === 2) throw err;
+    }
+    await new Promise(resolve => setTimeout(resolve, 400 * (attempt + 1)));
+  }
+  throw lastError || new Error('The article did not finish');
+}
+
 app.post('/api/chat', rateLimit('api'), async (req, res) => {
   const { apiKey, runToken, ...body } = req.body;
   
@@ -1781,15 +1869,7 @@ app.post('/api/chat', rateLimit('api'), async (req, res) => {
   }
   
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:  'POST',
-      headers: {
-        'Content-Type':      'application/json',
-        'x-api-key':         keyToUse,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({ ...body, stream: true }),
-    });
+    const response = await anthropicStream(body, keyToUse);
     
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
@@ -1830,12 +1910,16 @@ app.post('/api/chat', rateLimit('api'), async (req, res) => {
 // ANALYTICS ENDPOINT
 // ══════════════════════════════════════════════════════════════════════════════
 
-app.post('/api/track', optionalAuth, (req, res) => {
-  const { event, properties } = req.body;
-  if (!event) return res.status(400).json({ error: 'Missing event' });
+app.post('/api/track', optionalAuth, rateLimit('track'), (req, res) => {
+  const event = req.body?.event;
+  const properties = req.body?.properties && typeof req.body.properties === 'object' ? req.body.properties : {};
+  if (!event || typeof event !== 'string' || event.length > 64) {
+    return res.status(400).json({ error: 'Missing event' });
+  }
   
-  const distinctId = req.user?.id || properties?.distinctId || 'anonymous';
-  trackEvent(distinctId, event, properties);
+  const distinctId = req.user?.id || properties.distinctId || 'anonymous';
+  const { distinctId: _ignored, ...rest } = properties;
+  trackEvent(distinctId, event, rest);
   res.json({ success: true });
 });
 

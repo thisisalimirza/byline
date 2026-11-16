@@ -1612,5 +1612,20 @@ function toggleAnnotations() {
   <span class="footer-copy">© 2026 Byline</span>
 </footer>
 
+<script>
+(function () {
+  var id = localStorage.getItem('byline_anon');
+  if (!id) {
+    id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+    localStorage.setItem('byline_anon', id);
+  }
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event: 'landing_view', properties: { distinctId: id } }),
+  }).catch(function () {});
+})();
+</script>
+
 </body>
 </html>
