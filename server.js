@@ -221,6 +221,10 @@ app.get('/privacy', (req, res) =>
   res.sendFile(path.join(__dirname, 'public', 'privacy.html'))
 );
 
+app.get('/help', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public', 'help.html'))
+);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -230,7 +234,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ── GET /api/auth/status ──────────────────────────────────────────────────────
 // Returns whether authentication is configured and available
 app.get('/api/auth/status', (req, res) => {
-  res.json({ enabled: !!supabase });
+  res.json({
+    enabled: !!supabase,
+    // Google sign-in stays off until it is explicitly turned on.
+    google: false,
+  });
 });
 
 // ── POST /api/auth/magic-link ─────────────────────────────────────────────────

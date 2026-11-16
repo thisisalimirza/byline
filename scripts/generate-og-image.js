@@ -82,7 +82,7 @@ const html = `<!DOCTYPE html>
   <div class="divider"></div>
   <div class="features">
     <div class="feature">6-stage pipeline</div>
-    <div class="feature">SEO-optimized</div>
+    <div class="feature">Optimized for search</div>
     <div class="feature">From $0.33/article</div>
   </div>
 </body>

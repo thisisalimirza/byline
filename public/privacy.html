@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy — Byline</title>
-<meta name="description" content="Privacy Policy for Byline. Learn how we collect, use, and protect your data.">
+<title>Privacy policy — Byline</title>
+<meta name="description" content="Privacy policy for Byline. Learn how we collect, use, and protect your data.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://bylineblogs.com/privacy">
 
@@ -39,6 +39,7 @@
   }
   .nav-logo {
     display: flex; align-items: center; gap: 8px; text-decoration: none;
+    min-width: 44px; min-height: 44px;
   }
   .nav-logo-mark {
     width: 28px; height: 28px; background: var(--accent); border-radius: 7px;
@@ -61,14 +62,17 @@
   }
   a.back:hover { color: var(--text); }
   footer {
-    padding: 1.5rem; text-align: center;
-    font-size: 12px; color: var(--text-dim);
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+    text-align: center;
+    font-size: 13px; color: var(--text-dim);
     border-top: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
   }
-  footer a { 
-    color: var(--text-muted); text-decoration: none; 
-    margin: 0 0.75rem; min-height: 44px; display: inline-flex; align-items: center;
+  footer a, footer .footer-copy {
+    color: var(--text-muted); text-decoration: none;
+    min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px;
   }
+  footer .dot { color: var(--text-dim); display: inline-flex; align-items: center; }
   footer a:hover { color: var(--text); }
   .card {
     background: var(--surface); border: 1px solid var(--border);
@@ -126,7 +130,7 @@
 
 <div class="card">
   <div class="eyebrow">Legal</div>
-  <h1>Privacy Policy</h1>
+  <h1>Privacy policy</h1>
   <p class="updated">Last updated: October 29, 2026</p>
 
   <div class="highlight-box">
@@ -136,7 +140,7 @@
   <h2>1. Information We Collect</h2>
   
   <p><strong>Account Information</strong></p>
-  <p>When you create an account, we collect your email address and, if you sign in with Google, your name and profile picture.</p>
+  <p>When you create an account, we collect your email address. We do not offer Google sign-in.</p>
   
   <p><strong>Content You Create</strong></p>
   <p>We store the articles, drafts, and products you create so you can access them across devices. This includes your article topics, keywords, and generated content.</p>
@@ -160,7 +164,7 @@
   <h2>3. Third-Party Services</h2>
   <p>We use the following services to operate Byline:</p>
   <ul>
-    <li><strong>Content generation provider</strong> — Your prompts are sent to their API to generate articles.</li>
+    <li><strong>Anthropic</strong> — Content generation. Your prompts are sent to Anthropic's API to generate articles. See <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic's Privacy Policy</a>.</li>
     <li><strong>Stripe</strong> — Payment processing. See <a href="https://stripe.com/privacy" target="_blank">Stripe's Privacy Policy</a>.</li>
     <li><strong>Supabase</strong> — Database and authentication. Data stored in secure, encrypted databases.</li>
     <li><strong>Vercel</strong> — Hosting and analytics. See <a href="https://vercel.com/legal/privacy-policy" target="_blank">Vercel's Privacy Policy</a>.</li>
@@ -205,18 +209,21 @@
   <h2>11. Contact Us</h2>
   <p>Questions about this Privacy Policy? Contact us at <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>.</p>
 
-  <div class="footer-links">
-    <a href="/terms">Terms of service</a>
-    <a href="/refund">Refund policy</a>
-    <a href="/">Home</a>
-  </div>
 </div>
 </div>
 
 <footer>
   <a href="/terms">Terms</a>
+  <span class="dot" aria-hidden="true">·</span>
   <a href="/privacy">Privacy</a>
+  <span class="dot" aria-hidden="true">·</span>
   <a href="/refund">Refunds</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/help">Help</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/help#contact">Contact</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <span class="footer-copy">© 2026 Byline</span>
 </footer>
 
 </body>

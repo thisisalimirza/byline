@@ -358,3 +358,44 @@ Measured on prod just now:
 - **Status**: Fixed on branch
 
 ---
+
+## 2026-11-01 critic pass
+
+**Reviewed**: main after PR #7, plus the follow-up fixes in this branch  
+**Viewports**: 390px, 1180px, 1512px
+
+Decisions kept from review: legal pages name data processors (Anthropic stays in Terms §7 and Privacy). Google sign-in stays off, so the product does not promise it. The home comparison column is labeled "Typical chatbot draft" with the logo and link removed.
+
+### Fixes applied
+
+#### 2. App under 768px
+- Setup shows the form only. Stage panels and the empty state render under Results.
+
+#### 3. Empty state
+- Copy is "Add a topic and keyword, then generate."
+
+#### 4. Credits
+- Sidebar Credits card removed. Header pill reads "0 credits · Buy" and opens the buy modal.
+
+#### 5. Advanced
+- Own card, 8px gap, toggle at least 44px, same header style as "Your article".
+
+#### 6. Accounts off
+- /account says "Accounts are coming soon. Your credits and drafts live in this browser." with "Back to app".
+- /account is not in the app footer. FAQ no longer says "until you choose to sign in". Buttons are at least 44px.
+
+#### 7. Stage names
+- Planning, Research, Writing, SEO, Refining, Humanizing on home cards, How it works, and FAQ.
+- "Settings" is "Advanced". "SEO-optimize" is "optimize for search", including the og image.
+
+#### 8. Shared footer and logo
+- Every page: Terms · Privacy · Refunds · Help · Contact · © 2026 Byline. Targets are 44px. Every header logo hit area is 44px.
+
+#### 9. Titles and sitemap
+- /app removed from the sitemap. /app has a visually hidden h1 "Write an article" and a meta description.
+- Legal titles and H1s: "Terms of service", "Privacy policy", "Refund policy".
+
+#### 10. Numerals
+- Circled numerals only on the six stages. Numbers removed from Why Byline and Features cards.
+
+---

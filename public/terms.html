@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terms of Service — Byline</title>
-<meta name="description" content="Terms of Service for Byline, the article writing studio.">
+<title>Terms of service — Byline</title>
+<meta name="description" content="Terms of service for Byline, the article writing studio.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://bylineblogs.com/terms">
 
@@ -39,6 +39,7 @@
   }
   .nav-logo {
     display: flex; align-items: center; gap: 8px; text-decoration: none;
+    min-width: 44px; min-height: 44px;
   }
   .nav-logo-mark {
     width: 28px; height: 28px; background: var(--accent); border-radius: 7px;
@@ -61,14 +62,17 @@
   }
   a.back:hover { color: var(--text); }
   footer {
-    padding: 1.5rem; text-align: center;
-    font-size: 12px; color: var(--text-dim);
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+    text-align: center;
+    font-size: 13px; color: var(--text-dim);
     border-top: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
   }
-  footer a { 
-    color: var(--text-muted); text-decoration: none; 
-    margin: 0 0.75rem; min-height: 44px; display: inline-flex; align-items: center;
+  footer a, footer .footer-copy {
+    color: var(--text-muted); text-decoration: none;
+    min-height: 44px; display: inline-flex; align-items: center; padding: 0 8px;
   }
+  footer .dot { color: var(--text-dim); display: inline-flex; align-items: center; }
   footer a:hover { color: var(--text); }
   .card {
     background: var(--surface); border: 1px solid var(--border);
@@ -119,7 +123,7 @@
 
 <div class="card">
   <div class="eyebrow">Legal</div>
-  <h1>Terms of Service</h1>
+  <h1>Terms of service</h1>
   <p class="updated">Last updated: October 29, 2026</p>
 
   <h2>1. Agreement to terms</h2>
@@ -155,7 +159,7 @@
   <p>Generated content may not be unique. Similar inputs from different users may produce similar outputs. You are responsible for reviewing and editing generated content before publication.</p>
 
   <h2>7. Third-party services</h2>
-  <p>The Service relies on third-party providers including a content-generation provider, Stripe (payments), and Supabase (data storage). Your use of these services through Byline is also subject to their respective terms.</p>
+  <p>The Service relies on third-party providers including Anthropic (content generation), Stripe (payments), and Supabase (data storage). Your use of these services through Byline is also subject to their respective terms.</p>
 
   <h2>8. Disclaimers</h2>
   <p>The Service is provided "as is" without warranties of any kind. We do not guarantee that:</p>
@@ -177,18 +181,21 @@
   <h2>12. Contact</h2>
   <p>Questions about these Terms? Contact us at <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>.</p>
 
-  <div class="footer-links">
-    <a href="/privacy">Privacy policy</a>
-    <a href="/refund">Refund policy</a>
-    <a href="/">Home</a>
-  </div>
 </div>
 </div>
 
 <footer>
   <a href="/terms">Terms</a>
+  <span class="dot" aria-hidden="true">·</span>
   <a href="/privacy">Privacy</a>
+  <span class="dot" aria-hidden="true">·</span>
   <a href="/refund">Refunds</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/help">Help</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/help#contact">Contact</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <span class="footer-copy">© 2026 Byline</span>
 </footer>
 
 </body>
