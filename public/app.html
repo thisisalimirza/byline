@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Byline — Article Studio</title>
+<title>Byline — Article studio</title>
+<meta name="description" content="Write an article. Add a topic and keyword, then generate.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://bylineblogs.com/app">
 
@@ -89,9 +90,21 @@
   .logo {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 9px;
     text-decoration: none;
     flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
   .logo-mark {
     width: 30px; height: 30px;
@@ -144,6 +157,11 @@
     white-space: nowrap;
   }
   .pipe-arrow { color: var(--text-dim); font-size: 11px; padding: 0 1px; opacity: 0.35; }
+
+  @media (max-width: 1280px) {
+    .pipeline-vis { display: none; }
+    .header-credit-pill { margin-left: auto; }
+  }
 
   .pipe-node.active-1 .pipe-node-num { border-color: var(--a1); color: var(--a1); background: var(--a1d); }
   .pipe-node.active-1 .pipe-node-label { color: var(--a1); }
@@ -304,7 +322,7 @@
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 8px;
     /* smooth momentum scroll on iOS */
     -webkit-overflow-scrolling: touch;
   }
@@ -330,6 +348,7 @@
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
+    min-height: 44px;
     cursor: pointer;
     user-select: none;
     gap: 0.5rem;
@@ -801,7 +820,7 @@
 
   /* Generate button */
   .run-btn {
-    width: 100%; padding: 13px;
+    width: 100%; padding: 13px; min-height: 44px;
     background: var(--accent); color: #0d0c0a;
     border: none; border-radius: var(--r);
     font-family: var(--sans); font-size: 14px; font-weight: 700;
@@ -1451,9 +1470,9 @@
       grid-template-rows: auto auto auto auto auto auto;
     }
 
-    /* Show tab bar */
+    /* Tab bar is shown only under 768px (see the query below) */
     .mobile-tabs {
-      display: flex;
+      display: none;
       border-bottom: 1px solid var(--border);
       background: var(--bg);
       position: sticky;
@@ -1464,6 +1483,7 @@
     .mobile-tab {
       flex: 1;
       padding: 0.75rem;
+      min-height: 44px;
       background: none;
       border: none;
       border-bottom: 2px solid transparent;
@@ -1504,6 +1524,7 @@
     .sidebar-footer {
       border-top: none;
       padding-top: 0;
+      position: static;
     }
 
     /* Output area becomes full-width */
@@ -1513,9 +1534,7 @@
       min-height: 60vh;
     }
 
-    /* Tab-driven visibility */
-    .sidebar.tab-hidden { display: none; }
-    .output-area.tab-hidden { display: none; }
+    /* Tab visibility is applied under 768px only */
 
     /* Header adjustments */
     header { padding: 0 1rem; }
@@ -1538,6 +1557,20 @@
     .preview-tools-sidebar { width: 100%; border-left: none; border-top: 1px solid #e8e2d8; overflow: visible; }
     .preview-tools-sidebar .remix-formats { grid-template-columns: 1fr 1fr; }
     .preview-tools-sidebar .preview-seo-badges { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 767px) {
+    .mobile-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 58px;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .sidebar.tab-hidden { display: none; }
+    .output-area.tab-hidden { display: none; }
   }
 
   @media (max-width: 480px) {
@@ -1622,19 +1655,41 @@
     transition: opacity 0.15s; letter-spacing: 0.01em;
   }
   .pdf-generate-btn:hover { opacity: 0.85; }
+
+  .site-footer {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+    min-height: 52px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom));
+  }
+  .site-footer a, .site-footer .footer-copy {
+    min-height: 44px; display: inline-flex; align-items: center;
+    padding: 0 8px; font-size: 13px; color: var(--text-muted); text-decoration: none;
+  }
+  .site-footer a:hover { color: var(--text); }
+  .site-footer .dot { color: var(--text-dim); }
+  body { padding-bottom: 52px; }
+  #completionBar { bottom: 52px; }
+  @media (max-width: 719px) {
+    body { padding-bottom: 108px; }
+    #completionBar { bottom: 108px; }
+  }
 </style>
 </head>
 <body>
 
+<h1 class="visually-hidden">Write an article</h1>
 <header>
-  <a class="logo" href="/">
+  <a class="logo" href="/" aria-label="Byline home">
     <div class="logo-mark">B</div>
     <div class="logo-name">Byline</div>
   </a>
   <div class="pipeline-vis">
     <div class="pipe-node" id="pn-1">
       <span class="pipe-node-num">1</span>
-      <span class="pipe-node-label">Plan</span>
+      <span class="pipe-node-label">Planning</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-2">
@@ -1644,7 +1699,7 @@
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-3">
       <span class="pipe-node-num">3</span>
-      <span class="pipe-node-label">Write</span>
+      <span class="pipe-node-label">Writing</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-4">
@@ -1654,17 +1709,17 @@
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-5">
       <span class="pipe-node-num">5</span>
-      <span class="pipe-node-label">Refine</span>
+      <span class="pipe-node-label">Refining</span>
     </div>
     <div class="pipe-arrow">›</div>
     <div class="pipe-node" id="pn-6">
       <span class="pipe-node-num">6</span>
-      <span class="pipe-node-label">Humanize</span>
+      <span class="pipe-node-label">Humanizing</span>
     </div>
   </div>
   <button class="header-credit-pill" id="headerCreditPill" onclick="openCreditsModal()">
-    <span class="hcp-count" id="hcpCount">—</span>
-    <span class="hcp-label">credits</span>
+    <span class="hcp-count" id="hcpCount">0</span>
+    <span class="hcp-label">credits · Buy</span>
   </button>
   
   <!-- Auth section -->
@@ -1722,19 +1777,8 @@
   <aside class="sidebar">
   <div class="sidebar-scroll">
 
-    <!-- Credits - simplified, main display is in header -->
-    <div class="sidebar-card no-collapse" id="creditsCard">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div class="sidebar-card-title">Credits</div>
-        <button class="credit-topup" onclick="openCreditsModal()">Buy credits →</button>
-      </div>
-      <div class="credit-low-warn" id="creditLowWarn">
-        Running low — buy more to keep generating.
-      </div>
-      <!-- Hidden elements for JS compatibility -->
-      <span id="creditNum" style="display:none;">—</span>
-      <a id="refundLink" href="/refund" style="display:none;"></a>
-    </div>
+    <span id="creditNum" class="visually-hidden">0</span>
+    <a id="refundLink" href="/refund" class="visually-hidden">Refunds</a>
 
     <div class="error-msg" id="errorMsg"></div>
 
@@ -1852,13 +1896,15 @@
       </div>
       </div><!-- /sidebar-card-body#brandBody -->
     </div>
+    </div>
 
-    <!-- Advanced settings -->
-    <button class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
-      ⚙ Advanced
-      <span class="adv-toggle-icon">▼</span>
-    </button>
-    <div class="advanced-section" id="advancedSection">
+    <!-- Advanced -->
+    <div class="sidebar-card" id="advancedCard">
+    <div class="sidebar-card-header" id="advancedToggle" onclick="toggleSidebarCard('advanced')" role="button" tabindex="0" aria-expanded="false">
+      <div class="sidebar-card-title">Advanced</div>
+      <span class="sidebar-card-chevron" id="advancedChevron">▼</span>
+    </div>
+    <div class="sidebar-card-body collapsed" id="advancedBody">
       <div class="agent-config">
         <div class="agent-config-header" onclick="toggleConfig(1)">
           <div class="agent-dot" style="background:var(--a1)"></div>
@@ -1919,6 +1965,7 @@
           <textarea id="sys6" rows="7"></textarea>
         </div>
       </div>
+      </div>
     </div>
 
   </div><!-- /sidebar-scroll -->
@@ -1929,7 +1976,7 @@
 
   </aside>
 
-  <div class="output-area" id="outputArea">
+  <div class="output-area tab-hidden" id="outputArea">
 
     <!-- Drafts dashboard: rendered by JS, only shown when local drafts exist -->
     <div id="draftsDash"></div>
@@ -1941,7 +1988,7 @@
         <span class="agent-status-pill" id="pill1">—</span>
       </div>
       <div class="agent-panel-body">
-        <div class="agent-output-text empty-state" id="out1">Enter your topic and keyword on the left, then click Generate to start.</div>
+        <div class="agent-output-text empty-state" id="out1">Add a topic and keyword, then generate.</div>
       </div>
     </div>
 
@@ -2007,6 +2054,20 @@
 
   </div>
 </main>
+
+<footer class="site-footer">
+  <a href="/terms">Terms</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/privacy">Privacy</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/refund">Refunds</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/help">Help</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <a href="/help#contact">Contact</a>
+  <span class="dot" aria-hidden="true">·</span>
+  <span class="footer-copy">© 2026 Byline</span>
+</footer>
 
 <!-- ════════════════════ Preview Overlay ════════════════════ -->
 <div class="preview-overlay" id="previewOverlay">
@@ -2280,7 +2341,7 @@
           <ol class="impl-steps">
             <li>Open your Webflow CMS collection and create a new blog post item</li>
             <li>Paste the title into the Name / Title field</li>
-            <li>Click into the Rich Text body field and paste the article — Webflow preserves heading levels and paragraph breaks automatically</li>
+            <li>Open the Rich Text body field and paste the article. Webflow keeps heading levels and paragraph breaks.</li>
             <li>Go to the <strong>SEO Settings</strong> tab on the collection item and paste the meta description there</li>
             <li>Set a clean URL slug using the target keyword, lowercase and hyphenated (e.g. <code>local-seo-small-business</code>)</li>
             <li>Publish the item, then submit the URL to Google Search Console for faster indexing</li>
@@ -2293,7 +2354,7 @@
           <ol class="impl-steps">
             <li><strong>Ghost:</strong> Go to <code>Posts → New Post</code> and paste the title at the top</li>
             <li>Ghost supports Markdown natively — paste the Markdown version directly into the editor for the cleanest result</li>
-            <li>Click the settings gear (⚙), expand <code>Meta data</code>, and paste the meta description plus a custom slug</li>
+            <li>Open the settings gear, expand <code>Meta data</code>, and paste the meta description plus a custom slug</li>
             <li><strong>Substack:</strong> Create a new post, paste the title into the subject line, and paste the body into the editor</li>
             <li>For Substack, the title doubles as the email subject line — make sure it creates curiosity without being clickbait</li>
             <li>Add a header image and publish (or schedule for your audience's peak open time)</li>
@@ -3018,7 +3079,7 @@ async function runPipeline() {
   // ──────────────────────────────────────────────────────────────────────────
 
   // Auto-switch to Results tab on mobile when generation starts
-  if (window.innerWidth <= 900) switchTab('results');
+  if (window.innerWidth < 768) switchTab('results');
 
   const btn = document.getElementById('runBtn');
   btn.disabled = true;
@@ -4824,6 +4885,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const r = await fetch('/api/auth/status');
     const data = await r.json();
     authEnabled = data.enabled;
+    if (data.google) {
+      const googleWrap = document.getElementById('googleSigninWrap');
+      const googleBtn = document.getElementById('googleSigninBtn');
+      const divider = document.getElementById('signinDivider');
+      if (googleWrap) googleWrap.hidden = false;
+      if (googleBtn) googleBtn.hidden = false;
+      if (divider) divider.hidden = false;
+    }
   } catch (e) { /* auth not available */ }
   
   if (authEnabled) {
@@ -4860,14 +4929,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     <h2 class="signin-title">Sign in to Byline</h2>
     <p class="signin-sub">Save your work across devices and manage your credits in one place.</p>
     
-    <div class="signin-methods">
-      <button class="signin-btn google" onclick="signInWithGoogle()">
+    <div class="signin-methods" id="googleSigninWrap" hidden>
+      <button class="signin-btn google" id="googleSigninBtn" onclick="signInWithGoogle()" hidden>
         <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
       </button>
     </div>
     
-    <div class="signin-divider">or</div>
+    <div class="signin-divider" id="signinDivider" hidden>or</div>
     
     <form class="signin-email-form" onsubmit="event.preventDefault(); sendMagicLink();">
       <input type="email" id="signinEmail" placeholder="you@example.com" autocomplete="email" required>
