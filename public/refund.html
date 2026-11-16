@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Refund policy — Byline</title>
-<meta name="description" content="Byline's self-serve refund policy. Request a full refund automatically while 50% or more of your credits remain unused.">
+<meta name="description" content="Refund a Byline credit pack yourself. Full refund within 14 days if unused, then pro-rata for 30 days.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://bylineblogs.com/refund">
 
@@ -133,11 +133,11 @@
   .manual-section { display: none; margin-top: 20px; }
   .manual-section.visible { display: block; }
   label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
-  input[type="text"] {
-    width: 100%; padding: 10px 14px; font-family: var(--sans); font-size: 13px;
+  input[type="text"], input[type="email"] {
+    width: 100%; padding: 10px 14px; font-family: var(--sans); font-size: 16px;
     background: rgba(255,255,255,0.04); border: 1px solid var(--border);
     border-radius: var(--r); color: var(--text); margin-bottom: 12px;
-    outline: none; transition: border-color 0.15s;
+    outline: none; transition: border-color 0.15s; min-height: 44px;
   }
   input[type="text"]:focus { border-color: rgba(255,255,255,0.18); }
   input[type="text"]::placeholder { color: var(--text-dim); }
@@ -188,35 +188,30 @@
   <a class="back" href="/app">← Back to Byline</a>
   <div class="eyebrow" style="margin-top:16px;">Refunds</div>
   <h1>Refund policy</h1>
-  <p class="sub">Full refund if you've used less than half your pack. Processed instantly.</p>
+  <p class="sub">A full refund is available within 14 days if you have not used the pack. After that, unused credits are refunded pro-rata for 30 days from the purchase. Each pack can be refunded once, back to the original payment. The refund is issued immediately and the unused credits are removed.</p>
 
-  <div class="policy-box">
-    <strong>Refund policy:</strong> Full refund available as long as at least 50% of your credits remain unused.
-    If you've used more than half your pack, the remaining credits are non-refundable —
-    those articles have already been written.
+  <div class="policy-box" id="restore">
+    <strong>Restore or refund</strong>
+    Enter the email from checkout. We send a one-time code, then you can restore credits on this device or refund a pack.
   </div>
 
-  <!-- Purchase history from this device -->
-  <div id="purchaseSection">
-    <div class="purchase-loading" id="purchaseLoading">Checking your purchases on this device…</div>
-    <div class="purchase-list" id="purchaseList" style="display:none;"></div>
-    <div class="no-purchases" id="noPurchases" style="display:none;">
-      No purchases found on this device or browser.
+  <label for="emailInput">Purchase email</label>
+  <input type="email" id="emailInput" autocomplete="email" placeholder="you@example.com" />
+  <button class="manual-btn" id="sendCodeBtn" type="button">Send code</button>
+
+  <div id="codeBlock" style="display:none; margin-top:16px;">
+    <label for="codeInput">Code</label>
+    <input type="text" id="codeInput" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" />
+    <button class="manual-btn" id="verifyBtn" type="button">Verify email</button>
+  </div>
+
+  <div id="purchaseSection" style="display:none; margin-top:20px;">
+    <div class="purchase-list" id="purchaseList"></div>
+    <div class="no-purchases" id="noPurchases" style="display:none;">No purchases on this email.</div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;">
+      <button class="refund-btn" id="downloadBtn" type="button">Download my data</button>
+      <button class="refund-btn" id="deleteBtn" type="button" style="background:transparent; color:var(--text); border:1px solid var(--border);">Delete my data</button>
     </div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- Manual fallback -->
-  <div class="manual-toggle" id="manualToggle" onclick="toggleManual()">
-    <span class="arrow">›</span> Purchased on a different device? Restore with receipt code
-  </div>
-  <div class="manual-section" id="manualSection">
-    <div style="height:16px;"></div>
-    <label for="tokenInput">Receipt code</label>
-    <input type="text" id="tokenInput" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
-    <p class="hint">Open the app on the device where you purchased, then open this page again. The receipt code is filled in for you.</p>
-    <button class="manual-btn" id="manualBtn" onclick="submitManual()">Process refund →</button>
   </div>
 
   <div class="result" id="result">
@@ -226,17 +221,12 @@
 
   <p class="footer-note">
     Need help?
-    <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>
+    <a href="/help#contact">Contact</a>
   </p>
 </div>
 
 <script>
-  function toggleManual() {
-    const toggle = document.getElementById('manualToggle');
-    const section = document.getElementById('manualSection');
-    const open = toggle.classList.toggle('open');
-    section.classList.toggle('visible', open);
-  }
+  let accessToken = sessionStorage.getItem('byline_restore_token') || '';
 
   function showResult(type, title, msg) {
     const el = document.getElementById('result');
@@ -244,141 +234,164 @@
     document.getElementById('resultTitle').textContent = title;
     document.getElementById('resultMsg').textContent = msg;
     el.style.display = 'block';
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  async function doRefund(token, btnEl, onSuccess) {
-    btnEl.disabled = true;
-    btnEl.textContent = 'Processing…';
+  function money(n) { return '$' + Number(n || 0).toFixed(2); }
+
+  async function sendCode() {
+    const email = document.getElementById('emailInput').value.trim();
+    const btn = document.getElementById('sendCodeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/restore/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        showResult('error', 'Code not sent', d.error || 'Try again.');
+      } else {
+        document.getElementById('codeBlock').style.display = 'block';
+        showResult('success', 'Check your email', d.message);
+      }
+    } catch (e) {
+      showResult('error', 'Network error', 'Try again.');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Send code';
+  }
+
+  function renderPurchases(purchases) {
+    const list = document.getElementById('purchaseList');
+    const none = document.getElementById('noPurchases');
+    list.innerHTML = '';
+    document.getElementById('purchaseSection').style.display = 'block';
+    if (!purchases.length) { none.style.display = 'block'; return; }
+    none.style.display = 'none';
+    purchases.forEach((p) => {
+      const row = document.createElement('div');
+      row.className = 'purchase-row ' + (p.eligible ? 'eligible' : 'ineligible');
+      const meta = document.createElement('div');
+      meta.className = 'purchase-meta';
+      const title = document.createElement('div');
+      title.className = 'purchase-title';
+      title.textContent = p.credits + ' articles · ' + money(p.amount);
+      meta.appendChild(title);
+      const dateEl = document.createElement('div');
+      dateEl.className = 'purchase-date';
+      dateEl.textContent = new Date(p.created * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      if (p.receiptUrl) {
+        const receipt = document.createElement('a');
+        receipt.href = p.receiptUrl;
+        receipt.textContent = 'Receipt';
+        receipt.style.marginLeft = '8px';
+        receipt.style.color = 'var(--text-muted)';
+        dateEl.appendChild(receipt);
+      }
+      meta.appendChild(dateEl);
+      const status = document.createElement('div');
+      status.className = 'purchase-status ' + (p.refunded ? 'ok' : p.eligible ? 'ok' : 'no');
+      if (p.refunded) status.textContent = 'Refunded';
+      else if (p.eligible) status.textContent = (p.kind === 'full' ? 'Full refund' : 'Partial refund') + ' · ' + money(p.refundAmount) + ' · ' + p.remaining + ' unused';
+      else status.textContent = p.reason || 'Not eligible';
+      meta.appendChild(status);
+      row.appendChild(meta);
+      if (p.eligible) {
+        const btn = document.createElement('button');
+        btn.className = 'refund-btn';
+        btn.type = 'button';
+        btn.textContent = 'Refund';
+        btn.onclick = () => refundPack(p, btn, status, row);
+        row.appendChild(btn);
+      }
+      list.appendChild(row);
+    });
+  }
+
+  async function refundPack(p, btn, status, row) {
+    btn.disabled = true;
+    btn.textContent = 'Refunding…';
     try {
       const r = await fetch('/api/refund', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ creditToken: token }),
+        body: JSON.stringify({ token: accessToken, sessionId: p.id }),
       });
       const d = await r.json();
-      if (d.success) {
-        // Remove this token from localStorage history
-        const history = JSON.parse(localStorage.getItem('byline_purchases') || '[]');
-        localStorage.setItem('byline_purchases', JSON.stringify(history.filter(p => p.token !== token)));
-        if (localStorage.getItem('byline_credit_token') === token) {
-          localStorage.removeItem('byline_credit_token');
-          localStorage.removeItem('byline_credit_bal');
-        }
-        onSuccess(d);
-      } else {
-        showResult('error', '✗ Could not process refund', d.error || 'Something went wrong.');
-        btnEl.disabled = false;
-        btnEl.textContent = 'Refund →';
+      if (!r.ok || !d.success) {
+        showResult('error', 'Refund not issued', d.error || 'Try again.');
+        btn.disabled = false;
+        btn.textContent = 'Refund';
+        return;
       }
-    } catch (err) {
-      showResult('error', '✗ Network error', 'Please try again.');
-      btnEl.disabled = false;
-      btnEl.textContent = 'Refund →';
+      if (localStorage.getItem('byline_credit_token')) {
+        localStorage.setItem('byline_credit_bal', String(d.remaining || 0));
+      }
+      row.className = 'purchase-row ineligible';
+      btn.remove();
+      status.className = 'purchase-status ok';
+      status.textContent = 'Refunded';
+      showResult('success', 'Refund issued', money(d.amount) + ' is returning to the original payment. It can take 5–10 business days to appear. Unused credits from this pack were removed.');
+    } catch (e) {
+      showResult('error', 'Network error', 'Try again.');
+      btn.disabled = false;
+      btn.textContent = 'Refund';
     }
   }
 
-  function buildPurchaseRow(purchase, eligibility) {
-    const row = document.createElement('div');
-    row.className = 'purchase-row ' + (eligibility.eligible ? 'eligible' : 'ineligible');
-
-    const meta = document.createElement('div');
-    meta.className = 'purchase-meta';
-
-    const title = document.createElement('div');
-    title.className = 'purchase-title';
-    title.textContent = purchase.credits + ' articles';
-    meta.appendChild(title);
-
-    const dateEl = document.createElement('div');
-    dateEl.className = 'purchase-date';
-    dateEl.textContent = new Date(purchase.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    meta.appendChild(dateEl);
-
-    const status = document.createElement('div');
-    status.className = 'purchase-status ' + (eligibility.eligible ? 'ok' : 'no');
-    if (eligibility.eligible) {
-      const amt = eligibility.amount != null ? ' ($' + eligibility.amount.toFixed(2) + ')' : '';
-      status.textContent = '✓ Eligible for full refund' + amt;
-    } else {
-      status.textContent = '✗ ' + (eligibility.reason || 'Not eligible');
+  async function verifyCode() {
+    const email = document.getElementById('emailInput').value.trim();
+    const code = document.getElementById('codeInput').value.trim();
+    const btn = document.getElementById('verifyBtn');
+    btn.disabled = true;
+    try {
+      const r = await fetch('/api/restore/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        showResult('error', 'Not verified', d.error || 'Try again.');
+        btn.disabled = false;
+        return;
+      }
+      accessToken = d.token;
+      sessionStorage.setItem('byline_restore_token', d.token);
+      localStorage.setItem('byline_credit_token', d.token);
+      localStorage.setItem('byline_credit_bal', String(d.remaining || 0));
+      renderPurchases(d.purchases || []);
+      showResult('success', 'Credits restored', 'This browser now has ' + (d.remaining || 0) + ' credits. You can refund a pack below.');
+    } catch (e) {
+      showResult('error', 'Network error', 'Try again.');
     }
-    meta.appendChild(status);
-    row.appendChild(meta);
-
-    if (eligibility.eligible) {
-      const btn = document.createElement('button');
-      btn.className = 'refund-btn';
-      btn.textContent = 'Refund →';
-      btn.onclick = () => {
-        doRefund(purchase.token, btn, (d) => {
-          row.className = 'purchase-row ineligible';
-          btn.remove();
-          status.className = 'purchase-status ok';
-          status.textContent = '✓ Refunded — $' + d.amount.toFixed(2) + ' ' + d.currency + ' on its way (5–10 business days)';
-          showResult('success', '✓ Refund processed', 'Your $' + d.amount.toFixed(2) + ' refund is on its way. It\'ll appear on your statement within 5–10 business days.');
-        });
-      };
-      row.appendChild(btn);
-    }
-
-    return row;
+    btn.disabled = false;
   }
 
-  async function loadPurchases() {
-    const loadingEl = document.getElementById('purchaseLoading');
-    const listEl    = document.getElementById('purchaseList');
-    const noneEl    = document.getElementById('noPurchases');
+  document.getElementById('sendCodeBtn').onclick = sendCode;
+  document.getElementById('verifyBtn').onclick = verifyCode;
 
-    // Collect all tokens: purchase history array + current active token
-    const history    = JSON.parse(localStorage.getItem('byline_purchases') || '[]');
-    const activeToken = localStorage.getItem('byline_credit_token');
+  document.getElementById('downloadBtn').onclick = () => {
+    if (!accessToken) return;
+    window.location.href = '/api/account/export?token=' + encodeURIComponent(accessToken);
+  };
 
-    // Merge — ensure active token appears if not in history (older sessions)
-    const seen = new Set(history.map(p => p.token));
-    if (activeToken && !seen.has(activeToken)) {
-      history.unshift({ token: activeToken, credits: '?', date: new Date().toISOString() });
-    }
-
-    // Also check URL param (linked from app)
-    const urlToken = new URLSearchParams(window.location.search).get('token');
-    if (urlToken && !seen.has(urlToken)) {
-      history.unshift({ token: urlToken, credits: '?', date: new Date().toISOString() });
-    }
-
-    loadingEl.style.display = 'none';
-
-    if (history.length === 0) {
-      noneEl.style.display = 'block';
-      return;
-    }
-
-    listEl.style.display = 'flex';
-
-    // Check eligibility for each in parallel
-    const checks = history.map(p =>
-      fetch('/api/refund-eligible?token=' + encodeURIComponent(p.token))
-        .then(r => r.json())
-        .catch(() => ({ eligible: false, reason: 'Could not check status' }))
-    );
-    const results = await Promise.all(checks);
-
-    history.forEach((p, i) => {
-      listEl.appendChild(buildPurchaseRow(p, results[i]));
+  document.getElementById('deleteBtn').onclick = async () => {
+    const typed = window.prompt('Type DELETE to remove the customer profile for this email. Payment records stay with Stripe.');
+    if (typed !== 'DELETE') return;
+    const r = await fetch('/api/account/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: accessToken, confirm: 'DELETE' }),
     });
-  }
-
-  async function submitManual() {
-    const token = document.getElementById('tokenInput').value.trim();
-    const btn   = document.getElementById('manualBtn');
-    if (!token) { showResult('error', 'Missing token', 'Please paste your credit token.'); return; }
-    doRefund(token, btn, (d) => {
-      document.getElementById('manualSection').style.display = 'none';
-      showResult('success', '✓ Refund processed', 'Your $' + d.amount.toFixed(2) + ' ' + d.currency + ' refund is on its way within 5–10 business days.');
-    });
-  }
-
-  window.addEventListener('DOMContentLoaded', loadPurchases);
+    const d = await r.json();
+    if (!r.ok) { showResult('error', 'Not deleted', d.error || 'Try again.'); return; }
+    ['byline_credit_token','byline_credit_bal','byline_purchases','byline_drafts','byline_products','byline_own_key','byline_access_token','byline_refresh_token','byline_user'].forEach(k => localStorage.removeItem(k));
+    sessionStorage.removeItem('byline_restore_token');
+    showResult('success', 'Data deleted', d.message);
+  };
 </script>
 </div>
 

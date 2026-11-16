@@ -677,6 +677,10 @@
     font-size: 11px; color: var(--text-dim); text-align: center;
     margin-top: 14px; line-height: 1.6;
   }
+  .modal-storage-note a {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px; padding: 0 8px; color: var(--text-muted);
+  }
   .new-credits-banner {
     background: rgba(78,201,154,0.1); border: 1px solid rgba(78,201,154,0.25);
     border-radius: var(--r-sm); padding: 10px 14px;
@@ -2963,6 +2967,19 @@ function scrollActiveToBottom(outEl) {
   area.scrollTop = Math.max(area.scrollTop, target);
 }
 
+async function releaseRun(runToken) {
+  if (!runToken) return;
+  try {
+    const r = await fetch('/api/abort-run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ runToken }),
+    });
+    const d = await r.json();
+    if (typeof d.remaining === 'number') updateCreditDisplay(d.remaining);
+  } catch (e) {}
+}
+
 async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage, outEl, panelN) {
   const authPayload = authMode.type === 'key'
     ? { apiKey: authMode.apiKey }
@@ -2981,8 +2998,10 @@ async function streamAgent(authMode, model, maxTokens, systemPrompt, userMessage
   });
 
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error?.message || 'API error ' + response.status);
+    const err = await response.json().catch(() => ({}));
+    if (authMode.type === 'run') await releaseRun(authMode.runToken);
+    if (typeof err.remaining === 'number') updateCreditDisplay(err.remaining);
+    throw new Error(err.error?.message || err.error || 'The article did not finish. The credit was returned.');
   }
 
   const reader = response.body.getReader();
@@ -4990,6 +5009,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     <p class="modal-storage-note" id="modalStorageNote">
       Secure payment via Stripe. Credits are added instantly.
+      <a href="/refund#restore">Restore my credits</a> on another device.
     </p>
   </div>
 </div>
