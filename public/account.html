@@ -323,11 +323,11 @@
 </header>
 
 <main>
-  <!-- Loading state -->
-  <div id="loadingState" class="loading">Loading your account</div>
+  <!-- Loading state, only while accounts are on and the profile is fetching -->
+  <div id="loadingState" class="loading" style="display: none;">Loading your account</div>
   
   <!-- Shown while accounts are turned off -->
-  <div id="comingSoon" class="signin-prompt" style="display: none;">
+  <div id="comingSoon" class="signin-prompt">
     <h1>Account</h1>
     <p>Accounts are coming soon. Your credits and drafts live in this browser.</p>
     <div class="actions">
@@ -455,8 +455,12 @@
     if (!authEnabled) {
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('comingSoon').style.display = 'block';
+      document.getElementById('signinPrompt').style.display = 'none';
       return;
     }
+
+    document.getElementById('comingSoon').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
 
     const token = getAccessToken();
     

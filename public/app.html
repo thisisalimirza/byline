@@ -1524,7 +1524,7 @@
     .sidebar-footer {
       border-top: none;
       padding-top: 0;
-      bottom: 52px;
+      position: static;
     }
 
     /* Output area becomes full-width */
@@ -1672,13 +1672,9 @@
   .site-footer .dot { color: var(--text-dim); }
   body { padding-bottom: 52px; }
   #completionBar { bottom: 52px; }
-  @media (max-width: 900px) {
-    .sidebar-footer { bottom: 52px; }
-  }
   @media (max-width: 719px) {
     body { padding-bottom: 108px; }
     #completionBar { bottom: 108px; }
-    .sidebar-footer { bottom: 108px; }
   }
 </style>
 </head>
