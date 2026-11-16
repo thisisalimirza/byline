@@ -61,7 +61,11 @@
   h2 { font-size: 16px; font-weight: 600; margin: 28px 0 8px; }
   p, li { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
   ul { padding-left: 18px; margin-bottom: 8px; }
-  a { color: var(--accent); }
+  main a {
+    color: var(--accent);
+    display: inline-flex; align-items: center;
+    min-height: 44px;
+  }
   footer {
     padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--border);
