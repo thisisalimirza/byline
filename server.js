@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path    = require('path');
 const crypto  = require('crypto');
+const selfserve = require('./lib/selfserve');
 
 const app = express();
 
@@ -55,14 +56,14 @@ const CREDIT_PACKS = {
   studio:  { price: 2500, credits: 75, label: '75 Articles' },
 };
 
-// ── Refund policy ─────────────────────────────────────────────────────────────
-const REFUND_MIN_REMAINING_PCT = 0.5;
-
 // ── Rate limiting configuration ───────────────────────────────────────────────
 const RATE_LIMITS = {
   generation: { windowMs: 60 * 60 * 1000, max: 20 },  // 20 generations per hour
   auth:       { windowMs: 15 * 60 * 1000, max: 10 },  // 10 auth attempts per 15 min
   api:        { windowMs: 60 * 1000, max: 60 },       // 60 requests per minute
+  verify:     { windowMs: 15 * 60 * 1000, max: 5 },   // codes and checks
+  refund:     { windowMs: 60 * 60 * 1000, max: 8 },
+  contact:    { windowMs: 60 * 60 * 1000, max: 5 },
 };
 
 // ── Storage abstraction (Redis/KV for sessions and rate limits) ───────────────
@@ -813,6 +814,7 @@ app.post('/api/start-run', optionalAuth, rateLimit('generation'), async (req, re
       
       const runToken = crypto.randomUUID();
       await storageSet(`run:${runToken}`, { callsLeft: 6, userId: req.user.id }, 7200);
+      await storageSet(`runcharge:${runToken}`, { userId: req.user.id, returned: false }, 7200);
       
       trackEvent(req.user.id, 'generation_started', { credits_remaining: newBalance });
       return res.json({ runToken, remaining: newBalance, authenticated: true });
@@ -824,18 +826,78 @@ app.post('/api/start-run', optionalAuth, rateLimit('generation'), async (req, re
   
   // Guest token flow
   if (!creditToken) return res.status(400).json({ error: 'Sign in or purchase credits to generate' });
+
+  const access = selfserve.readAccess(creditToken);
+  if (access) {
+    if (!stripe) return res.status(503).json({ error: 'Payments not available. Try again later.' });
+    try {
+      const spent = await selfserve.spendFromEmail(stripe, access.e);
+      if (spent.empty) return res.status(402).json({ error: 'You\'re out of credits' });
+      const runToken = crypto.randomUUID();
+      await storageSet(`run:${runToken}`, { callsLeft: 6 }, 7200);
+      await storageSet(`runcharge:${runToken}`, {
+        email: access.e, sessionId: spent.sessionId, returned: false,
+      }, 7200);
+      trackEvent(access.e, 'generation_started', { credits_remaining: spent.remaining, guest: true });
+      return res.json({ runToken, remaining: spent.remaining, authenticated: false });
+    } catch (e) {
+      console.error('Spend error:', e.message);
+      return res.status(e.status || 500).json({ error: e.status === 402 ? 'You\'re out of credits' : 'Something went wrong' });
+    }
+  }
   
-  const entry = await storageGet(`credit:${creditToken}`);
+  let entry = await storageGet(`credit:${creditToken}`);
+  if (!entry && stripe) {
+    try {
+      const found = await stripe.checkout.sessions.search({
+        query: `metadata['guest_token']:'${String(creditToken).replace(/'/g, '')}' AND status:'complete'`,
+        limit: 1,
+      });
+      const session = found.data?.[0];
+      if (session) {
+        const pack = selfserve.packFromSession(session);
+        entry = {
+          remaining: pack.remaining,
+          used: pack.used,
+          stripeSessionId: session.id,
+          email: selfserve.normalizeEmail(pack.email),
+          created_at: new Date().toISOString(),
+        };
+      }
+    } catch (e) { /* search unavailable */ }
+  }
   if (!entry || entry.remaining <= 0) {
     return res.status(402).json({ error: 'You\'re out of credits' });
   }
-  
-  entry.remaining--;
-  entry.used = (entry.used || 0) + 1;
+
+  let sessionId = entry.stripeSessionId || null;
+  if (sessionId && stripe) {
+    try {
+      if ((entry.used || 0) > 0) {
+        const current = await stripe.checkout.sessions.retrieve(sessionId);
+        if ((current.metadata?.credits_used || '0') === '0') {
+          await stripe.checkout.sessions.update(sessionId, {
+            metadata: { credits_used: String(entry.used) },
+          });
+        }
+      }
+      const result = await selfserve.adjustUsed(stripe, sessionId, 1);
+      entry.remaining = result.remaining;
+      entry.used = result.used;
+    } catch (e) {
+      return res.status(402).json({ error: 'You\'re out of credits' });
+    }
+  } else {
+    entry.remaining--;
+    entry.used = (entry.used || 0) + 1;
+  }
   await storageSet(`credit:${creditToken}`, entry);
   
   const runToken = crypto.randomUUID();
   await storageSet(`run:${runToken}`, { callsLeft: 6 }, 7200);
+  await storageSet(`runcharge:${runToken}`, {
+    creditToken, sessionId, email: entry.email || '', returned: false,
+  }, 7200);
   
   trackEvent(creditToken, 'generation_started', { credits_remaining: entry.remaining, guest: true });
   res.json({ runToken, remaining: entry.remaining, authenticated: false });
@@ -866,8 +928,10 @@ app.post('/api/create-checkout', optionalAuth, async (req, res) => {
       }],
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/app`,
+      customer_creation: 'always',
       metadata: { 
         credits: String(selected.credits),
+        credits_used: '0',
         user_id: req.user?.id || '',
         guest_token: guestToken || '',
       },
@@ -937,6 +1001,15 @@ app.get('/success', async (req, res) => {
     }
     
     const token = guestToken || crypto.randomUUID();
+
+    if (!session.metadata?.credits_used) {
+      await stripe.checkout.sessions.update(session.id, {
+        metadata: {
+          credits_used: '0',
+          email: session.customer_details?.email || '',
+        },
+      });
+    }
     
     await storageSet(`credit:${token}`, {
       remaining:       credits,
@@ -1059,6 +1132,19 @@ app.post('/api/webhook/stripe', async (req, res) => {
         const credits = parseInt(session.metadata?.credits, 10) || 10;
         const userId = session.metadata?.user_id;
         const guestToken = session.metadata?.guest_token;
+
+        if (!session.metadata?.credits_used || !session.metadata?.email) {
+          try {
+            await stripe.checkout.sessions.update(session.id, {
+              metadata: {
+                credits_used: session.metadata?.credits_used || '0',
+                email: session.customer_details?.email || session.metadata?.email || '',
+              },
+            });
+          } catch (e) {
+            console.error('Webhook metadata update:', e.message);
+          }
+        }
         
         if (userId && supabaseAdmin) {
           await addCreditsToUser(
@@ -1167,71 +1253,432 @@ app.post('/api/webhook/stripe', async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// REFUND ENDPOINTS (existing)
+// RESTORE, REFUNDS, DATA, CONTACT
+// Purchases live on the Stripe checkout session. A one-time code proves the
+// purchase email. Works while accounts are off.
 // ══════════════════════════════════════════════════════════════════════════════
+
+function publicPack(pack) {
+  return {
+    id: pack.id,
+    created: pack.created,
+    amount: (pack.amountCents || 0) / 100,
+    currency: pack.currency,
+    credits: pack.credits,
+    used: pack.used,
+    remaining: pack.remaining,
+    refunded: pack.refunded,
+    eligible: !!(pack.quote && pack.quote.eligible),
+    refundAmount: pack.quote && pack.quote.eligible ? pack.quote.refundCents / 100 : 0,
+    kind: pack.quote ? pack.quote.kind || null : null,
+    reason: pack.quote && !pack.quote.eligible ? pack.quote.reason : '',
+    receiptUrl: pack.receiptUrl || '',
+  };
+}
+
+async function withReceipts(packs) {
+  if (!stripe) return packs;
+  await Promise.all(packs.map(async (pack) => {
+    if (!pack.paymentIntent || pack.receiptUrl) return;
+    try {
+      const pi = await stripe.paymentIntents.retrieve(pack.paymentIntent, { expand: ['latest_charge'] });
+      pack.receiptUrl = pi.latest_charge?.receipt_url || '';
+    } catch { /* receipt is optional */ }
+  }));
+  return packs;
+}
+
+async function saveVerifyCode(email, code) {
+  const record = {
+    hash: selfserve.hashCode(email, code),
+    exp: Date.now() + selfserve.CODE_TTL_MS,
+    tries: 0,
+  };
+  await storageSet(`verify:${email}`, record, 600);
+  try {
+    const customers = await selfserve.customersForEmail(stripe, email);
+    if (customers[0]) {
+      await stripe.customers.update(customers[0].id, {
+        metadata: {
+          verify_hash: record.hash,
+          verify_exp: String(record.exp),
+          verify_tries: '0',
+        },
+      });
+    }
+  } catch (e) {
+    console.error('Verify code store:', e.message);
+  }
+  return record;
+}
+
+async function readVerifyCode(email) {
+  const stored = await storageGet(`verify:${email}`);
+  if (stored && stored.hash) return stored;
+  try {
+    const customers = await selfserve.customersForEmail(stripe, email);
+    const meta = customers[0]?.metadata;
+    if (meta?.verify_hash) {
+      return {
+        hash: meta.verify_hash,
+        exp: parseInt(meta.verify_exp, 10) || 0,
+        tries: parseInt(meta.verify_tries, 10) || 0,
+        customerId: customers[0].id,
+      };
+    }
+  } catch { /* no customer */ }
+  return null;
+}
+
+async function writeVerifyTries(email, record) {
+  await storageSet(`verify:${email}`, record, 600);
+  if (record.customerId) {
+    try {
+      await stripe.customers.update(record.customerId, {
+        metadata: { verify_tries: String(record.tries) },
+      });
+    } catch { /* best effort */ }
+  }
+}
+
+app.post('/api/restore/request', rateLimit('verify'), async (req, res) => {
+  const email = selfserve.normalizeEmail(req.body?.email);
+  if (!selfserve.isEmail(email)) return res.status(400).json({ error: 'Enter the email you used at checkout' });
+  if (!stripe) return res.status(503).json({ error: 'Payments are not available right now' });
+
+  const generic = { ok: true, message: 'If that email has a purchase, we sent a code. It expires in 10 minutes.' };
+  try {
+    const packs = await selfserve.listPacks(stripe, email);
+    if (!packs.length) return res.json(generic);
+    const code = selfserve.makeCode();
+    await saveVerifyCode(email, code);
+    await selfserve.sendEmail({
+      to: email,
+      subject: 'Your Byline code',
+      text: selfserve.codeMessage(code),
+    });
+    return res.json(generic);
+  } catch (err) {
+    if (err.code === 'email_unconfigured' || err.code === 'email_failed') {
+      return res.status(503).json({ error: `We couldn't send a code. Email ${selfserve.SUPPORT_EMAIL} and we'll sort it out.` });
+    }
+    console.error('Restore request:', err.message);
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+app.post('/api/restore/verify', rateLimit('verify'), async (req, res) => {
+  const email = selfserve.normalizeEmail(req.body?.email);
+  const code = String(req.body?.code || '').replace(/\s/g, '');
+  if (!selfserve.isEmail(email) || !/^\d{6}$/.test(code)) {
+    return res.status(400).json({ error: 'Enter the email and the 6-digit code' });
+  }
+  if (!stripe) return res.status(503).json({ error: 'Payments are not available right now' });
+
+  const record = await readVerifyCode(email);
+  if (!record || !record.hash || Date.now() > record.exp) {
+    return res.status(400).json({ error: 'That code has expired. Request a new one.' });
+  }
+  if (record.tries >= selfserve.CODE_MAX_TRIES) {
+    return res.status(429).json({ error: 'Too many attempts. Request a new code.' });
+  }
+  const expected = selfserve.hashCode(email, code);
+  const match = expected.length === record.hash.length && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(record.hash));
+  if (!match) {
+    record.tries += 1;
+    await writeVerifyTries(email, record);
+    return res.status(400).json({ error: 'That code does not match' });
+  }
+  await storageDel(`verify:${email}`);
+
+  const packs = await withReceipts(await selfserve.listPacks(stripe, email));
+  const token = selfserve.signAccess(email);
+  const remaining = packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+  res.json({ token, email, remaining, purchases: packs.map(publicPack) });
+});
+
+app.get('/api/purchases', async (req, res) => {
+  const access = selfserve.readAccess(req.query.token);
+  if (!access) return res.status(401).json({ error: 'Verify your email to see purchases' });
+  if (!stripe) return res.status(503).json({ error: 'Payments are not available right now' });
+  try {
+    const packs = await withReceipts(await selfserve.listPacks(stripe, access.e));
+    const remaining = packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+    res.json({ email: access.e, remaining, purchases: packs.map(publicPack) });
+  } catch (err) {
+    console.error('Purchases:', err.message);
+    res.status(500).json({ error: 'Could not load purchases' });
+  }
+});
+
+async function refundSession(sessionId, email) {
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const owner = selfserve.normalizeEmail(session.metadata?.email || session.customer_details?.email || '');
+  if (!owner || owner !== email) {
+    return { status: 403, body: { error: 'That purchase belongs to a different email' } };
+  }
+  const pack = selfserve.packFromSession(session);
+  if (session.metadata?.refunded === '1') {
+    return { status: 400, body: { error: 'This pack was already refunded' } };
+  }
+  const pi = pack.paymentIntent
+    ? await stripe.paymentIntents.retrieve(pack.paymentIntent)
+    : null;
+  if (pi && pi.amount_refunded > 0) {
+    await stripe.checkout.sessions.update(sessionId, { metadata: { refunded: '1', refund_pending: '' } });
+    return { status: 400, body: { error: 'This pack was already refunded' } };
+  }
+  if (!pack.quote.eligible) {
+    return { status: 400, body: { error: pack.quote.reason } };
+  }
+  const usedBefore = pack.used;
+  await stripe.checkout.sessions.update(sessionId, {
+    metadata: { refund_pending: '1', credits_used: String(pack.credits) },
+  });
+  try {
+    const refund = await stripe.refunds.create({
+      payment_intent: pack.paymentIntent,
+      amount: pack.quote.refundCents,
+    }, { idempotencyKey: `refund_${sessionId}` });
+    await stripe.checkout.sessions.update(sessionId, {
+      metadata: { refunded: '1', refund_pending: '', refund_id: refund.id, credits_used: String(pack.credits) },
+    });
+    return {
+      status: 200,
+      body: {
+        success: true,
+        amount: refund.amount / 100,
+        currency: refund.currency.toUpperCase(),
+        kind: pack.quote.kind,
+      },
+    };
+  } catch (err) {
+    await stripe.checkout.sessions.update(sessionId, {
+      metadata: { refund_pending: '', credits_used: String(usedBefore) },
+    }).catch(() => {});
+    console.error('Refund error:', err.message);
+    return { status: 500, body: { error: 'The refund did not go through. Your credits are unchanged.' } };
+  }
+}
 
 app.get('/api/refund-eligible', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.json({ eligible: false, reason: 'Missing token' });
-  const entry = await storageGet(`credit:${token}`);
-  if (!entry) return res.json({ eligible: false, reason: 'Purchase not found on this device' });
-  if (!entry.stripeSessionId) return res.json({ eligible: false, reason: 'Email us for a manual refund' });
-  const usedCredits = entry.used || 0;
-  const totalCredits = entry.remaining + usedCredits;
-  const remainingPct = totalCredits > 0 ? entry.remaining / totalCredits : 1;
-  if (remainingPct < REFUND_MIN_REMAINING_PCT) {
-    return res.json({ eligible: false, reason: `${usedCredits} of ${totalCredits} credits used` });
-  }
-  let amount = null;
-  if (stripe) {
+  const access = selfserve.readAccess(token);
+  if (access && stripe) {
     try {
-      const session = await stripe.checkout.sessions.retrieve(entry.stripeSessionId);
-      amount = session.amount_total / 100;
-    } catch (_) {}
+      const packs = await selfserve.listPacks(stripe, access.e);
+      const eligible = packs.filter(p => p.quote.eligible);
+      if (!eligible.length) return res.json({ eligible: false, reason: 'No refundable pack on this email' });
+      return res.json({
+        eligible: true,
+        remaining: eligible[0].remaining,
+        amount: eligible[0].quote.refundCents / 100,
+      });
+    } catch {
+      return res.json({ eligible: false, reason: 'Could not check purchases' });
+    }
   }
-  res.json({ eligible: true, remaining: entry.remaining, amount });
-});
-
-app.post('/api/refund', async (req, res) => {
-  if (!stripe) return res.status(503).json({ error: 'Payments not configured' });
-  
-  const { creditToken } = req.body;
-  if (!creditToken) return res.status(400).json({ error: 'Missing credit token' });
-  
-  const entry = await storageGet(`credit:${creditToken}`);
-  if (!entry) return res.status(404).json({ error: 'Token not found. Use the same device where you purchased.' });
-  if (!entry.stripeSessionId) return res.status(400).json({ error: 'No purchase found for this token' });
-  
-  const usedCredits = entry.used || 0;
-  const originalCredits = entry.remaining + usedCredits;
-  const remainingPct = originalCredits > 0 ? entry.remaining / originalCredits : 1;
-  if (remainingPct < REFUND_MIN_REMAINING_PCT) {
-    const threshold = Math.floor(REFUND_MIN_REMAINING_PCT * 100);
-    return res.status(400).json({
-      error: `You've used ${usedCredits} of ${originalCredits} credits. Refunds available while ${threshold}%+ remain.`
-    });
+  const entry = await storageGet(`credit:${token}`);
+  if (!entry || !entry.stripeSessionId || !stripe) {
+    return res.json({ eligible: false, reason: 'Purchase not found. Verify the email you used at checkout.' });
   }
-  
   try {
     const session = await stripe.checkout.sessions.retrieve(entry.stripeSessionId);
-    const paymentIntent = session.payment_intent;
-    if (!paymentIntent) return res.status(400).json({ error: 'No payment found' });
-    
-    const pi = await stripe.paymentIntents.retrieve(paymentIntent);
-    if (pi.status === 'canceled' || pi.amount_received === 0) {
-      return res.status(400).json({ error: 'Already refunded' });
-    }
-    
-    const refund = await stripe.refunds.create({ payment_intent: paymentIntent });
-    await storageDel(`credit:${creditToken}`);
-    
-    trackEvent(creditToken, 'refund_processed', { amount: refund.amount / 100 });
-    res.json({ success: true, amount: refund.amount / 100, currency: refund.currency.toUpperCase() });
-  } catch (err) {
-    console.error('Refund error:', err.message);
-    res.status(500).json({ error: 'Refund failed: ' + err.message });
+    const pack = selfserve.packFromSession(session);
+    if (!pack.quote.eligible) return res.json({ eligible: false, reason: pack.quote.reason });
+    res.json({ eligible: true, remaining: pack.remaining, amount: pack.quote.refundCents / 100 });
+  } catch {
+    res.json({ eligible: false, reason: 'Purchase not found' });
   }
 });
+
+app.post('/api/refund', rateLimit('refund'), async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Payments not configured' });
+  const { creditToken, token, sessionId } = req.body || {};
+  const accessToken = token || (selfserve.readAccess(creditToken) ? creditToken : null);
+
+  try {
+    if (accessToken && sessionId) {
+      const access = selfserve.readAccess(accessToken);
+      if (!access) return res.status(401).json({ error: 'Verify your email again' });
+      const result = await refundSession(sessionId, access.e);
+      if (result.status === 200) {
+        trackEvent(access.e, 'refund_processed', { amount: result.body.amount, sessionId });
+        const packs = await selfserve.listPacks(stripe, access.e);
+        result.body.remaining = packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+      }
+      return res.status(result.status).json(result.body);
+    }
+
+    if (!creditToken) return res.status(400).json({ error: 'Missing credit token' });
+    const entry = await storageGet(`credit:${creditToken}`);
+    if (!entry?.stripeSessionId) {
+      return res.status(404).json({ error: 'Verify the email you used at checkout to refund this purchase.' });
+    }
+    const session = await stripe.checkout.sessions.retrieve(entry.stripeSessionId);
+    const email = selfserve.normalizeEmail(session.metadata?.email || session.customer_details?.email || entry.email || '');
+    if (!email) return res.status(400).json({ error: 'This purchase has no email on it. Email ' + selfserve.SUPPORT_EMAIL });
+    const result = await refundSession(entry.stripeSessionId, email);
+    if (result.status === 200) {
+      entry.remaining = 0;
+      await storageSet(`credit:${creditToken}`, entry);
+      trackEvent(creditToken, 'refund_processed', { amount: result.body.amount });
+    }
+    return res.status(result.status).json(result.body);
+  } catch (err) {
+    console.error('Refund error:', err.message);
+    res.status(500).json({ error: 'The refund did not go through. Your credits are unchanged.' });
+  }
+});
+
+app.get('/api/account/export', async (req, res) => {
+  const access = selfserve.readAccess(req.query.token);
+  if (!access) return res.status(401).json({ error: 'Verify your email to download your data' });
+  if (!stripe) return res.status(503).json({ error: 'Payments are not available right now' });
+  try {
+    const packs = await withReceipts(await selfserve.listPacks(stripe, access.e));
+    res.setHeader('Content-Disposition', 'attachment; filename="byline-data.json"');
+    res.json({
+      email: access.e,
+      exported_at: new Date().toISOString(),
+      purchases: packs.map(publicPack),
+      note: 'Article drafts saved in this browser are not on the server. Use Download drafts on this browser to save those.',
+    });
+  } catch (err) {
+    console.error('Export error:', err.message);
+    res.status(500).json({ error: 'Could not prepare your download' });
+  }
+});
+
+app.post('/api/account/delete', rateLimit('verify'), async (req, res) => {
+  const access = selfserve.readAccess(req.body?.token);
+  if (!access) return res.status(401).json({ error: 'Verify your email before deleting data' });
+  if (req.body?.confirm !== 'DELETE') return res.status(400).json({ error: 'Type DELETE to confirm' });
+  if (!stripe) return res.status(503).json({ error: 'Payments are not available right now' });
+  try {
+    const customers = await selfserve.customersForEmail(stripe, access.e);
+    for (const customer of customers) {
+      await stripe.customers.del(customer.id);
+    }
+    await storageDel(`verify:${access.e}`);
+    trackEvent(access.e, 'data_deleted', {});
+    res.json({
+      success: true,
+      message: 'The customer profile for this email was deleted. Payment records stay with Stripe for accounting. Clear this browser to remove drafts stored here.',
+    });
+  } catch (err) {
+    console.error('Delete error:', err.message);
+    res.status(500).json({ error: 'Could not delete the profile. Email ' + selfserve.SUPPORT_EMAIL });
+  }
+});
+
+app.post('/api/contact', rateLimit('contact'), async (req, res) => {
+  const email = selfserve.normalizeEmail(req.body?.email);
+  const message = String(req.body?.message || '').trim();
+  if (!selfserve.isEmail(email)) return res.status(400).json({ error: 'Enter a valid email' });
+  if (message.length < 8 || message.length > 4000) {
+    return res.status(400).json({ error: 'Write a short message, under 4000 characters' });
+  }
+  try {
+    await selfserve.sendEmail({
+      to: selfserve.SUPPORT_EMAIL,
+      replyTo: email,
+      subject: 'Byline help',
+      text: `From: ${email}\n\n${message}`,
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    if (err.code === 'email_unconfigured' || err.code === 'email_failed') {
+      return res.status(503).json({ error: `We couldn't send that. Email ${selfserve.SUPPORT_EMAIL} instead.` });
+    }
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+app.post('/api/abort-run', async (req, res) => {
+  const { runToken } = req.body || {};
+  if (!runToken) return res.status(400).json({ error: 'Missing run' });
+  try {
+    const remaining = await returnRunCredit(runToken);
+    res.json({ ok: true, remaining });
+  } catch (err) {
+    console.error('Abort run:', err.message);
+    res.status(500).json({ error: 'Could not return the credit' });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CREDIT RETURN WHEN A RUN FAILS
+// ══════════════════════════════════════════════════════════════════════════════
+
+async function returnRunCredit(runToken) {
+  if (!runToken) return null;
+  const charge = await storageGet(`runcharge:${runToken}`);
+  if (!charge || charge.returned) {
+    return charge ? creditRemaining(charge) : null;
+  }
+  charge.returned = true;
+  await storageSet(`runcharge:${runToken}`, charge, 7200);
+
+  if (charge.userId && supabaseAdmin) {
+    const { data: balance } = await supabaseAdmin
+      .from('credit_balances')
+      .select('balance')
+      .eq('user_id', charge.userId)
+      .single();
+    const newBalance = (balance?.balance || 0) + 1;
+    await supabaseAdmin.from('credit_balances').upsert({
+      user_id: charge.userId,
+      balance: newBalance,
+    }, { onConflict: 'user_id' });
+    await supabaseAdmin.from('credit_transactions').insert({
+      user_id: charge.userId,
+      amount: 1,
+      balance_after: newBalance,
+      type: 'usage',
+      description: 'Credit returned. The article did not finish.',
+    });
+    return newBalance;
+  }
+
+  if (charge.sessionId && stripe) {
+    await selfserve.returnToSession(stripe, charge.sessionId);
+  } else if (charge.creditToken) {
+    const entry = await storageGet(`credit:${charge.creditToken}`);
+    if (entry) {
+      entry.remaining = (entry.remaining || 0) + 1;
+      entry.used = Math.max(0, (entry.used || 0) - 1);
+      await storageSet(`credit:${charge.creditToken}`, entry);
+    }
+  }
+  return creditRemaining(charge);
+}
+
+async function creditRemaining(charge) {
+  if (!charge) return null;
+  if (charge.userId && supabaseAdmin) {
+    const { data } = await supabaseAdmin
+      .from('credit_balances')
+      .select('balance')
+      .eq('user_id', charge.userId)
+      .single();
+    return data?.balance ?? null;
+  }
+  if (charge.email && stripe) {
+    const packs = await selfserve.listPacks(stripe, charge.email);
+    return packs.filter(p => !p.refunded && !p.pending).reduce((sum, p) => sum + p.remaining, 0);
+  }
+  if (charge.sessionId && stripe) {
+    const session = await stripe.checkout.sessions.retrieve(charge.sessionId);
+    return selfserve.packFromSession(session).remaining;
+  }
+  if (charge.creditToken) {
+    const entry = await storageGet(`credit:${charge.creditToken}`);
+    return entry?.remaining ?? null;
+  }
+  return null;
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // AI ENDPOINTS
@@ -1328,7 +1775,8 @@ app.post('/api/chat', rateLimit('api'), async (req, res) => {
     
     keyToUse = process.env.ANTHROPIC_API_KEY;
     if (!keyToUse) {
-      return res.status(503).json({ error: 'Server API key not configured' });
+      const remaining = await returnRunCredit(runToken);
+      return res.status(503).json({ error: 'Server API key not configured', remaining });
     }
   }
   
@@ -1344,7 +1792,14 @@ app.post('/api/chat', rateLimit('api'), async (req, res) => {
     });
     
     if (!response.ok) {
-      const err = await response.json();
+      const err = await response.json().catch(() => ({}));
+      if (runToken && !apiKey) {
+        const remaining = await returnRunCredit(runToken);
+        return res.status(response.status).json({
+          error: 'The article did not finish. The credit was returned.',
+          remaining,
+        });
+      }
       return res.status(response.status).json(err);
     }
     
@@ -1361,6 +1816,12 @@ app.post('/api/chat', rateLimit('api'), async (req, res) => {
     }
     res.end();
   } catch (err) {
+    let remaining = null;
+    if (runToken && !apiKey) remaining = await returnRunCredit(runToken);
+    if (res.headersSent) return;
+    if (runToken && !apiKey) {
+      return res.status(500).json({ error: 'The article did not finish. The credit was returned.', remaining });
+    }
     res.status(500).json({ error: err.message });
   }
 });

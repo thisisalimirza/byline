@@ -61,7 +61,11 @@
   h2 { font-size: 16px; font-weight: 600; margin: 28px 0 8px; }
   p, li { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
   ul { padding-left: 18px; margin-bottom: 8px; }
-  a { color: var(--accent); }
+  main a {
+    color: var(--accent);
+    display: inline-flex; align-items: center;
+    min-height: 44px;
+  }
   footer {
     padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--border);
@@ -75,6 +79,24 @@
   footer a:hover { color: var(--text); }
   footer .dot { color: var(--text-dim); }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  label { display: block; font-size: 13px; color: var(--text-muted); margin: 12px 0 6px; }
+  input, textarea {
+    width: 100%; min-height: 44px; padding: 10px 12px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: var(--sans); font-size: 16px;
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  button {
+    min-height: 44px; margin-top: 12px; padding: 0 16px;
+    background: var(--accent); color: #0d0c0a; border: none; border-radius: 8px;
+    font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ghost {
+    background: transparent; color: var(--text); border: 1px solid var(--border);
+  }
+  #contactNote { margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -90,17 +112,79 @@
   <p class="lead">Short answers for credits, articles, and refunds. Your drafts stay in this browser until accounts are available.</p>
 
   <h2>Credits</h2>
-  <p>One credit writes one article. Packs are 10 for $5, 25 for $10, or 75 for $25. Buy them from the credits control in the app. Credits do not expire.</p>
+  <p>One credit writes one article. Packs are 10 for $5, 25 for $10, or 75 for $25. Open Buy from the credits control in the app. Credits do not expire.</p>
+  <p>Bought on another device? <a href="/refund#restore">Restore my credits</a> with the checkout email. We email a one-time code, then the credits show up in this browser.</p>
 
-  <h2>Articles</h2>
-  <p>Add a topic and keyword, then generate. The article passes through planning, research, writing, SEO, refining, and humanizing. If something goes wrong, try again from the app.</p>
+  <h2>Failed generations</h2>
+  <p>If an article fails on our side, the credit is returned automatically. You do not need to ask. Start the article again when you are ready.</p>
+
+  <h2>Downloads and exports</h2>
+  <p>After an article finishes, use Copy, Preview, or the PDF control in the app to take it with you. Drafts on this browser can be saved as a file here.</p>
+  <div class="row">
+    <button type="button" id="downloadDrafts" class="ghost">Download drafts on this browser</button>
+    <button type="button" id="clearDrafts" class="ghost">Delete drafts on this browser</button>
+  </div>
+
+  <h2>Receipts and invoices</h2>
+  <p>Stripe emails a receipt when you pay. After you verify your purchase email on the <a href="/refund">refund page</a>, each pack includes a receipt link.</p>
 
   <h2>Refunds</h2>
-  <p>You can request a refund yourself on the <a href="/refund">refund page</a>.</p>
+  <p>A full refund is available within 14 days if you have not used the pack. After that, unused credits are refunded pro-rata for 30 days from the purchase. Each pack can be refunded once, back to the original payment. Do it yourself on the <a href="/refund">refund page</a>.</p>
+
+  <h2>Deleting data</h2>
+  <p>Delete drafts on this browser with the button above. To delete the customer profile tied to a purchase email, verify that email on the <a href="/refund">refund page</a> and choose Delete my data. Payment records stay with Stripe for accounting.</p>
+  <p>You can also <a href="/refund">download purchase data</a> after verifying your email.</p>
 
   <h2 id="contact">Contact</h2>
-  <p>If the refund page or the app cannot solve it, email <a href="mailto:ali@braskgroup.com">ali@braskgroup.com</a>.</p>
+  <p>Use this if the pages above do not solve it. Messages go to ali@braskgroup.com.</p>
+  <form id="contactForm">
+    <label for="contactEmail">Email</label>
+    <input id="contactEmail" type="email" autocomplete="email" required>
+    <label for="contactMessage">Message</label>
+    <textarea id="contactMessage" required></textarea>
+    <button type="submit">Send message</button>
+  </form>
+  <p id="contactNote"></p>
 </main>
+<script>
+  function browserBundle() {
+    const keys = ['byline_drafts','byline_products','byline_purchases','byline_credit_bal'];
+    const data = {};
+    keys.forEach(k => { data[k] = localStorage.getItem(k); });
+    return data;
+  }
+  document.getElementById('downloadDrafts').onclick = () => {
+    const blob = new Blob([JSON.stringify(browserBundle(), null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'byline-browser-data.json';
+    a.click();
+  };
+  document.getElementById('clearDrafts').onclick = () => {
+    ['byline_drafts','byline_products','byline_pdf_company'].forEach(k => localStorage.removeItem(k));
+    document.getElementById('contactNote').textContent = 'Drafts on this browser were deleted.';
+  };
+  document.getElementById('contactForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const note = document.getElementById('contactNote');
+    note.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('contactEmail').value,
+          message: document.getElementById('contactMessage').value,
+        }),
+      });
+      const d = await r.json();
+      note.textContent = r.ok ? 'Message sent.' : (d.error || 'Could not send.');
+      if (r.ok) e.target.reset();
+    } catch (err) {
+      note.textContent = 'Could not send. Email ali@braskgroup.com.';
+    }
+  };
+</script>
 <footer>
   <a href="/terms">Terms</a>
   <span class="dot" aria-hidden="true">·</span>
